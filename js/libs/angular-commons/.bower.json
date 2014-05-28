@@ -1,0 +1,34 @@
+{
+  "name": "angular-commons",
+  "version": "0.2.0",
+  "main": [
+    "dist/scripts/angular-commons.js",
+    "dist/scripts/angular-commons.min.js"
+  ],
+  "ignore": [
+    ".*",
+    "app",
+    "config",
+    "nbproject",
+    "test",
+    "Gruntfile.js",
+    "karma*",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular": ">=1.2.0"
+  },
+  "devDependencies": {
+    "angular-mocks": ">=1.2.0"
+  },
+  "homepage": "https://github.com/cismet/angular-commons",
+  "_release": "0.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.2.0",
+    "commit": "2627f8f6d58c0649a802ae1677ef36858a264231"
+  },
+  "_source": "git://github.com/cismet/angular-commons.git",
+  "_target": "~0.2.0",
+  "_originalSource": "angular-commons"
+}

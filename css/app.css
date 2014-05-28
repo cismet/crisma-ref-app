@@ -1,0 +1,28 @@
+.angular-google-map-container { height: 400px; }
+
+#ribbon .breadcrumb a.active {
+    color: #fff!important;
+    position: relative;
+
+}
+
+/*#shortcut-tree {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 350px;
+    background-color: #33302F;
+    background-color: rgba(0,0,0,.85);
+    z-index: 1005;
+    display: none;
+    color: #fff;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}*/
+
+.catalagoue-tree>ul{
+    height: auto;
+}

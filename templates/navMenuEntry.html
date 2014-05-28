@@ -1,0 +1,9 @@
+<li>
+    <a ng-click="toggleOpen()">
+        <i ng-if="menuitem.icon" class="fa fa-lg fa-fw" ng-class="menuitem.icon"></i>
+        <span class="crop" ng-class="menuItemParent">{{menuitem.name}}</span>
+        <span  class="badge bg-color-greenLight pull-right inbox-badge">{{menuitem.badge()}}</span>
+        <b ng-if="menuitem.children && !menuitem.badge" class="collapse-sign"><em ng-class="collapseSign"></em></b>
+    </a>
+    <!-- we insert the submenu via $compile, hence angular does not allow recursive directives...--> 
+</li>

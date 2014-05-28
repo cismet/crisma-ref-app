@@ -1,0 +1,57 @@
+
+<div class="well">
+    <h1>Workspace</h1>
+    <p>
+        Manage all the Worldstates you have added to the Workspace and select them for further processing. 
+        <br>
+        <br>
+    </p>
+
+    <div class="row">
+
+        <div class="col-sm-3">
+            <section>
+                <form class="smart-form">
+                    <label class="label">Multiple select</label>
+                    <label class="select select-multiple">
+                        <select style="width:100%;height:100%;" class="custom-scroll" multiple ng-model="selectedWorldstates" ng-options="worldstate.name for worldstate in WorkspaceService.worldstates" >
+                        </select>
+                    </label>
+                </form>
+            </section>
+
+        </div>
+        <div class="col-sm-9">
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th> Parent worldstate <small></small></th>
+                        <th> Child worldstates<small></small></th>
+                        <th> creator <small></small></th>
+                        <th> creation date <small></small></th>
+                        <th> data items<small>&nbsp;(number)</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="worldstate in worldstates">
+                        <th>{{worldstate.id}}-{{worldstate.name}}</th>
+                        <td>{{worldstate.parentworldstate.id}}-{{worldstate.parentworldstate.name}}</td>
+                        <td>
+                            <ul>
+                                <li ng-repeat="childWs in worldstate.childworldstates">{{childWs.id}}-{{childWs.name}}</li>
+                            </ul>
+                        </td>
+                        <td>{{worldstate.creator}}</td>
+                        <td>{{worldstate.created | date: 'fullDate'}}</td>
+                        <td>{{worldstate.worldstatedata.length}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+</div>

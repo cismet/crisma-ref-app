@@ -1,0 +1,19 @@
+<!--Begin Title Area-->
+<!--End Title Area-->
+
+<!--Begin Body-->
+<div directive-includer ng-repeat="renderer in normalAreaRenderer| orderBy:'renderingdescriptor.priority'" rendering-descriptor="renderer.renderingdescriptor" dataslot="renderer.dataslot" worldstate="worldstate">
+</div>
+<!--The widget grid comes with features of the jarvis widget plugin like maximizing and ordering-->
+<widget-grid>
+    <!--    <widget-container rendering-descriptor="worldstate.iccdata.renderingDescriptor" dataslot="worldstate.iccdata">
+        </widget-container>-->
+    <widget-container ng-repeat="dataslot in widgetAreaRenderer| orderBy:'renderingdescriptor.priority'" rendering-descriptor="dataslot.renderingdescriptor" dataslot="dataslot.dataslot" worldstate="worldstate">
+    </widget-container>
+</widget-grid>
+
+<!--End Body-->
+
+<!--Begin Title Area-->
+
+<!--End Title Area-->

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group name="wupp">
+            <file>file:/home/daniel/git_repo/crisma-reference-app/custom/templates/leafletWMS.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/services/services.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/partials/WorldstateViewer.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/controllers/WorldstateViewerCtrl.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/index.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/controllers/AppCtrl.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/directives/navMenu.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/libs/angular-1.3.0-beta.5/angular-resource.js</file>
+        </group>
+        <group name="html5widgets">
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/directives/breadcrumb.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/services/services.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/custom/directives/directives.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/angularApp.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/partials/workspace.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/controllers/WorkspaceCtrl.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/index.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/templates/navArea.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/directives/userInfo.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/templates/userInfo.html</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/directives/navMenu.js</file>
+            <file>file:/home/daniel/git_repo/crisma-reference-app/js/cismet/directives/shortcut.js</file>
+        </group>
+    </open-files>
+</project-private>
