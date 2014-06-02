@@ -6,15 +6,18 @@ angular.module(
         'Nodes',
         'Worldstates',
         'WorkspaceService',
-        function ($scope, Nodes, Worldstates,WorkspaceService) {
+        function ($scope, Nodes, Worldstates, WorkspaceService) {
             $scope.isWorldstateIcon = true;
             $scope.treeOptions = {
                 multiSelection: true,
                 checkboxClass: 'glyphicon glyphicon-unchecked',
-                folderIconClosed: 'icon-folder-close.png',
-                folderIconOpen: 'icon-folder-open.png',
+//                folderIconClosed: 'icon-folder-close.png',
+//                folderIconOpen: 'icon-folder-open.png',
                 leafIcon: 'icon-file.png',
-                imagePath: '/js/libs/crisma-worldstate-tree-widget-angular/dist/images/'
+                imagePath: '/img/worldstate-tree/',
+                folderIconClosed: 'icon-world.png',
+                folderIconOpen: 'icon-world.png',
+                leafIcon : 'icon-world.png'
             };
             $scope.switchIcon = function () {
                 if (!$scope.isWorldstateIcon) {
@@ -44,9 +47,9 @@ angular.module(
                         var node = newVal[i];
 //                         splittedKey = node.key.split('.');          
 //                        Worldstates.get({wsId:splittedKey[splittedKey.length-1]}, function (ws) {
-                            if (!$scope.workspaceService.contains(node)){
-                                $scope.workspaceService.addWorldstate(node);
-                            }
+                        if (!$scope.workspaceService.contains(node)) {
+                            $scope.workspaceService.addWorldstate(node);
+                        }
 //                        });
                     }
 
@@ -56,9 +59,9 @@ angular.module(
                         for (var j = 0; j < itemsToDelete.length; j++) {
 //                            var splittedKey = itemsToDelete[j].key.split('.');
 //                            Worldstates.get({wsId: splittedKey[splittedKey.length-1]}, function (ws) {
-                                if ($scope.workspaceService.contains(itemsToDelete[j])) {
-                                    $scope.workspaceService.removeWS(itemsToDelete[j]);
-                                }
+                            if ($scope.workspaceService.contains(itemsToDelete[j])) {
+                                $scope.workspaceService.removeWS(itemsToDelete[j]);
+                            }
 //                            });
 
                         }

@@ -380,7 +380,7 @@ angular.module('de.cismet.crisma.widgets.worldstateTreeWidget.services', ['ngRes
           clientSort: false,
           derivePermissionsFromClass: false,
           icon: icon,
-          isLeaf: !hasChilds,
+          isLeaf: leaf,
           object: ws,
           getChildren: getChildrenFunc
         };
@@ -421,7 +421,7 @@ angular.module('de.cismet.crisma.widgets.worldstateTreeWidget.services', ['ngRes
             clientSort: false,
             derivePermissionsFromClass: false,
             icon: icon,
-            isLeaf: !hasChilds,
+            isLeaf: ws.leaf,
             object: ws,
             getChildren: getChildrenFunc
           };

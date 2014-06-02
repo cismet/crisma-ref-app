@@ -47,6 +47,8 @@ angular.module(
                                 nodeKey = nodeKey + '.';
                             }
                             $scope.selectedBreadCrumbIndex = $scope.breadCrumbPath.length - 1;
+                        }else{
+                            $scope.breadCrumbPath.splice(0,$scope.breadCrumbPath.length);
                         }
                     });
                 }

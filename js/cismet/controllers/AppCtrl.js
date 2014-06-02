@@ -26,6 +26,7 @@ angular.module(
             $scope.workspaceNode = {
                 name: 'Workspace',
                 icon: 'fa-home',
+                link:'/workspace',
                 badge: function () {
                     return $scope.workspaceService.worldstates.length;
                 }
@@ -34,18 +35,19 @@ angular.module(
             $scope.LayoutService = LayoutService;
             $scope.MenuService = MenuService;
             $scope.MenuService.menuItems = [{
-                    name: 'Worldstate Tree Widget',
-                    icon: 'fa-sitemap',
-                    link: '/worldstateTreeWidget'
-                }, {
-                    name: 'Worldstate Information',
-                    icon: 'fa-home',
-                    link: '/worldstateInformation',
-                }, {
                     name: 'Decision Support',
                     icon: 'fa-bar-chart-o',
                     link: '/decisionSupport'
+                },{
+                    name: 'Worldstate Tree Widget',
+                    icon: 'fa-sitemap',
+                    link: '/worldstateTreeWidget'
                 },
+//                {
+//                    name: 'Worldstate Information',
+//                    icon: 'fa-home',
+//                    link: '/worldstateInformation',
+//                },
                 $scope.scenarioNode,
                 $scope.workspaceNode
             ];
@@ -70,9 +72,9 @@ angular.module(
             $scope.$watchCollection('workspaceService.worldstates', function (newVal, oldVal) {
                 if (newVal !== oldVal) {
                     $scope.workspaceNode.children=$scope.workspaceService.worldstates;
-                    for(var i=0;i< $scope.workspaceNode.children.length;i++){
-                        $scope.workspaceNode.children[i].link='/workspace';
-                    }
+//                    for(var i=0;i< $scope.workspaceNode.children.length;i++){
+//                        $scope.workspaceNode.children[i].link='/workspace';
+//                    }
                 }
             });
 
