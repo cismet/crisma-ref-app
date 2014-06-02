@@ -62,7 +62,7 @@ angular.module('de.cismet.custom.services',
                 case 'money_evac_16.png':
                     styleClass = 'fa-dollar';
                     break;
-                case 'flower_dead_16.png':
+                case 'flower_injured_16.png':
                     styleClass = 'fa-wheelchair';
                     break;
                 case 'home_lost_16.png':

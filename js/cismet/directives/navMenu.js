@@ -79,7 +79,21 @@ angular.module(
                         if (scope.MenuService.activeItem === scope.menuitem) {
                             elem.addClass("active");
                         } else {
+                            //This implements accordion fuctionality...
+                            //FIXME This will only work for a two level hierarchy
                             elem.removeClass("active");
+                            if (subMenuElem && subMenuElem.is(':visible')) {
+                                var closeSubMenu = true;
+                                for (var i = 0; i < scope.menuitem.children.length; i++) {
+                                    var childElem = scope.menuitem.children[i];
+                                    if (childElem === scope.MenuService.activeItem) {
+                                        closeSubMenu = false;
+                                    }
+                                }
+                                if (closeSubMenu) {
+                                    $animate.removeClass(subMenuElem, 'open');
+                                }
+                            }
                         }
                     }
                 });
@@ -99,7 +113,6 @@ angular.module(
                         scope.collapseSign = collapseSignExpand;
                     }
 
-                    //FIXME implement accordion functionality....
                     if (scope.menuitem.children) {
 
                         if (subMenuElem.is(':visible') && !subMenuElem.hasClass('active')) {

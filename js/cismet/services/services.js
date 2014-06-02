@@ -19,7 +19,7 @@ angular.module('de.cismet.smartAdmin.services',
         function () {
             'use strict';
             return {
-                isVisble: false,
+                isVisble: false
             };
         }
     ]).service('LayoutService',
@@ -104,7 +104,7 @@ angular.module('de.cismet.smartAdmin.services',
                                 children = Nodes.children({nodeId: that.key}, callback);
                                 return children.$promise;
                             };
-node                        // we augment the node object of the rest api with a method how the children are generated
+                        // we augment the node object of the rest api with a method how the children are generated
                         node.icon = 'fa fa-globe';
 //                    currNode.leaf = true;
                         node.getChildren = getChildrenFunc;
