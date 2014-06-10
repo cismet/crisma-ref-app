@@ -2,8 +2,7 @@ angular.module(
     'de.cismet.custom.directives',
     [
         'easypiechart',
-        'de.cismet.custom.services',
-        'de.cismet.cids.rest.collidngNames.Nodes'
+        'de.cismet.custom.services'
     ]
     ).directive(
     'wmsLeaflet',

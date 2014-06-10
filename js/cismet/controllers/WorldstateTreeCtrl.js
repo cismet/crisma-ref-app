@@ -44,24 +44,18 @@ angular.module(
                     //add all new items to the workspace service...
                     for (var i = 0; i < newVal.length; i++) {
                         var node = newVal[i];
-//                         splittedKey = node.key.split('.');          
-//                        Worldstates.get({wsId:splittedKey[splittedKey.length-1]}, function (ws) {
                         if (!$scope.workspaceService.contains(node)) {
                             $scope.workspaceService.addWorldstate(node);
                         }
-//                        });
                     }
 
                     //remove worldstates that were deselected...
                     if (oldVal.length >= newVal.length) {
                         var itemsToDelete = _.difference(oldVal, newVal);
                         for (var j = 0; j < itemsToDelete.length; j++) {
-//                            var splittedKey = itemsToDelete[j].key.split('.');
-//                            Worldstates.get({wsId: splittedKey[splittedKey.length-1]}, function (ws) {
                             if ($scope.workspaceService.contains(itemsToDelete[j])) {
                                 $scope.workspaceService.removeWS(itemsToDelete[j]);
                             }
-//                            });
 
                         }
                     }

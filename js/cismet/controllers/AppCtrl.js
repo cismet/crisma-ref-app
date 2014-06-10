@@ -1,7 +1,8 @@
 angular.module(
     'de.cismet.smartAdmin.controllers',
     [
-        'de.cismet.smartAdmin.services'
+        'de.cismet.smartAdmin.services',
+        'de.cismet.crisma.ICMM.Worldstates'
     ]
     ).controller('AppCtrl',
     [

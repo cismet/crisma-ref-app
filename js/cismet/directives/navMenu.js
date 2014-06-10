@@ -67,8 +67,8 @@ angular.module(
 //                                        scope.MenuService.activePath.push(scope.selectedItem);
                                         scope.$emit('menuEntryActivated');
                                         //finally change the route according to the link
-                                        if (scope.selectedItem.link) {
-                                            $location.path(scope.selectedItem.link);
+                                        if (scope.selectedItem.objectKey) {
+                                            $location.path(scope.selectedItem.objectKey);
                                         }
                                     }
                                 }
