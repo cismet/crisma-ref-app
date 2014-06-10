@@ -8,19 +8,16 @@ angular.module(
         '$scope',
         'LayoutService',
         'MenuService',
-        '$q',
-        '$timeout',
-        'Nodes',
-        'de.cismet.crisma.widgets.scenarioListWidget.services.ScenarioWorldstatesService',
         'ShortCutService',
         'WorkspaceService',
-        '$location',
-        'Worldstates',
-        function ($scope, LayoutService, MenuService, $q, $timeout, Nodes, ScenarioWorldstatesService, ShortCutService, WorkspaceService, $location, Worldstates) {
+        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService) {
             'use strict';
             $scope.scenarioNode = {
                 name: 'Scenarios',
-                icon: 'fa-globe'
+                icon: 'fa-globe',
+//              This is needed to show the collapse symbole on the right
+                children:[{}],
+                directive:'<cids-node-list-widget selected-worldstate="selectedItem"/>'
             };
 
             $scope.workspaceNode = {
@@ -54,9 +51,9 @@ angular.module(
 
             //we need to fetch all Scenario Worldstates and after that 
             //we need to fetch the respective 
-            Nodes.scenarios(function (data) {
-                $scope.scenarioNode.children = data;
-            });
+//            Nodes.scenarios(function (data) {
+//                $scope.scenarioNode.children = data;
+//            });
 
             $scope.worldstateNode = {
                 name: 'Worldsates',

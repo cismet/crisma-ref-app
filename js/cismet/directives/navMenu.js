@@ -56,7 +56,27 @@ angular.module(
                             var domChilds = elem.children();
                             domChilds[domChilds.length - 1].remove();
                         }
-                        subMenuElem = $compile('<nav-sub-menu menuitems="menuitem.children" parent-menu={{false}}></nav-sub-menu>')(scope);
+                        if (scope.menuitem.directive) {
+                            scope.selectedItem;
+                            scope.$watch('selectedItem', function (newVal, oldVal) {
+                                if (newVal !== oldVal) {
+                                    if (scope.selectedItem) {
+                                        scope.MenuService.activePath.splice(0, MenuService.activePath.length);
+                                        scope.MenuService.activeItem = scope.selectedItem;
+//                                        //hence we use a directive
+//                                        scope.MenuService.activePath.push(scope.selectedItem);
+                                        scope.$emit('menuEntryActivated');
+                                        //finally change the route according to the link
+                                        if (scope.selectedItem.link) {
+                                            $location.path(scope.selectedItem.link);
+                                        }
+                                    }
+                                }
+                            });
+                            subMenuElem = $compile(scope.menuitem.directive)(scope);
+                        } else {
+                            subMenuElem = $compile('<nav-sub-menu menuitems="menuitem.children" parent-menu={{false}}></nav-sub-menu>')(scope);
+                        }
                         elem.append(subMenuElem);
                         if (subMenuElemWasVisible) {
                             $timeout(function () {
@@ -77,12 +97,19 @@ angular.module(
                 scope.$watch('MenuService.activeItem', function (newVal, oldVal) {
                     if (newVal !== oldVal) {
                         if (scope.MenuService.activeItem === scope.menuitem) {
-                            elem.addClass("active");
+                            elem.addClass('active');
                         } else {
                             //This implements accordion fuctionality...
                             //FIXME This will only work for a two level hierarchy
-                            elem.removeClass("active");
-                            if (subMenuElem && subMenuElem.is(':visible')) {
+                            if (elem.hasClass('active')) {
+                                elem.removeClass('active');
+                            }
+                            if (scope.menuitem.directive) {
+                                if (scope.selectedItem !== scope.MenuService.activeItem) {
+                                    scope.selectedItem = null;
+                                    $animate.removeClass(subMenuElem, 'open');
+                                }
+                            } else if (subMenuElem && subMenuElem.is(':visible')) {
                                 var closeSubMenu = true;
                                 for (var i = 0; i < scope.menuitem.children.length; i++) {
                                     var childElem = scope.menuitem.children[i];
@@ -98,8 +125,16 @@ angular.module(
                     }
                 });
 
+                // if the a menu entry was activated thi event is used to build
+                // the selected path...
                 scope.$on('menuEntryActivated', function () {
-                    MenuService.activePath.push(scope.menuitem);
+                    // hence a submenu can be provided by a directive we need to
+                    // append the selectedItem of that directive in that case..
+                    if (scope.menuitem.directive) {
+                        MenuService.activePath.push(scope.selectedItem);
+                    } else {
+                        MenuService.activePath.push(scope.menuitem);
+                    }
                 });
 
                 scope.collapseSign = collapseSignExpand;
@@ -114,8 +149,14 @@ angular.module(
                     }
 
                     if (scope.menuitem.children) {
-
-                        if (subMenuElem.is(':visible') && !subMenuElem.hasClass('active')) {
+                        if (scope.menuitem.directive) {
+                            if (subMenuElem.is(':visible')) {
+                                $animate.removeClass(subMenuElem, 'open');
+                            } else {
+                                $animate.addClass(subMenuElem, 'open');
+                            }
+                        }
+                        else if (subMenuElem.is(':visible') && !subMenuElem.hasClass('active')) {
                             $animate.removeClass(subMenuElem, 'open');
                         } else {
                             $animate.addClass(subMenuElem, 'open');
@@ -130,7 +171,12 @@ angular.module(
                             scope.menuitem.getChildren().then(function (children) {
                                 $timeout(function () {
                                     scope.menuitem.children = children;
-                                    var clonedElem = $compile('<nav-sub-menu menuitems="menuitem.children" parent-menu={{false}}></nav-sub-menu>')(scope);
+                                    var clonedElem;
+                                    if (scope.menuitem.directive) {
+                                        subMenuElem = $compile(scope.menuItem.subMenuDirective)(scope);
+                                    } else {
+                                        $compile('<nav-sub-menu menuitems="menuitem.children" parent-menu={{false}}></nav-sub-menu>')(scope);
+                                    }
 //                                    var clonedElem = $compile('<ul><li><a>Loading done</a></li></ul>')(scope);
                                     subMenuElem.remove();
                                     subMenuElem = clonedElem;
@@ -158,7 +204,9 @@ angular.module(
                     MenuService.activePath.splice(0, MenuService.activePath.length);
                     MenuService.activeItem = scope.menuitem;
 
-                    scope.$emit('menuEntryActivated', scope.menuitem);
+                    //fire activation event upwards the menu structure. starts 
+                    //with the current scope...
+                    scope.$emit('menuEntryActivated');
                     //finally change the route according to the link
                     if (scope.menuitem.link) {
                         $location.path(scope.menuitem.link);

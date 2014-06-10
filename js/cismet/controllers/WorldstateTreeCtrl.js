@@ -3,10 +3,9 @@ angular.module(
     ).controller('WorldstateTreeCtrl',
     [
         '$scope',
-        'Nodes',
-        'Worldstates',
+        'de.cismet.collidingNameService.Nodes',
         'WorkspaceService',
-        function ($scope, Nodes, Worldstates, WorkspaceService) {
+        function ($scope, Nodes, WorkspaceService) {
             $scope.isWorldstateIcon = true;
             $scope.treeOptions = {
                 multiSelection: true,
