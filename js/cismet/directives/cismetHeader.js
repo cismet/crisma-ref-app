@@ -5,7 +5,11 @@ angular.module(
         'ngAnimate',
         'google-maps',
         'de.cismet.custom.directives',
-        'leaflet-directive'
+        'leaflet-directive',
+        'de.cismet.cids.widgets.nodeListWidget.directives',
+        'de.cismet.cids.widgets.nodeListWidget.controllers',
+        'de.cismet.cids.widgets.nodePathWidget.directives',
+        'de.cismet.cids.widgets.nodePathWidget.controllers',
     ]
     ).directive('cismetHeader', [
     'LayoutService',

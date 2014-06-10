@@ -3,8 +3,7 @@ angular.module(
     ).controller('DashBoardCtrl',
     [
         '$scope',
-        '$timeout',
-        function ($scope, $timeout) {
+        function ($scope) {
             $scope.spark1Values = [1000, 1050, 1100, 1300, 1600, 2000, 500, 4000, 30];
             $scope.spark1Sum = '$ ' + $scope.spark1Values.reduce(function (a, b) {
                 return a + b;

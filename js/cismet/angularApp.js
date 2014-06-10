@@ -10,6 +10,7 @@ angular.module('de.cismet.smartAdmin', [
     'de.cismet.smartAdmin.directives',
     'ui.bootstrap',
     'de.cismet.crisma.widgets.worldstateTreeWidget',
+    'de.cismet.cids.rest.collidngNames.Nodes',
 ]).config(function ($routeProvider) {
     $routeProvider.when('/login', {
         templateUrl: "partials/login.html"
@@ -43,16 +44,20 @@ angular.module('de.cismet.smartAdmin', [
             controller: 'DashBoardCtrl'
         })
         .when('/decisionSupport', {
-            templateUrl: "partials/dashboard.html",
-            controller: 'DashBoardCtrl'
+//            templateUrl: "partials/scenarioList.html",
+//            controller: 'DashBoardCtrl'
         })
         .when('/CRISMA.worldstates/:wsId', {
             templateUrl: "partials/WorldstateViewer.html",
             controller: 'WorldstateViewerCtrl',
             resolve: {
-                worldstate: function ($route, Worldstates) {
-                    return Worldstates.get({wsId: $route.current.params.wsId}).$promise;
-                }
+                worldstate: [
+                    '$route',
+                    'de.cismet.crisma.ICMM.Worldstates',
+                    function ($route, Worldstates) {
+                        return Worldstates.get({wsId: $route.current.params.wsId}).$promise;
+                    }
+                ]
             }
         });
 

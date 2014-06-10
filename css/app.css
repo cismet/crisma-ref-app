@@ -60,3 +60,9 @@ ul.dynatree-container a:hover{
 span.glyphicon{
     color: #ffffff;
 }
+
+/*Breadcrumb hover animation*/
+#ribbon .breadcrumb a:hover{
+    /*background-color: rgba(91,89,88,.8);*/
+    color:#fff !important;
+}

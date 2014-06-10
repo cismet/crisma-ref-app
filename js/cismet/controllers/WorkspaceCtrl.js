@@ -4,9 +4,8 @@ angular.module(
     [
         '$scope',
         'WorkspaceService',
-        'Worldstates',
-        'Nodes',
-        function ($scope, WorkspaceService, Worldstates, Nodes) {
+        'de.cismet.crisma.ICMM.Worldstates',
+        function ($scope, WorkspaceService, Worldstates) {
             $scope.WorkspaceService = WorkspaceService;
             $scope.worldstates = [];
             for (var i = 0; i < $scope.WorkspaceService.worldstates.length; i++) {

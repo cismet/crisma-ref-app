@@ -1,11 +1,10 @@
 <div id="ribbon">
 
     <!--<span class="ribbon-button-alignment"> <span id="refresh" class="btn btn-ribbon" data-title="refresh"  rel="tooltip" data-placement="bottom" data-original-title="<i class='text-warning fa fa-warning'></i> Warning! This will reset all your widget settings." data-html="true"><i class="fa fa-refresh"></i></span> </span>-->
-    <span ng-if="breadCrumbPath.length > 0" class="ribbon-button-alignment" style="color:#fff">Scenario Path:</span>
+    <span ng-if="activeNode" class="ribbon-button-alignment" style="color:#fff">Scenario Path:&nbsp;</span>
     <!--breadcrumb--> 
-    <ol class="breadcrumb">
-        <li ng-repeat="item in breadCrumbPath"><a ng-click="loadWorldstate($index)" ng-class="isActive($index)">{{item.name}}</a></li>
-    </ol>
+    <cids-node-path-widget input-node="activeNode" selected-node="selectedBreadcrumbNode"/>
+    <!--<scenario-path input-node="activeNode" selected-node="selectedBreadcrumbNode"></scenario-path>
     <!--end breadcrumb--> 
 
     <!--                 You can also add more buttons to the

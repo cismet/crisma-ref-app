@@ -2,7 +2,7 @@ angular.module(
     'de.cismet.custom.directives',
     [
         'easypiechart',
-        'de.cismet.custom.services',
+        'de.cismet.custom.services'
     ]
     ).directive(
     'wmsLeaflet',
@@ -396,8 +396,8 @@ angular.module(
         'WorldstateUtils',
         'IconService',
         'WorkspaceService',
-        'Nodes',
-        function (WorldstateUtils, IconService, WorkspaceService,Nodes) {
+        'de.cismet.collidingNameService.Nodes',
+        function (WorldstateUtils, IconService, WorkspaceService, Nodes) {
             'use strict';
             return {
                 restrict: 'E',
@@ -407,7 +407,7 @@ angular.module(
                     $scope.IconService = IconService;
                     $scope.indicators = WorldstateUtils.stripIccData($scope.worldstate, false);
                     $scope.importantIndicators = [];
-                    
+
                     $scope.getColor = function (index) {
                         return $scope.renderingDescriptor.colourClasses[index];
                     };
@@ -415,7 +415,7 @@ angular.module(
                         var indicatorGroup = $scope.indicators[Object.keys($scope.indicators)[i]];
                         for (var j = 0; j < Object.keys(indicatorGroup).length; j++) {
                             var indicatorItem = indicatorGroup[Object.keys(indicatorGroup)[j]];
-                            if (indicatorItem.displayName === 'Number of dead') {
+                            if (indicatorItem.displayName === 'Number of injured') {
                                 $scope.importantIndicators.push(indicatorItem);
                             } else if (indicatorItem.displayName === 'Lost buildings') {
                                 $scope.importantIndicators.push(indicatorItem);
@@ -424,20 +424,31 @@ angular.module(
                             }
                         }
                     }
-                    
-                    $scope.addToWorkspace = function(){
+
+                    $scope.addToWorkspace = function () {
                         //FIXME We need a clever way for determining the node of a worldstate
-                        var nodeId = [$scope.worldstate.id],ws=$scope.worldstate;
-                        while(ws.parentworldstate){
+                        var nodeId = [$scope.worldstate.id], ws = $scope.worldstate;
+                        while (ws.parentworldstate) {
                             nodeId.push(ws.parentworldstate.id);
                             ws = ws.parentworldstate;
                         }
                         var nodeKey = nodeId.reverse().join('.');
-                        Nodes.get({nodeId: nodeKey},function(node){
+                        Nodes.get({nodeId: nodeKey}, function (node) {
                             WorkspaceService.addWorldstate(node);
                         });
                     };
 
+                    $scope.removeFromWorkspace = function () {
+                        var nodeId = [$scope.worldstate.id], ws = $scope.worldstate;
+                        while (ws.parentworldstate) {
+                            nodeId.push(ws.parentworldstate.id);
+                            ws = ws.parentworldstate;
+                        }
+                        var nodeKey = nodeId.reverse().join('.');
+                        Nodes.get({nodeId: nodeKey}, function (node) {
+                            WorkspaceService.removeWS(node);
+                        });
+                    };
                 }
             };
         }
@@ -588,5 +599,4 @@ angular.module(
                 }
             };
         }
-    ]
-    );
+    ]);
