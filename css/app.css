@@ -1,6 +1,9 @@
+/*Since version 1.4 the nav div has a scrollbar which we avoid with this*/
 .fixed-navigation nav{
     overflow-x: hidden;
 }
+
+// FIXME since version 1.4 the collapse menu button is not visible anymore....
 
 .angular-google-map-container { height: 400px; }
 
@@ -51,7 +54,7 @@
 .catalagoue-tree>ul{
     padding-left: 18px !important;
     background-color: #474544;
-    /* height: 1000px; */
+    height: 1000px;
 }
 
 ul.dynatree-container a{
