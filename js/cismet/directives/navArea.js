@@ -10,7 +10,7 @@ angular.module(
                 restrict: 'E',
                 replace: true,
                 link: function () {
-                    // SHOW & HIDE MOBILE SEARCH FIELD
+//                     SHOW & HIDE MOBILE SEARCH FIELD
                     $('#cancel-search-js').click(function () {
                         $.root_.removeClass('search-mobile');
                     });

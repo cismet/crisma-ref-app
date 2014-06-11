@@ -1,3 +1,10 @@
+/*Since version 1.4 the nav div has a scrollbar which we avoid with this*/
+.fixed-navigation nav{
+    overflow-x: hidden;
+}
+
+// FIXME since version 1.4 the collapse menu button is not visible anymore....
+
 .angular-google-map-container { height: 400px; }
 
 #ribbon .breadcrumb a.active {
@@ -36,7 +43,9 @@
     /*background-color: #3A3633;*/
     margin: -10px -14px;
     padding: 0px;
-    height: 1000px;
+    
+
+    /* height: 1000px; */
     border-color: #fff;
     /* border: 1px solid #ffffff; */
     /* z-index: 500; */

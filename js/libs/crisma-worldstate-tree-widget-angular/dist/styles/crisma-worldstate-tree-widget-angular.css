@@ -97,7 +97,7 @@ body {
 
 /* styles for the tree */
 .catalagoue-tree>ul{
-    /* height: 500px; */
+    height: 500px;
     border: none !important;
     display: block;
 }

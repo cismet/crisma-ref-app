@@ -18,23 +18,24 @@
         <!-- Basic Styles -->
         <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" media="screen" href="css/font-awesome.min.css">
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css">
 
         <link rel="stylesheet" href="js/libs/dynatree/dist/skin/ui.dynatree.css">
         <link rel="stylesheet" type="text/css" media="screen" href="js/libs/crisma-worldstate-tree-widget-angular/dist/styles/crisma-worldstate-tree-widget-angular.css">
-
+        
         <!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
-        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-production.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-skins.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-production.min.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-skins.min.css">
 
         <!-- SmartAdmin RTL Support is under construction
         <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-rtl.css"> -->
 
-        <!-- We recommend you use "your_style.css" to override SmartAdmin
-             specific styles this will also ensure you retrain your customization with each SmartAdmin update.
-        <link rel="stylesheet" type="text/css" media="screen" href="css/your_style.css"> -->
+        <!-- Angular Related CSS -->
+        <link rel="stylesheet" type="text/css" media="screen" href="css/ng.min.css">
 
+        <!-- Application related CSS -->
+        <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css">
+        
         <!-- FAVICONS -->
         <link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
         <link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon">
@@ -60,14 +61,14 @@
 
         <!--RIBBON--> 
         <breadcrumb>
-<!--            <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
-                <span> <a href="javascript:void(0);" ><i class="fa fa-sitemap"></i></a> </span>
-            </div>-->
+            <!--            <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
+                            <span> <a href="javascript:void(0);" ><i class="fa fa-sitemap"></i></a> </span>
+                        </div>-->
         </breadcrumb>
         <!-- END RIBBON -->
 
         <!-- MAIN CONTENT -->
-        <div id="content" ng-view>
+        <div id="content" ng-view class="view-animate">
 
         </div>
         <!-- END MAIN CONTENT -->
@@ -79,27 +80,21 @@
     Note: These tiles are completely responsive,
     you can add as many as you like
     -->
-<!--    <div id="shortcut" shortcut-area>
-
-    </div>-->
+    <!--    <div id="shortcut" shortcut-area>
+    
+        </div>-->
     <div id="shortcut-tree" shortcut-area>
-     
+
     </div>
     <!-- END SHORTCUT AREA -->
 
     <!--================================================== -->
 
     <!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)-->
-    <script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>
+    <!--<script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>-->
 
     <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-    <script>
-                        if (!window.jQuery) {
-                            document.write('<script src="js/libs/jquery-2.0.2.min.js"><\/script>');
-                        }
-    </script>
-
     <script src="js/libs/jquery-ui/ui/jquery-ui.js"></script>
     <script src="js/libs/dynatree/dist/jquery.dynatree.js"></script>
 
@@ -107,13 +102,6 @@
     <script src="js/libs/angular-1.3.0-beta.5/angular-animate.js"></script>
     <script src="js/libs/angular-1.3.0-beta.5/angular-route.js"></script>
     <script src="js/libs/angular-1.3.0-beta.5/angular-resource.js"></script>
-    <script>
-                        if (!window.jQuery.ui) {
-                            document.write('<script src="js/libs/jquery-ui-1.10.3.min.js"><\/script>');
-                        }
-    </script>
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
     <!--Angular dependend scripts-->
 
@@ -157,8 +145,8 @@
     <script src='js/libs/underscore-1.6.0/underscore.js'></script>
     <script src='js/libs/angular-google-maps-1.0.18/angular-google-maps.min.js'></script>
 
-    <!-- JS TOUCH : include this plugin for mobile drag / drop touch events
-    <script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script> -->
+    <!-- JS TOUCH : include this plugin for mobile drag / drop touch events-->
+    <script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
 
     <!-- BOOTSTRAP JS -->
     <script src="js/libs/bootstrap/bootstrap.min.js"></script>
@@ -171,9 +159,8 @@
 
     <!-- EASY PIE CHARTS -->
     <!--Remove the normal Jquery version and use the angular version directly-->
-    <script src="js/plugin/easy-pie-chart/1.2.1/jquery.easy-pie-chart.min.js"></script>
+    <!--<script src="js/plugin/easy-pie-chart/1.2.1/jquery.easy-pie-chart.min.js"></script>-->
     <script src="js/plugin/easy-pie-chart/2.1.4/angular.easypiechart.js"></script>
-
 
     <!-- SPARKLINES -->
     <script src="js/plugin/sparkline/jquery.sparkline.min.js"></script>
@@ -193,33 +180,8 @@
     <!-- browser msie issue fix -->
     <script src="js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
 
-    <!-- FastClick: For mobile devices -->
-    <script src="js/plugin/fastclick/fastclick.js"></script>
-
-    <!--[if IE 7]>
-
-    <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
-
-    <![endif]-->
-
-    <!-- PAGE RELATED PLUGIN(S) -->
-
-    <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
-    <script src="js/plugin/flot/jquery.flot.cust.js"></script>
-    <script src="js/plugin/flot/jquery.flot.resize.js"></script>
-    <script src="js/plugin/flot/jquery.flot.fillbetween.min.js"></script>
-    <script src="js/plugin/flot/jquery.flot.orderBar.js"></script>
-    <script src="js/plugin/flot/jquery.flot.pie.js"></script>
-    <script src="js/plugin/flot/jquery.flot.tooltip.js"></script>
-
-
-    <!-- Vector Maps Plugin: Vectormap engine, Vectormap language -->
-    <script src="js/plugin/vectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="js/plugin/vectormap/jquery-jvectormap-world-mill-en.js"></script>
-
-    <!-- Full Calendar -->
-    <script src="js/plugin/fullcalendar/jquery.fullcalendar.min.js"></script>
-
+    <!-- FastClick: For mobile devices: you can disable this in app.js -->
+    <script src="js/plugin/fastclick/fastclick.min.js"></script>
 </body>
 
 </html>
