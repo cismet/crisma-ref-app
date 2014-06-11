@@ -4,7 +4,8 @@ angular.module(
     [
         'MenuService',
         '$location',
-        function (MenuService, $location) {
+        'de.cismet.collidingNameService.Nodes',
+        function (MenuService, $location,Nodes) {
             'use strict';
             return {
                 templateUrl: 'templates/breadcrumb.html',
@@ -15,16 +16,20 @@ angular.module(
                     $scope.selectedBreadcrumbNode;
                     $scope.$watch('selectedBreadcrumbNode', function (newVal, oldVal) {
                         if (newVal !== oldVal) {
-                             $location.path($scope.selectedBreadcrumbNode.objectKey);
+                            $location.path($scope.selectedBreadcrumbNode.objectKey);
                         }
                     });
 
                     $scope.$on('$routeChangeSuccess', function () {
                         var menuItemPath = MenuService.getPathToActiveItem();
 
-                        //FIXME WE need a proper way to get the node corresponding to the Worldstate
                         var activeItem = menuItemPath[menuItemPath.length - 1];
-                        $scope.activeNode = activeItem;
+                        //FIXME WE need a proper way to get the node corresponding to the Worldstate
+                        if (activeItem instanceof Nodes) {
+                            $scope.activeNode = activeItem;
+                        }else{
+                            $scope.activeNode = null;
+                        }
                     });
                 }
             };
