@@ -1,0 +1,16 @@
+<div id="indicatorCriteriaTable">
+    <table data-ng-table="tableParams" show-filter="true" class="table ng-table-responsive">
+        <thead>
+            <tr>
+                <th ng-repeat="column in columns" class="text-center sortable">
+                    <div>{{column.title}}</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="row in $data">
+                <td data-ng-repeat="col in columns">{{row[col.field].name}}</td>
+            </tr>
+        </tbody>
+    </table>  
+</div>
