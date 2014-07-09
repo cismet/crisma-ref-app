@@ -11,6 +11,9 @@ angular.module('de.cismet.smartAdmin', [
     'ui.bootstrap',
     'de.cismet.crisma.widgets.worldstateTreeWidget',
     'de.cismet.cids.rest.collidngNames.Nodes',
+    'ngTable',
+    'eu.crismaproject.worldstateAnalysis.controllers',
+    'eu.crismaproject.worldstateAnalysis.directives',
 ]).config(function ($routeProvider) {
     $routeProvider.when('/login', {
         templateUrl: "partials/login.html"
@@ -44,8 +47,8 @@ angular.module('de.cismet.smartAdmin', [
             controller: 'DashBoardCtrl'
         })
         .when('/decisionSupport', {
-//            templateUrl: "partials/scenarioList.html",
-//            controller: 'DashBoardCtrl'
+            templateUrl: "partials/decisionSupport.html",
+            controller: 'DecisionSupportCtrl'
         })
         .when('/CRISMA.worldstates/:wsId', {
             templateUrl: "partials/WorldstateViewer.html",

@@ -1,11 +1,11 @@
 <article ng-class="containerClasses">
-    <div class="jarviswidget jarviswidget-sortable" id="wid-id-0" role="widget" style="position: relative; opacity: 1;">
+    <div class="jarviswidget jarviswidget-sortable" id="{{$index}}" role="widget" style="position: relative; opacity: 1;">
         <header ng-if="renderingDescriptor.displayHeader" role="heading">
             <div class="jarviswidget-ctrls" role="menu">  
                 <!--Abhaengig machen von proerties aus renderingdescriptor-->
                 <a ng-if="renderingDescriptor.editable" href="javascript:void(0);" class="button-icon jarviswidget-edit-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Edit Title"><i class="fa fa-cog "></i></a> 
                 <a ng-if="renderingDescriptor.collapsible" href="#" class="button-icon jarviswidget-toggle-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Collapse"><i class="fa fa-minus "></i></a> 
-                <a ng-if="renderingDescriptor.fullSize" href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-resize-full "></i></a> 
+                <a ng-if="renderingDescriptor.fullSize" href="javascript:void(0);" class="button-icon jarviswidget-fullscreen-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Fullscreen"><i class="fa fa-expand"></i></a> 
                 <a ng-if="renderingDescriptor.closeable" href="javascript:void(0);" class="button-icon jarviswidget-delete-btn" rel="tooltip" title="" data-placement="bottom" data-original-title="Delete"><i class="fa fa-times"></i></a>
             </div>
             <!--Abhaengig machen von proerties aus renderingdescriptor-->
