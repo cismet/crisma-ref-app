@@ -13,6 +13,9 @@ angular.module(
                 templateUrl: 'custom/templates/leafletWMS.html',
                 replace: true,
                 controller: function ($scope) {
+                    $scope.defaults = {
+                        scrollWheelZoom: false
+                    };
                     $scope.center = {
                         //coords of L'Aquila 
                         lat: 42.37274928510041,
