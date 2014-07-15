@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
-        <title> SmartAdmin </title>
+        <title> Crisma Reference Application </title>
         <meta name="description" content="">
         <meta name="author" content="">
 
@@ -31,6 +31,8 @@
 
         <!-- Angular Related CSS -->
         <link rel="stylesheet" type="text/css" media="screen" href="css/ng.min.css">
+        <!-- NVD3 Related CSS -->
+         <link rel="stylesheet" href="js/libs/nvd3/nv.d3.css">
 
         <!-- Application related CSS -->
         <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
@@ -66,7 +68,7 @@
                         </div>-->
         </breadcrumb>
         <!-- END RIBBON -->
-
+        
         <!-- MAIN CONTENT -->
         <div id="content" ng-view class="view-animate">
 
@@ -107,6 +109,10 @@
 
     <script src="js/libs/ng-table/ng-table.js"></script>
     <script src="js/libs/angular-commons/dist/scripts/angular-commons.js"></script>
+    <script src="js/libs/d3/d3.js"></script>
+    <script src="js/libs/radar-chart-d3/src/radar-chart.js"></script>
+    <script src="js/libs/nvd3/nv.d3.js"></script>
+    <script src="js/libs/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget-tpl.js"></script>
     <script src="js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular.js"></script>
@@ -119,7 +125,6 @@
     <script src="js/libs/cids-node-path-widget/dist/scripts/cids-node-path-widget.js"></script>
     <script src="js/libs/cids-node-path-widget/dist/scripts/cids-node-path-widget-tpl.js"></script>
     <script src="js/libs/d3/d3.js"></script>
-    <script src="js/libs/radar-chart-d3/src/radar-chart.js"></script>
 
     <script src="js/libs/angular-bootstrap/ui-bootstrap-tpls-0.10.0.js"></script>
     <script src="js/cismet/services/services.js"></script>
