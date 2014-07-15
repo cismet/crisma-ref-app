@@ -17,6 +17,87 @@
         <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
             <header>
                 <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                <h2 ng-if="!isCriteria">Indicator Table</h2>
+                <h2 ng-if="isCriteria">Criteria Table</h2>
+                <div class="widget-toolbar" role="menu">
+                    <div class="btn-group" dropdown is-open="status.isopen">
+                        <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+                            Change Mode <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-click="isCriteria = false"><i ng-if="!isCriteria" class="fa fa-check-circle-o"/> Indicator</a></li>
+                            <li><a ng-click="isCriteria = true"><i ng-if="isCriteria" class="fa fa-check-circle-o"/> Criteria</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+
+            <!-- widget content -->
+            <div class="widget-body">
+                <indicator-criteria-table worldstates='worldstates' for-criteria='isCriteria'></indicator-criteria-table>
+            </div>
+            <!-- end widget content -->
+
+        </div>
+        <!-- end widget div -->
+
+</div>
+<!-- end widget -->
+
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+        <!-- Widget ID (each widget will need unique ID)-->
+        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                <h2 ng-if="isCriteria">Worldstate relation analysis chart</h2>
+                <div class="widget-toolbar" role="menu">
+                    <div class="btn-group" dropdown is-open="status.isopen">
+                        <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+                            Change Mode <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-click="forCriteria = false"><i ng-if="!forCriteria" class="fa fa-check-circle-o"/> Indicator</a></li>
+                            <li><a ng-click="forCriteria = true"><i ng-if="forCriteria" class="fa fa-check-circle-o"/> Criteria</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+
+            <!-- widget content -->
+            <div class="widget-body">
+                <relation-analysis-chart style="padding-left:50px" height="350" for-criteria='forCriteria' worldstates="worldstates"></relation-analysis-chart>
+            </div>
+            <!-- end widget content -->
+
+        </div>
+        <!-- end widget div -->
+</div>
+
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+        <!-- Widget ID (each widget will need unique ID)-->
+        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                 <h2>Criteria Radar Chart Comparison</h2>
             </header>
             <!-- widget content -->
@@ -54,48 +135,3 @@
         <!-- end widget div -->
 </div>
 <!-- end widget -->
-
-</div>
-<div class="row">
-    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
-        <!-- Widget ID (each widget will need unique ID)-->
-        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-            <header>
-                <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                <h2 ng-if="!isCriteria">Indicator Table</h2>
-                <h2 ng-if="isCriteria">Criteria Table</h2>
-                <div class="widget-toolbar" role="menu">
-                    <div class="btn-group" dropdown is-open="status.isopen">
-                        <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
-                            Change Mode <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a ng-click="isCriteria = false"><i ng-if="!isCriteria" class="fa fa-check-circle-o"/> Indicator</a></li>
-                            <li><a ng-click="isCriteria = true"><i ng-if="isCriteria" class="fa fa-check-circle-o"/> Criteria</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-            </header>
-
-            <!-- widget edit box -->
-            <div class="jarviswidget-editbox">
-                <!-- This area used as dropdown edit box -->
-
-            </div>
-            <!-- end widget edit box -->
-
-            <!-- widget content -->
-            <div class="widget-body">
-                <indicator-criteria-table worldstates='worldstates' for-criteria='isCriteria'></indicator-criteria-table>
-            </div>
-            <!-- end widget content -->
-
-        </div>
-        <!-- end widget div -->
-
-</div>
-<!-- end widget -->
-
-</div>
