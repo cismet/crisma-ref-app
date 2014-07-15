@@ -1,30 +1,4 @@
-angular.module('eu.crismaproject.worldstateAnalysis.directives', [
-  'eu.crismaproject.worldstateAnalysis.controllers',
-  'ngTable',
-  'de.cismet.crisma.ICMM.Worldstates'
-]).directive('indicatorCriteriaTable', [function () {
-    'use strict';
-    var scope;
-    scope = {
-      worldstates: '=',
-      forCriteria: '=',
-      detailIcons: '@'
-    };
-    return {
-      scope: scope,
-      restrict: 'E',
-      templateUrl: 'templates/indicatorCriteriaTableTemplate.html',
-      controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController'
-    };
-  }]);
-// this is only used for demo/testing purposes
-angular.module('eu.crismaproject.worldstateAnalysis.demoApp', [
-  'eu.crismaproject.worldstateAnalysis.demoApp.controllers',
-  'eu.crismaproject.worldstateAnalysis.directives',
-  'eu.crismaproject.worldstateAnalysis.services',
-  'de.cismet.crisma.widgets.worldstateTreeWidget'
-]);
-angular.module('eu.crismaproject.worldstateAnalysis.controllers', []).controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController', [
+angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDirectives']).controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController', [
   '$scope',
   '$filter',
   'de.cismet.crisma.ICMM.Worldstates',
@@ -143,6 +117,121 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', []).controller
     });
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives', [
+  'eu.crismaproject.worldstateAnalysis.controllers',
+  'ngTable',
+  'de.cismet.crisma.ICMM.Worldstates'
+]).directive('indicatorCriteriaTable', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '=',
+      forCriteria: '=',
+      detailIcons: '@'
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/indicatorCriteriaTableTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController'
+    };
+  }]);
+// this is only used for demo/testing purposes
+angular.module('eu.crismaproject.worldstateAnalysis.demoApp', [
+  'eu.crismaproject.worldstateAnalysis.demoApp.controllers',
+  'eu.crismaproject.worldstateAnalysis.directives',
+  'eu.crismaproject.worldstateAnalysis.services',
+  'de.cismet.crisma.widgets.worldstateTreeWidget'
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController', [
+  '$scope',
+  function ($scope) {
+    'use strict';
+    $scope.legendItems = [];
+    $scope.convertToChartDataStructure = function (criteriaVector) {
+      var i, criteriaData, groupName, group, criteriaProp, criteria, result, dataItem, legendItems;
+      result = [];
+      legendItems = [];
+      for (i = 0; i < criteriaVector.length; i++) {
+        dataItem = [];
+        criteriaData = criteriaVector[i].data;
+        legendItems.push(criteriaVector[i].name);
+        for (groupName in criteriaData) {
+          if (criteriaData.hasOwnProperty(groupName)) {
+            group = criteriaData[groupName];
+            for (criteriaProp in group) {
+              if (group.hasOwnProperty(criteriaProp) && criteriaProp !== 'displayName' && criteriaProp !== 'iconResource') {
+                criteria = group[criteriaProp];
+                dataItem.push({
+                  axis: criteria.displayName,
+                  value: criteria.value
+                });
+              }
+            }
+          }
+        }
+        result.push(dataItem);
+      }
+      return [
+        result,
+        legendItems
+      ];
+    };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaAxisChooserDirectiveController', [
+  '$scope',
+  function ($scope) {
+    'use strict';
+    var getAxisProperties, xAxis, defaultAxis;
+    xAxis = $scope.isXAxis === 'true';
+    defaultAxis = { name: xAxis ? 'Select a x-axis' : 'Select a y-axis' };
+    getAxisProperties = function (iccData) {
+      var group, axesGroup, prop, res = [];
+      if (iccData) {
+        var worldstateIccData = iccData.data;
+        for (group in worldstateIccData) {
+          if (worldstateIccData.hasOwnProperty(group)) {
+            axesGroup = worldstateIccData[group];
+            res.push({
+              name: axesGroup.displayName,
+              icon: axesGroup.iconResource,
+              isGroup: true
+            });
+            for (prop in axesGroup) {
+              if (axesGroup.hasOwnProperty(prop)) {
+                if (prop !== 'displayName' && prop !== 'iconResource') {
+                  res.push({
+                    name: axesGroup[prop].displayName,
+                    icon: axesGroup[prop].iconResource,
+                    isGroup: false
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      return res;
+    };
+    if (!$scope.selectedAxis) {
+      $scope.selectedAxis = defaultAxis;
+    }
+    $scope.scales = [];
+    $scope.axisSelected = function (index) {
+      if ($scope.scales[index]) {
+        $scope.selectedAxis = $scope.scales[index];
+      } else {
+        $scope.selectedAxis = defaultAxis;
+      }
+    };
+    $scope.$watch('iccObject', function () {
+      if ($scope.iccObject) {
+        $scope.scales = getAxisProperties($scope.iccObject);
+      }
+    });
+  }
+]);
 // only for testing/demo
 angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
   'de.cismet.crisma.ICMM.Worldstates',
@@ -190,138 +279,254 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
       }
     });
     // Retrieve the top level nodes from the icmm api
-    $scope.treeNodes = Nodes.query(function (data) {
-      console.log(data);
-    });
+    $scope.treeNodes = Nodes.query();
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.RelationAnalysisChartDirectiveController', [
+  '$scope',
+  'de.cismet.crisma.ICMM.Worldstates',
+  function ($scope, WorldstateService) {
+    'use strict';
+    var controller = this;
+    this.createChartData = function (iccData, xAxis, yAxis) {
+      var i, iccItem, valueX, valueY, data = [];
+      if (!iccData || !xAxis || !yAxis) {
+        throw 'Invalid configuration. Can no determine chart data for (iccData, xAxis, yaxis):' + iccData + ' , ' + xAxis + ' , ' + yAxis;
+      }
+      var firstValueX = 0;
+      for (i = 0; i < iccData.length; i++) {
+        iccItem = iccData[0];
+        if (!iccItem) {
+          throw 'Invalid icc object ' + iccItem;
+        }
+        valueX = controller.getDataValueForAxis(xAxis, iccItem);
+        valueY = controller.getDataValueForAxis(yAxis, iccItem);
+        //                    valueX = Math.random() * 500 + 200;
+        //                    valueY = Math.random() * 500 + 200;
+        if (firstValueX === 0) {
+          firstValueX = valueX;
+        }
+        data.push({
+          key: i + 1 + '. ' + iccData[i].name,
+          values: [{
+              x: valueX,
+              y: valueY
+            }]
+        });
+      }
+      return data;
+    };
+    this.getDataValueForAxis = function (axis, iccObject) {
+      var axisProp, iccItem, iccGroup, iccProp, iccGroupProp;
+      if (!(axis && axis.name)) {
+        return null;
+      }
+      axisProp = axis.name;
+      iccItem = iccObject.data;
+      for (iccGroupProp in iccItem) {
+        if (iccItem.hasOwnProperty(iccGroupProp)) {
+          iccGroup = iccItem[iccGroupProp];
+          for (iccProp in iccGroup) {
+            if (iccGroup.hasOwnProperty(iccProp)) {
+              if (iccGroup[iccProp].displayName === axisProp) {
+                return iccGroup[iccProp].value;
+              }
+            }
+          }
+        }
+      }
+      return null;
+    };
+    $scope.getXAxisLabel = function () {
+      var res = '';
+      if ($scope.xAxis && $scope.xAxis.name) {
+        res = $scope.xAxis.name;
+      }
+      return res;
+    };
+    $scope.getYAxisLabel = function () {
+      var res = '';
+      if ($scope.yAxis && $scope.yAxis.name) {
+        res = $scope.yAxis.name;
+      }
+      return res;
+    };
+    $scope.zScale = d3.scale.linear();
+    $scope.yAxisTickFormatFunction = function () {
+      return function (d) {
+        return d3.round(d, 2);
+      };
+    };
+    $scope.xAxisTickFormatFunction = function () {
+      return function (d) {
+        return d3.round(d, 2);
+      };
+    };
+    this.dataChangedWatchCallback = function () {
+      if ($scope.worldstates() && $scope.worldstates().length > 0) {
+        $scope.iccData = WorldstateService.utils.stripIccData($scope.worldstates(), $scope.forCriteria);
+        $scope.iccObject = $scope.iccData[0];
+        if ($scope.xAxis && $scope.yAxis) {
+          if ($scope.xAxis.name.indexOf('Select') === -1 && $scope.yAxis.name.indexOf('Select') === -1) {
+            $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis);
+          }
+        }
+      }
+    };
+    this.axisWatchCallback = function () {
+      if ($scope.xAxis && $scope.yAxis) {
+        if ($scope.xAxis.name.indexOf('Select') === -1 && $scope.yAxis.name.indexOf('Select') === -1) {
+          $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis);
+        }
+      }
+    };
+    $scope.$watch('xAxis', this.axisWatchCallback);
+    $scope.$watch('yAxis', this.axisWatchCallback);
+    $scope.$watch('forCriteria', this.dataChangedWatchCallback);
+    $scope.$watch('worldstates()', this.dataChangedWatchCallback);
   }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('criteriaRadar', [
   'de.cismet.crisma.ICMM.Worldstates',
   function (WorldstateService) {
     'use strict';
-    var scope;
+    var scope, linkFunction, drawLegend;
     scope = { localModel: '&worldstates' };
+    drawLegend = function (elem, chartConfig, legendItems) {
+      var colorscale, legendSvg, legendContainer, rects, labelWidthHistory, labels, labelWidth, breakIndex, yOff;
+      colorscale = d3.scale.category10();
+      legendSvg = d3.select(elem[0]).append('div').append('svg').attr('width', chartConfig.w).attr('height', 5);
+      //Initiate Legend
+      legendContainer = legendSvg.append('g').attr('class', 'legend').attr('height', 5).attr('width', 50);
+      //Create colour squares
+      rects = legendContainer.selectAll('rect').data(legendItems).enter().append('rect').attr('y', 15).attr('x', 0).attr('width', 10).attr('height', 10).style('fill', function (d, i) {
+        return colorscale(i);
+      });
+      //Create text next to squares
+      labels = legendContainer.selectAll('text').data(legendItems).enter().append('text').attr('y', 24).attr('x', 0).attr('font-size', '11px').attr('fill', '#737373').text(function (d) {
+        return d;
+      });
+      //                      we need to adjust the position of the legend labels
+      //                      and break the line if necessary
+      labelWidthHistory = [];
+      labelWidth = [];
+      breakIndex = 0;
+      yOff = 0;
+      labels.attr('transform', function (data, i) {
+        var width, sumLabelWidth, sumRectWidth, margin, offset;
+        width = d3.select(this).node().getBBox().width;
+        sumLabelWidth = labelWidth.reduce(function (prev, curr) {
+          return prev + curr;
+        }, 0);
+        labelWidth.push(width);
+        labelWidthHistory.push(width);
+        sumRectWidth = (i - breakIndex + 1) * 15;
+        margin = (i - breakIndex) * 20;
+        offset = sumLabelWidth + sumRectWidth + margin;
+        if (offset + width > chartConfig.w) {
+          yOff += 20;
+          breakIndex = i;
+          labelWidth = [width];
+          offset = 15;
+        }
+        return 'translate(' + offset + ',' + yOff + ')';
+      });
+      yOff = 0;
+      breakIndex = 0;
+      rects.attr('transform', function (data, i) {
+        var sumLabelWidth, sumRectWidth, margin, offset;
+        sumLabelWidth = labelWidthHistory.reduce(function (prev, curr, index) {
+          if (index < i && index >= breakIndex) {
+            return prev + curr;
+          }
+          return prev;
+        }, 0);
+        sumRectWidth = (i - breakIndex) * 15;
+        margin = (i - breakIndex) * 20;
+        offset = sumLabelWidth + sumRectWidth + margin;
+        if (offset + labelWidthHistory[i] > chartConfig.w) {
+          yOff += 20;
+          breakIndex = i;
+          offset = 0;
+        }
+        return 'translate(' + offset + ',' + yOff + ')';
+      });
+      //set the size of the legend containers correctly
+      legendSvg.attr('height', yOff + 50);
+      legendContainer.attr('height', yOff + 50);
+      //center the legend horizontally
+      legendContainer.attr('transform', function () {
+        var legendWidth, off;
+        legendWidth = d3.select(this).node().getBBox().width;
+        off = (chartConfig.w - legendWidth) / 2;
+        off = off < 0 ? 0 : off;
+        return 'translate(' + off + ',' + '0)';
+      });
+    };
+    linkFunction = function (scope, elem) {
+      var dataVector, cfg, width, chartDataModel;
+      //we want the chart to adjust to the size of the element it is placed in
+      width = elem.width ? elem.width() : 200;
+      cfg = {
+        w: width,
+        h: width,
+        maxValue: 100,
+        levels: 4
+      };
+      scope.$watchCollection('localModel()', function () {
+        // remove everything from the element...
+        elem.removeData();
+        elem.empty();
+        if (scope.localModel() && scope.localModel().length > 0) {
+          // we are only interest in criteria data
+          dataVector = WorldstateService.utils.stripIccData(scope.localModel(), true);
+          chartDataModel = scope.convertToChartDataStructure(dataVector);
+          scope.chartData = chartDataModel[0];
+          scope.legendItems = chartDataModel[1];
+          var divNode = d3.select(elem[0]).append('div').attr('style', 'display:block;margin: 0 auto;').node();
+          RadarChart.draw(divNode, scope.chartData, cfg);
+          drawLegend(elem, cfg, scope.legendItems);
+        }
+      });
+    };
     return {
       scope: scope,
       restrict: 'A',
-      link: function (scope, elem) {
-        var dataVector, convertToChartDataStructure, chartData, LegendOptions = [], cfg, drawLegend;
-        //we want the chart to adjust to the size of the element it is placed in
-        cfg = {
-          w: elem.width(),
-          h: elem.width(),
-          maxValue: 100,
-          levels: 4
-        };
-        convertToChartDataStructure = function (criteriaVector) {
-          var i, criteriaData, groupName, group, criteriaProp, criteria, result, dataItem;
-          result = [];
-          LegendOptions = [];
-          for (i = 0; i < criteriaVector.length; i++) {
-            dataItem = [];
-            criteriaData = criteriaVector[i].data;
-            LegendOptions.push(criteriaVector[i].name);
-            for (groupName in criteriaData) {
-              if (criteriaData.hasOwnProperty(groupName)) {
-                group = criteriaData[groupName];
-                for (criteriaProp in group) {
-                  if (group.hasOwnProperty(criteriaProp) && criteriaProp !== 'displayName' && criteriaProp !== 'iconResource') {
-                    criteria = group[criteriaProp];
-                    dataItem.push({
-                      axis: criteria.displayName,
-                      value: criteria.value
-                    });
-                  }
-                }
-              }
-            }
-            result.push(dataItem);
-          }
-          return result;
-        };
-        drawLegend = function () {
-          var colorscale = d3.scale.category10();
-          var legendSvg = d3.select(elem[0]).append('div').append('svg').attr('width', cfg.w).attr('height', 5);
-          //Initiate Legend
-          var legendContainer = legendSvg.append('g').attr('class', 'legend').attr('height', 5).attr('width', 50);
-          //Create colour squares
-          var rects = legendContainer.selectAll('rect').data(LegendOptions).enter().append('rect').attr('y', 15).attr('x', 0).attr('width', 10).attr('height', 10).style('fill', function (d, i) {
-              return colorscale(i);
-            });
-          //Create text next to squares
-          var labels = legendContainer.selectAll('text').data(LegendOptions).enter().append('text').attr('y', 24).attr('x', 0).attr('font-size', '11px').attr('fill', '#737373').text(function (d) {
-              return d;
-            });
-          //                      we need to adjust the position of the legend labels
-          //                      and break the line if necessary
-          var labelWidthHistory = [];
-          var labelWidth = [];
-          var breakIndex = 0;
-          var yOff = 0;
-          labels.attr('transform', function (data, i) {
-            var width = d3.select(this).node().getBBox().width;
-            var sumLabelWidth = labelWidth.reduce(function (prev, curr) {
-                return prev + curr;
-              }, 0);
-            labelWidth.push(width);
-            labelWidthHistory.push(width);
-            var sumRectWidth = (i - breakIndex + 1) * 15;
-            var margin = (i - breakIndex) * 20;
-            var offset = sumLabelWidth + sumRectWidth + margin;
-            if (offset + width > cfg.w) {
-              yOff += 20;
-              breakIndex = i;
-              labelWidth = [width];
-              offset = 15;
-            }
-            return 'translate(' + offset + ',' + yOff + ')';
-          });
-          yOff = 0;
-          breakIndex = 0;
-          rects.attr('transform', function (data, i) {
-            var sumLabelWidth = labelWidthHistory.reduce(function (prev, curr, index) {
-                if (index < i && index >= breakIndex) {
-                  return prev + curr;
-                }
-                return prev;
-              }, 0);
-            var sumRectWidth = (i - breakIndex) * 15;
-            var margin = (i - breakIndex) * 20;
-            var offset = sumLabelWidth + sumRectWidth + margin;
-            if (offset + labelWidthHistory[i] > cfg.w) {
-              yOff += 20;
-              breakIndex = i;
-              offset = 0;
-            }
-            return 'translate(' + offset + ',' + yOff + ')';
-          });
-          //set the size of the legend containers correctly
-          legendSvg.attr('height', yOff + 50);
-          legendContainer.attr('height', yOff + 50);
-          //center the legend horizontally
-          legendContainer.attr('transform', function () {
-            var legendWidth = d3.select(this).node().getBBox().width;
-            var off = (cfg.w - legendWidth) / 2;
-            off = off < 0 ? 0 : off;
-            return 'translate(' + off + ',' + '0)';
-          });
-        };
-        scope.$watchCollection('localModel()', function (newVal, oldVal) {
-//          if (newVal !== oldVal) {
-            // remove everything from the element...
-            elem.removeData();
-            elem.empty();
-            if (scope.localModel() && scope.localModel().length > 0) {
-              // we are only interest in criteria data
-              dataVector = WorldstateService.utils.stripIccData(scope.localModel(), true);
-              chartData = convertToChartDataStructure(dataVector);
-              var divNode = d3.select(elem[0]).append('div').attr('style', 'display:block;margin: 0 auto;').node();
-              RadarChart.draw(divNode, chartData, cfg);
-              drawLegend();
-            }
-//          }
-        });
-      }
+      link: linkFunction,
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController'
+    };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indicatorCriteriaAxisChooser', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      iccObject: '=',
+      isXAxis: '@',
+      selectedAxis: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/indicatorCriteriaAxisChooserTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaAxisChooserDirectiveController'
+    };
+  }]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('relationAnalysisChart', [
+  'de.cismet.crisma.ICMM.Worldstates',
+  function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '&',
+      chartHeight: '@height',
+      forCriteria: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/relationAnalysisChartTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.RelationAnalysisChartDirectiveController'
     };
   }
 ]);
