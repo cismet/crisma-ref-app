@@ -84,3 +84,16 @@ span.glyphicon{
 #header, #ribbon{
     z-index: 55555 !important;
 }
+
+#menuCollapse{
+    margin-right: 16px;
+    padding-top: 4px;
+}
+.mac #menuCollapse{
+    margin-right: 0px !important;
+}
+
+.mac body.fixed-navigation nav>ul{
+    width:100% !important;
+    padding-right: 0px !important;
+}
