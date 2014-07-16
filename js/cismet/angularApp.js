@@ -53,15 +53,6 @@ angular.module('de.cismet.smartAdmin', [
         .when('/CRISMA.worldstates/:wsId', {
             templateUrl: "partials/WorldstateViewer.html",
             controller: 'WorldstateViewerCtrl',
-            resolve: {
-                worldstate: [
-                    '$route',
-                    'de.cismet.crisma.ICMM.Worldstates',
-                    function ($route, Worldstates) {
-                        return Worldstates.get({wsId: $route.current.params.wsId}).$promise;
-                    }
-                ]
-            }
         });
 
 //    $locationProvider.html5Mode(true);

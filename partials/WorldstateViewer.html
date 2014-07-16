@@ -2,15 +2,20 @@
 <!--End Title Area-->
 
 <!--Begin Body-->
-<div directive-includer ng-repeat="renderer in normalAreaRenderer| orderBy:'renderingdescriptor.priority'" rendering-descriptor="renderer.renderingdescriptor" dataslot="renderer.dataslot" worldstate="worldstate">
+<div ng-show="isLoading" class="alert alert-info">
+    <p> <i class="fa-fw fa fa-spinner fa-spin"></i> <Strong>Loading</Strong> worldstate object from ICMM. Please wait.</p>
 </div>
-<!--The widget grid comes with features of the jarvis widget plugin like maximizing and ordering-->
-<widget-grid>
-    <!--    <widget-container rendering-descriptor="worldstate.iccdata.renderingDescriptor" dataslot="worldstate.iccdata">
-        </widget-container>-->
-    <widget-container ng-repeat="dataslot in widgetAreaRenderer | orderBy:'renderingdescriptor.priority'" rendering-descriptor="dataslot.renderingdescriptor" dataslot="dataslot.dataslot" worldstate="worldstate">
-    </widget-container>
-</widget-grid>
+<div ng-show="!isLoading">
+    <div directive-includer ng-repeat="renderer in normalAreaRenderer| orderBy:'renderingdescriptor.priority'" rendering-descriptor="renderer.renderingdescriptor" dataslot="renderer.dataslot" worldstate="worldstate">
+    </div>
+    <!--The widget grid comes with features of the jarvis widget plugin like maximizing and ordering-->
+    <widget-grid>
+        <!--    <widget-container rendering-descriptor="worldstate.iccdata.renderingDescriptor" dataslot="worldstate.iccdata">
+            </widget-container>-->
+        <widget-container ng-repeat="dataslot in widgetAreaRenderer| orderBy:'renderingdescriptor.priority'" rendering-descriptor="dataslot.renderingdescriptor" dataslot="dataslot.dataslot" worldstate="worldstate">
+        </widget-container>
+    </widget-grid>
+</div>
 
 <!--End Body-->
 
