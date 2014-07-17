@@ -75,3 +75,25 @@ span.glyphicon{
     /*background-color: rgba(91,89,88,.8);*/
     color:#fff !important;
 }
+
+/* The smart admin css contains a bug which cuts off some letters in the sparks element*/
+#sparks li span{
+    line-height: 24px;
+}
+
+#header, #ribbon{
+    z-index: 55555 !important;
+}
+
+#menuCollapse{
+    margin-right: 16px;
+    padding-top: 4px;
+}
+.mac #menuCollapse{
+    margin-right: 0px !important;
+}
+
+.mac body.fixed-navigation nav>ul{
+    width:100% !important;
+    padding-right: 0px !important;
+}

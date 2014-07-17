@@ -2,5 +2,5 @@
     <nav-menu-entry ng-repeat="item in menuitems" menuitem="item"> </nav-menu-entry>
     <!--This is quick fix for the bug that exists in smart 1.4 that hides the collapse menu button-->
     <!--The span below should needs to be moved back to the navArea template when the bug is fixed-->
-    <span ng-if="parentMenu" style="margin-right: 16px;padding-top: 4px;" data-menu-collapse="" class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+    <span id="menuCollapse" ng-if="parentMenu" data-menu-collapse="" class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </ul>
