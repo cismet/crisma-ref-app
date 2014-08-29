@@ -1,0 +1,34 @@
+{
+  "name": "icmm-js",
+  "version": "0.1.1",
+  "ignore": [
+    ".*",
+    "app",
+    "config",
+    "nbproject",
+    "test",
+    "Gruntfile.js",
+    "karma*",
+    "bower*",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular": "1.2.15",
+    "json3": "~3.2.6",
+    "es5-shim": "~2.1.0"
+  },
+  "devDependencies": {
+    "angular-resource": "1.2.15",
+    "angular-mocks": "~1.2.17"
+  },
+  "homepage": "https://github.com/crismaproject/icmm_js",
+  "_release": "0.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.1",
+    "commit": "985e9a3f3054ea792cd7b41c1f17e0b61b0af504"
+  },
+  "_source": "git://github.com/crismaproject/icmm_js.git",
+  "_target": "v0.1.1",
+  "_originalSource": "icmm_js"
+}
