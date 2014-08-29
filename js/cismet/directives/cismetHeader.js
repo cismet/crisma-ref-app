@@ -13,7 +13,8 @@ angular.module(
     ]
     ).directive('cismetHeader', [
     'LayoutService',
-    function (LayoutService) {
+    'localStorageService',
+    function (LayoutService,localStorageService) {
         'use strict';
         return {
             templateUrl: 'templates/header.html',

@@ -16,11 +16,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
         <!-- Basic Styles -->
+        <!--<link rel="stylesheet" type="text/css" media="screen" href="js/libs/bootstrap/dist/css/bootstrap.min.css">-->
         <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" media="screen" href="css/font-awesome.min.css">
 
         <link rel="stylesheet" href="js/libs/dynatree/dist/skin/ui.dynatree.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="js/libs/crisma-worldstate-tree-widget-angular/dist/styles/crisma-worldstate-tree-widget-angular.css">
 
         <!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
         <link rel="stylesheet" type="text/css" media="screen" href="css/smartadmin-production.min.css">
@@ -32,11 +32,14 @@
         <!-- Angular Related CSS -->
         <link rel="stylesheet" type="text/css" media="screen" href="css/ng.min.css">
         <!-- NVD3 Related CSS -->
-         <link rel="stylesheet" href="js/libs/nvd3/nv.d3.css">
+        <link rel="stylesheet" href="js/libs/nvd3/nv.d3.css">
 
-        <!-- Application related CSS -->
-        <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css">
+        <!-- Application related CSS -->
+        <link rel="stylesheet" type="text/css" media="screen" href="js/libs/crisma-worldstate-tree-widget-angular/dist/styles/crisma-worldstate-tree-widget-angular.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="js/libs/worldstate-analysis-widget/dist/styles/worldstate-analysis-widget.css">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
+
 
         <!-- FAVICONS -->
         <link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
@@ -44,7 +47,7 @@
 
         <!-- GOOGLE FONT -->
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
-        
+
         <script src="js/libs/css-browser-selector/css-broswer-selector.js" type="text/javascript"></script>
 
     </head>
@@ -52,7 +55,9 @@
         <!-- possible classes: minified, fixed-ribbon, fixed-header, fixed-width-->
 
         <!-- HEADER -->
-    <cismet-header></cismet-header>
+    <cismet-header>
+
+    </cismet-header>
     <!-- END HEADER -->
 
     <!-- Left panel : Navigation area -->
@@ -65,12 +70,24 @@
 
         <!--RIBBON--> 
         <breadcrumb>
-            <!--            <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
+<!--                        <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
                             <span> <a href="javascript:void(0);" ><i class="fa fa-sitemap"></i></a> </span>
                         </div>-->
+             <div class="btn-ribbon btn-group" style="margin-top:-5px;">
+                <button type="button" class="btn btn-default btn-sm">{{SelectedCriteriaFunction.selectedCriteriaFunction.name}}</button>
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu" role="menu" >
+                    <li ng-repeat="cf in SelectedCriteriaFunction.criteriaFunctionSets" role="presentation" ng-click="updateSelectedCriteriaFunction($index)">
+                        <a>{{cf.name}}</a>
+                    </li>
+                </ul>
+            </div>
         </breadcrumb>
         <!-- END RIBBON -->
-        
+
         <!-- MAIN CONTENT -->
         <div id="content" ng-view class="view-animate">
 
@@ -98,14 +115,19 @@
     <!--<script data-pace-options='{ "restartOnRequestAfter": true }' src="js/plugin/pace/pace.min.js"></script>-->
 
     <!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>-->
+    <script src="js/libs/jquery/jquery.min.js"></script>
     <script src="js/libs/jquery-ui/ui/jquery-ui.js"></script>
     <script src="js/libs/dynatree/dist/jquery.dynatree.js"></script>
 
-    <script src="js/libs/angular-1.3.0-beta.5/angular.js"></script>
-    <script src="js/libs/angular-1.3.0-beta.5/angular-animate.js"></script>
-    <script src="js/libs/angular-1.3.0-beta.5/angular-route.js"></script>
-    <script src="js/libs/angular-1.3.0-beta.5/angular-resource.js"></script>
+    <!--    <script src="js/libs/angular-1.3.0-beta.5/angular.js"></script>
+        <script src="js/libs/angular-1.3.0-beta.5/angular-animate.js"></script>
+        <script src="js/libs/angular-1.3.0-beta.5/angular-route.js"></script>
+        <script src="js/libs/angular-1.3.0-beta.5/angular-resource.js"></script>-->
+    <script src="js/libs/angular-1.2.16/angular.js"></script>
+    <script src="js/libs/angular-1.2.16/angular-animate.js"></script>
+    <script src="js/libs/angular-1.2.16/angular-route.js"></script>
+    <script src="js/libs/angular-1.2.16/angular-resource.js"></script>
 
     <!--Angular dependend scripts-->
 
@@ -115,10 +137,13 @@
     <script src="js/libs/radar-chart-d3/src/radar-chart.js"></script>
     <script src="js/libs/nvd3/nv.d3.js"></script>
     <script src="js/libs/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js"></script>
+    <script src="js/libs/ng-table/ng-table.js"></script>
+    <script src="js/libs/angular-strap/dist/angular-strap.min.js"></script>
+    <script src="js/libs/angular-strap/dist/angular-strap.tpl.min.js"></script>
+    <script src="js/libs/angular-local-storage/angular-local-storage.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget-tpl.js"></script>
     <script src="js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular.js"></script>
-    <script src="js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular-tpl.js"></script>
     <script src="js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular-tpl.js"></script>
     <script src="js/libs/icmm_js/dist/scripts/icmm_js.js"></script>
     <script src="js/libs/cids-custom-rest-js/dist/scripts/cids-custom-rest-js.js"></script>
@@ -128,7 +153,7 @@
     <script src="js/libs/cids-node-path-widget/dist/scripts/cids-node-path-widget-tpl.js"></script>
     <script src="js/libs/d3/d3.js"></script>
 
-    <script src="js/libs/angular-bootstrap/ui-bootstrap-tpls-0.10.0.js"></script>
+    <!--<script src="js/libs/angular-bootstrap/ui-bootstrap-tpls-0.10.0.js"></script>-->
     <script src="js/cismet/services/services.js"></script>
     <script src="js/cismet/controllers/AppCtrl.js"></script>
     <script src="js/cismet/controllers/DashBoardCtrl.js"></script>
@@ -162,6 +187,7 @@
     <script src="js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
 
     <!-- BOOTSTRAP JS -->
+    <!--<script src="js/libs/bootstrap/dist/jsbootstrap.min.js"></script>-->
     <script src="js/libs/bootstrap/bootstrap.min.js"></script>
 
     <!-- CUSTOM NOTIFICATION -->

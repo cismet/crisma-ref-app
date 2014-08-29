@@ -2,7 +2,8 @@ angular.module(
     'de.cismet.custom.directives',
     [
         'easypiechart',
-        'de.cismet.custom.services'
+        'de.cismet.custom.services',
+        'eu.crismaproject.worldstateAnalysis.services'
     ]
     ).directive(
     'wmsLeaflet',
@@ -295,85 +296,73 @@ angular.module(
     [
         'WorldstateUtils',
         'IconService',
-        function (WorldstateUtils, IconService) {
+        'SelectedCriteriaFunction',
+        function (WorldstateUtils, IconService, SelectedCriteriaFunction) {
             'use strict';
             return {
                 restrict: 'E',
                 templateUrl: 'custom/templates/iccDataBody.html',
                 replace: true,
                 controller: function ($scope) {
-
-                    // part for the first approach with large pie chart...
-//                    $scope.generatePieChartData = function () {
-//                        var data_res = [];
-//                        for (var item in $scope.activeCategory) {
-//                            if (item !== 'iconResource' && item !== 'displayName') {
-//                                data_res.push({
-//                                    label: $scope.activeCategory[item].displayName,
-//                                    data: $scope.activeCategory[item].value
-//                                });
-//                            }
-//                        }
-//                        return data_res;
-//                    };
-//                    $scope.iccData = JSON.parse($scope.dataslot.actualaccessinfo);
-//                    $scope.activeCategory = $scope.iccData.casualties;
-//                    $scope.maxVal = function () {
-//                        var max = 100;
-//                        for (var item in $scope.activeCategory) {
-//
-//                            if ($scope.activeCategory[item]) {
-//                                var val = $scope.activeCategory[item].value;
-//                                max = val > max ? val : max;
-//                            }
-//                        }
-//                        return max;
-//                    };
-//
-//                    $scope.activateGroup = function (index) {
-//                        var keys = Object.keys($scope.iccData);
-//                        var selectedKey = keys[index];
-//                        $scope.activeCategory = $scope.iccData[selectedKey];
-//                        $scope.pieChartData = $scope.generatePieChartData();
-//                    };
-//
-//
-//                    $scope.pieChartData = $scope.generatePieChartData();
-//                    var barColor = elem.css('color') || elem.data('pie-color'),
-//                        trackColor = $this.data('pie-track-color') || '#eeeeee',
-//                        size = parseInt($this.data('pie-size')) || 25;
-
-                    //we need to split the json of the criteria / indicator into groups of 3 items.
+                    //we need to split the indicators into groups of 3 items.
                     $scope.IconService = IconService;
+                    $scope.SelectedCriteriaFunction = SelectedCriteriaFunction;
+
+                    $scope.$watch('SelectedCriteriaFunction.selectedCriteriaFunction', function () {
+                        var i, j, critFuncSet, critFun, indicator, indicatorGroup;
+                        //we need to update the criteriaFunction binding in the groups..
+                        var indicatorGroups = [];
+                        $scope.pagedIccGroups.forEach(function (group) {
+                            indicatorGroups = indicatorGroups.concat(group);
+                        });
+                        critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
+                        for (i = 0; i < indicatorGroups.length; i++) {
+                            indicatorGroup = indicatorGroups[i];
+                            for (j = 0; j < indicatorGroup.items.length; j++) {
+                                indicator = indicatorGroup.items[j];
+
+                                critFuncSet.forEach(function (cf) {
+                                    if (cf.indicator === indicator.displayName) {
+                                        critFun = cf;
+                                    }
+                                });
+                                indicator.criteriaFunction = critFun;
+                            }
+                        }
+                    }, true);
 
                     $scope.getPanelColour = function (pageIndex, index) {
                         return $scope.renderingDescriptor.colourClasses[(3 * pageIndex) + index];
                     };
 
-                    $scope.indicators = WorldstateUtils.stripIccData($scope.dataslot[0].worldstate, false);
-                    $scope.criteria = WorldstateUtils.stripIccData($scope.dataslot[0].worldstate, true);
+                    $scope.indicators = WorldstateUtils.stripIccData($scope.dataslot[0].worldstate);
 
                     $scope.pagedIccGroups = [];
                     var page = [];
                     for (var i = 0; i < Object.keys($scope.indicators).length; i++) {
                         var indicatorGroup = $scope.indicators[Object.keys($scope.indicators)[i]];
-                        var criteriaGroup = $scope.criteria[Object.keys($scope.indicators)[i]];
                         if (i > 0 && i % 3 === 0) {
                             $scope.pagedIccGroups.push(page);
                             page = [];
                         }
 
                         var items = [];
+                        var critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
+                        var critFun;
                         for (var j = 0; j < Object.keys(indicatorGroup).length; j++) {
                             var indicatorItem = indicatorGroup[Object.keys(indicatorGroup)[j]];
-                            var criteriaItem = criteriaGroup[Object.keys(indicatorGroup)[j]];
                             if (indicatorItem.value) {
+                                critFuncSet.forEach(function (cf) {
+                                    if (cf.indicator === indicatorItem.displayName) {
+                                        critFun = cf;
+                                    }
+                                });
                                 items.push({
                                     displayName: indicatorItem.displayName,
                                     iconResource: indicatorItem.iconResource,
                                     indicator: indicatorItem.value,
-                                    criteria: criteriaItem.value,
-                                    indicatorUnit: indicatorItem.unit
+                                    indicatorUnit: indicatorItem.unit,
+                                    criteriaFunction: critFun
                                 });
                             }
                         }
@@ -545,34 +534,32 @@ angular.module(
     ).directive(
     'criteriaeasypie',
     [
-        function () {
+        'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+        function (CriteriaCalculationService) {
             'use strict';
             return {
                 restrict: 'E',
                 templateUrl: 'custom/templates/criteriaEasyPie.html',
                 replace: 'true',
                 scope: {
-                    percent: '=',
+                    indicator: '=',
+                    criteriaFunction: '=',
                     size: '='
                 },
                 controller: function ($scope) {
-                    var barColor;
-                    $scope.styleClasses = ['easy-pie-chart'];
-                    if ($scope.percent < 25) {
-                        $scope.styleClasses.push('txt-color-yellow');
-                        barColor = "#a90329";
-                    } else if ($scope.percent < 75) {
-                        $scope.styleClasses.push('txt-color-orangeDark');
-                        barColor = "#A57225";
-                    } else {
-                        $scope.styleClasses.push('txt-color-greenDark');
-                        barColor = "#496949";
-                    }
-
-                    $scope.styleClasses.push('easyPieChart');
-
+                    var barColor, updateCriteria;
+                    updateCriteria = function () {
+                        if (!$scope.criteriaFunction || !$scope.indicator) {
+                            $scope.percent = 0;
+                            return;
+                        }
+                        $scope.percent = CriteriaCalculationService.calculateCriteria($scope.indicator, $scope.criteriaFunction);
+                        $scope.percent = Math.round($scope.percent * 10) / 10;
+                    };
                     $scope.opts = {
-                        barColor: barColor,
+                        barColor: function(percent){
+                            return CriteriaCalculationService.getColorForCriteria(percent, $scope.criteriaFunction);
+                        },
                         trackColor: '#f2f2f2',
                         scaleColor: false,
                         lineCap: 'butt',
@@ -581,10 +568,18 @@ angular.module(
                         animate: 1500,
                         rotate: -90,
                         size: $scope.size,
-                        onStep: function (value) {
-//                            this.el.find('span').text(~~value);
-                        }
                     };
+                    updateCriteria();
+                    $scope.styleClasses = ['easy-pie-chart'];
+                    $scope.styleClasses.push('easyPieChart');
+
+                    $scope.$watch('indicator', function () {
+                        updateCriteria();
+                    });
+
+                    $scope.$watch('criteriaFunction', function () {
+                        updateCriteria();
+                    }, true);
                 }
             };
         }

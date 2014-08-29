@@ -2,7 +2,13 @@
 .fixed-navigation nav{
     overflow-x: hidden;
 }
+.fixed-ribbon #content {
+    padding-top: 0px;
+}
 
+.dropdown-menu{
+    z-index: 1010 !important;
+}
 // FIXME since version 1.4 the collapse menu button is not visible anymore....
 
 .angular-google-map-container { height: 400px; }
@@ -43,7 +49,7 @@
     /*background-color: #3A3633;*/
     margin: -10px -14px;
     padding: 0px;
-    
+
 
     /* height: 1000px; */
     border-color: #fff;
@@ -81,8 +87,12 @@ span.glyphicon{
     line-height: 24px;
 }
 
+#sparks li h5{
+    margin: 0px;
+}
+
 #header, #ribbon{
-    z-index: 55555 !important;
+    z-index: 1001 !important;
 }
 
 #menuCollapse{
@@ -96,4 +106,23 @@ span.glyphicon{
 .mac body.fixed-navigation nav>ul{
     width:100% !important;
     padding-right: 0px !important;
+}
+
+/*
+ * adoptions to the progressbar css in order to get correct and bootsrap appliant
+ * behaviour in the criteria-functions widget
+ */
+
+.progress{
+    position: static;    
+}
+
+.progress .progress-bar{
+    position: static;    
+    font-weight: normal;
+    text-shadow: none;
+}
+
+.intervalMarker span.glyphicon{
+    color:black;
 }

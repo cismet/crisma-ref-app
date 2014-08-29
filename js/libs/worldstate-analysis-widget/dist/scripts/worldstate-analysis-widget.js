@@ -1,9 +1,13 @@
-angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDirectives']).controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController', [
+angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
+  'nvd3ChartDirectives',
+  'eu.crismaproject.worldstateAnalysis.services'
+]).controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController', [
   '$scope',
   '$filter',
   'de.cismet.crisma.ICMM.Worldstates',
   'ngTableParams',
-  function ($scope, $filter, WorldstateService, NgTableParams) {
+  'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+  function ($scope, $filter, WorldstateService, NgTableParams, ccs) {
     'use strict';
     var getOrderedProperties = function (obj) {
         var p, keys;
@@ -16,7 +20,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDir
         keys.sort();
         return keys;
       }, updateTable = function () {
-        var field, group, i, iccData, j, k_outer, k_inner, keys_outer, keys_inner, prop, val, dataVector = WorldstateService.utils.stripIccData($scope.worldstates, $scope.forCriteria);
+        var field, group, i, iccData, j, k_outer, k_inner, keys_outer, keys_inner, prop, val, criteriaFunction, k, indicatorVector = WorldstateService.utils.stripIccData($scope.worldstates);
         if (!(!$scope.worldstates || $scope.worldstates.length === 0)) {
           $scope.rows = [];
           $scope.columns = [{
@@ -25,7 +29,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDir
               visible: true
             }];
           j = 0;
-          iccData = dataVector[0].data;
+          iccData = indicatorVector[0].data;
           keys_outer = getOrderedProperties(iccData);
           for (k_outer = 0; k_outer < keys_outer.length; ++k_outer) {
             group = iccData[keys_outer[k_outer]];
@@ -48,14 +52,14 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDir
               }
             }
           }
-          for (i = 0; i < dataVector.length; ++i) {
+          for (i = 0; i < indicatorVector.length; ++i) {
             field = 'f' + (i + 2);
             $scope.columns.push({
-              title: dataVector[i].name,
+              title: indicatorVector[i].name,
               field: field,
               visible: true
             });
-            iccData = dataVector[i].data;
+            iccData = indicatorVector[i].data;
             j = 0;
             keys_outer = getOrderedProperties(iccData);
             for (k_outer = 0; k_outer < keys_outer.length; ++k_outer) {
@@ -65,7 +69,17 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDir
               for (k_inner = 0; k_inner < keys_inner.length; ++k_inner) {
                 prop = keys_inner[k_inner];
                 if (prop !== 'displayName' && prop !== 'iconResource') {
-                  val = group[prop].value;
+                  for (k = 0; k < $scope.criteriaFunction.criteriaFunctions.length; k++) {
+                    if ($scope.criteriaFunction.criteriaFunctions[k].indicator === group[prop].displayName) {
+                      criteriaFunction = $scope.criteriaFunction.criteriaFunctions[k];
+                      break;
+                    }
+                  }
+                  if ($scope.forCriteria) {
+                    val = ccs.calculateCriteria(group[prop].value, criteriaFunction);
+                  } else {
+                    val = group[prop].value;
+                  }
                   if (val % 1 !== 0) {
                     val = $filter('number')(val, 2);
                   }
@@ -115,18 +129,25 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', ['nvd3ChartDir
         updateTable();
       }
     });
+    $scope.$watch('criteriaFunction', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates) {
+        updateTable();
+      }
+    }, true);
   }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives', [
   'eu.crismaproject.worldstateAnalysis.controllers',
   'ngTable',
-  'de.cismet.crisma.ICMM.Worldstates'
+  'de.cismet.crisma.ICMM.Worldstates',
+  'mgcrea.ngStrap.popover'
 ]).directive('indicatorCriteriaTable', [function () {
     'use strict';
     var scope;
     scope = {
       worldstates: '=',
       forCriteria: '=',
+      criteriaFunction: '=',
       detailIcons: '@'
     };
     return {
@@ -141,30 +162,88 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp', [
   'eu.crismaproject.worldstateAnalysis.demoApp.controllers',
   'eu.crismaproject.worldstateAnalysis.directives',
   'eu.crismaproject.worldstateAnalysis.services',
-  'de.cismet.crisma.widgets.worldstateTreeWidget'
+  'de.cismet.crisma.widgets.worldstateTreeWidget',
+  'mgcrea.ngStrap'
 ]);
-angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController', [
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.CriteriaFunctionManagerDirectiveController', [
   '$scope',
   function ($scope) {
     'use strict';
+    $scope.editable = [];
+    $scope.currentIntervalFunctions = [];
+    $scope.selectedCriteriaFunctionIndex = -1;
+    $scope.tooltipDelete = { title: 'Delete this criteria function' };
+    $scope.tooltipAdd = { title: 'Create a new criteria function' };
+    $scope.tooltipSave = { title: 'Save changes' };
+    $scope.tooltipRename = { title: 'Rename criteria function' };
+    $scope.tooltipRenameDone = { title: 'Done' };
+    $scope.addCriteriaFunction = function () {
+      var i, criteriaFunctions = [];
+      for (i = 0; i < $scope.indicators.length; i++) {
+        criteriaFunctions.push({
+          indicator: $scope.indicators[i].displayName,
+          lowerBoundary: {
+            criteriaValue: 0,
+            indicatorValue: 0
+          },
+          upperBoundary: {
+            criteriaValue: 100,
+            indicatorValue: 0
+          },
+          intervals: []
+        });
+      }
+      $scope.criteriaFunctionSet.push({
+        name: 'Criteria function ' + ($scope.criteriaFunctionSet.length + 1),
+        criteriaFunctions: criteriaFunctions
+      });
+      $scope.editable.push(false);
+    };
+    $scope.removeCriteriaFunction = function () {
+      $scope.criteriaFunctionSet.splice($scope.selectedCriteriaFunctionIndex, 1);
+    };
+    $scope.isActiveItem = function (index) {
+      if ($scope.selectedCriteriaFunctionIndex === index) {
+        return 'list-group-item-info';
+      } else {
+        return '';
+      }
+    };
+    $scope.setSelectedCriteriaFunction = function (index) {
+      $scope.selectedCriteriaFunctionIndex = index;
+      $scope.currentCriteriaFunction = $scope.criteriaFunctionSet[$scope.selectedCriteriaFunctionIndex];
+    };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController', [
+  '$scope',
+  'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+  function ($scope, ccs) {
+    'use strict';
     $scope.legendItems = [];
-    $scope.convertToChartDataStructure = function (criteriaVector) {
-      var i, criteriaData, groupName, group, criteriaProp, criteria, result, dataItem, legendItems;
+    $scope.convertToChartDataStructure = function (indicatorVector) {
+      var i, j, indicatorData, groupName, group, criteriaProp, indiactor, result, dataItem, legendItems, criteriaFunction;
       result = [];
       legendItems = [];
-      for (i = 0; i < criteriaVector.length; i++) {
+      for (i = 0; i < indicatorVector.length; i++) {
         dataItem = [];
-        criteriaData = criteriaVector[i].data;
-        legendItems.push(criteriaVector[i].name);
-        for (groupName in criteriaData) {
-          if (criteriaData.hasOwnProperty(groupName)) {
-            group = criteriaData[groupName];
+        indicatorData = indicatorVector[i].data;
+        legendItems.push(indicatorVector[i].name);
+        for (groupName in indicatorData) {
+          if (indicatorData.hasOwnProperty(groupName)) {
+            group = indicatorData[groupName];
             for (criteriaProp in group) {
               if (group.hasOwnProperty(criteriaProp) && criteriaProp !== 'displayName' && criteriaProp !== 'iconResource') {
-                criteria = group[criteriaProp];
+                indiactor = group[criteriaProp];
+                for (j = 0; j < $scope.criteriaFunction.criteriaFunctions.length; j++) {
+                  if ($scope.criteriaFunction.criteriaFunctions[j].indicator === indiactor.displayName) {
+                    criteriaFunction = $scope.criteriaFunction.criteriaFunctions[j];
+                    break;
+                  }
+                }
                 dataItem.push({
-                  axis: criteria.displayName,
-                  value: criteria.value
+                  axis: indiactor.displayName,
+                  value: ccs.calculateCriteria(indiactor.value, criteriaFunction)
                 });
               }
             }
@@ -177,6 +256,251 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
         legendItems
       ];
     };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorBandDirectiveController', [
+  '$scope',
+  'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+  function ($scope, ccs) {
+    'use strict';
+    var initData, criteriaSortFunction;
+    initData = {
+      lowerBoundary: {
+        criteriaValue: 0,
+        indicatorValue: 0
+      },
+      upperBoundary: {
+        criteriaValue: 100,
+        indicatorValue: 0
+      },
+      intervals: []
+    };
+    criteriaSortFunction = function (intervalA, intervalB) {
+      return intervalA.criteriaValue - intervalB.criteriaValue;
+    };
+    if (!$scope.criteriaFunction) {
+      $scope.criteriaFunction = initData;
+    }
+    $scope.criteriaFunction.lowerBoundary = $scope.criteriaFunction.lowerBoundary || initData.lowerBoundary;
+    $scope.criteriaFunction.upperBoundary = $scope.criteriaFunction.upperBoundary || initData.upperBoundary;
+    $scope.criteriaFunction.intervals = $scope.criteriaFunction.intervals ? $scope.criteriaFunction.intervals.sort(criteriaSortFunction) || initData.intervals.sort(criteriaSortFunction) : initData.intervals.sort(criteriaSortFunction);
+    $scope.$watch('criteriaFunction', function () {
+      if ($scope.criteriaFunction) {
+        $scope.criteriaFunction.lowerBoundary = $scope.criteriaFunction.lowerBoundary || initData.lowerBoundary;
+        $scope.criteriaFunction.upperBoundary = $scope.criteriaFunction.upperBoundary || initData.upperBoundary;
+        $scope.criteriaFunction.intervals = $scope.criteriaFunction.intervals ? $scope.criteriaFunction.intervals.sort(criteriaSortFunction) || initData.intervals.sort(criteriaSortFunction) : initData.intervals.sort(criteriaSortFunction);
+      }
+    }, true);
+    $scope.getIntervalColor = function (interval) {
+      var colorClass, colorValue;
+      colorValue = ccs.getColor(interval, $scope.criteriaFunction);
+      switch (colorValue) {
+      case '#B5F4BC':
+        colorClass = 'color-b';
+        break;
+      // C_FEELING_ORANGE;
+      case '#FFBA6B':
+        colorClass = 'color-e';
+        break;
+      //D_AFFINITY;
+      case '#FF9F80':
+        colorClass = 'color-d';
+        break;
+      //E_ORANGE_SHERBERT;
+      case '#FFC48C':
+        colorClass = 'color-e';
+        break;
+      // F_PEACE_BABY_YELLOW;
+      case '#FFDC8A':
+        colorClass = 'color-f';
+        break;
+      //G_JAYANTHI;
+      case '#FFF19E':
+        colorClass = 'color-g';
+        break;
+      //H_HONEY_DO;
+      case '#EFFAB4':
+        colorClass = 'color-h';
+        break;
+      //I_SPLASH_OF_LIME;
+      case '#D1F2A5':
+        colorClass = 'color-i';
+        break;
+      }
+      return colorClass;
+    };
+    $scope.deleteInterval = function (interval) {
+      var index = $scope.criteriaFunction.intervals.indexOf(interval);
+      $scope.criteriaFunction.intervals.splice(index, 1);
+    };
+    $scope.updateLowerBoundary = function (indicatorVal) {
+      $scope.criteriaFunction.lowerBoundary.indicatorValue = indicatorVal;
+    };
+    $scope.updateUpperBoundary = function (indicatorVal) {
+      $scope.criteriaFunction.upperBoundary.indicatorValue = indicatorVal;
+    };
+    $scope.$on('band-item-removed', function (args, interval) {
+      if (args.targetScope !== $scope) {
+        $scope.$broadcast('band-item-removed');
+      } else {
+        $scope.deleteInterval(interval);
+      }
+    });
+    $scope.createInterval = function (criteriaVal, indicatorVal) {
+      var newInterval = {
+          criteriaValue: criteriaVal,
+          indicatorValue: indicatorVal
+        };
+      $scope.criteriaFunction.intervals.push(newInterval);
+      $scope.criteriaFunction.intervals.sort(criteriaSortFunction);
+      $scope.$broadcast('band-item-added');
+    };
+    // needed to place the interval marker at the rigth position
+    $scope.getIntervalWidth = function (interval, previousInterval) {
+      var sumBefore = 0;
+      if (previousInterval) {
+        sumBefore = previousInterval.criteriaValue || 0;
+      }
+      if (interval && interval.criteriaValue) {
+        return { width: interval.criteriaValue - sumBefore + '%' };
+      }
+      return { width: 100 - sumBefore + '%' };
+    };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorBandItemDirectiveController', [
+  '$scope',
+  '$filter',
+  '$element',
+  '$timeout',
+  function ($scope, $filter, $element, $timeout) {
+    'use strict';
+    $scope.actualHeightExceeded = false;
+    $scope.getElementHeight = function () {
+      return $element.height();
+    };
+    $scope.getElementWidth = function () {
+      return $element.width();
+    };
+    $scope.checkActualHeight = function () {
+      $timeout(function () {
+        var childElem = $scope.lowerBoundary || $scope.upperBoundary ? $element.children()[0] : $element.children()[1];
+        if (angular.element(childElem).height() > angular.element($element.parent()).height()) {
+          $scope.actualHeightExceeded = true;
+        } else {
+          if ($scope.actualHeightExceeded) {
+            $timeout(function () {
+              $scope.checkActualHeight();
+            });
+          }
+          $scope.actualHeightExceeded = false;
+        }
+      }, 500);
+    };
+    $scope.actualHeightExceeded = false;
+    $scope.checkActualHeight();
+    $scope.$on('band-item-added', function () {
+      $scope.checkActualHeight();
+    });
+    $scope.$on('band-item-removed', function () {
+      $scope.checkActualHeight();
+    });
+    $scope.getCriteriaSuggestion = function () {
+      var criteriaSuggestion;
+      if (!$scope.interval || $scope.upperBoundary) {
+        criteriaSuggestion = 100;
+      } else if ($scope.lowerBoundary) {
+        criteriaSuggestion = 0;
+      } else {
+        if (!$scope.previousInterval) {
+          criteriaSuggestion = $scope.interval.criteriaValue / 2;
+        } else {
+          criteriaSuggestion = $scope.previousInterval.criteriaValue + ($scope.interval.criteriaValue - $scope.previousInterval.criteriaValue) / 2;
+        }
+      }
+      return criteriaSuggestion;
+    };
+    $scope.$on('tooltip.show.before', function () {
+      $scope.popOverItem.criteriaValue = $scope.getCriteriaSuggestion();
+      $scope.popOverItem.indicatorValue = $filter('number')($scope.interval.indicatorValue || 0);
+    });
+    $scope.minWidth = 80;
+    var indicatorVal = $scope.interval ? $scope.interval.indicatorValue || 0 : 0;
+    $scope.popOverItem = {
+      criteriaValue: $scope.getCriteriaSuggestion(),
+      indicatorValue: $filter('number')(indicatorVal)
+    };
+    $scope.getPercent = function () {
+      var sumBefore = 0;
+      if ($scope.lowerBoundary || $scope.upperBoundary) {
+        return 100;
+      }
+      if ($scope.previousInterval) {
+        sumBefore = $scope.previousInterval.criteriaValue || 0;
+      }
+      if ($scope.interval && ($scope.interval.criteriaValue || $scope.interval.criteriaValue === 0)) {
+        //                    return  Math.floor(($scope.interval.criteriaValue - sumBefore))
+        if (sumBefore > $scope.interval.criteriaValue) {
+          throw new Error('The criteriaValue of the previous interval can not be higher than the criteriaValue of the current Interval');
+        }
+        return $scope.interval.criteriaValue - sumBefore;
+      }
+      if (sumBefore > 100) {
+        throw new Error('The criteriaValue of the previous interval can not be higher than the criteriaValue of the current Interval');
+      }
+      return 100 - sumBefore;
+    };
+    $scope.intervalWidth = function () {
+      var percentage = $scope.getPercent();
+      return { width: percentage + '%' };
+    };
+    $scope.getColorClass = function () {
+      if ($scope.lowerBoundary) {
+        return 'color-a';
+      }
+      if ($scope.upperBoundary) {
+        return 'color-j';
+      }
+      return $scope.getColor({ interval: $scope.interval });
+    };
+    $scope.del = function (interval) {
+      $scope.$emit('band-item-removed', interval);
+    };
+    $scope.updateInterval = function (event) {
+      $scope.onIntervalChanged({
+        criteriaValue: parseFloat($scope.popOverItem.criteriaValue),
+        indicatorValue: parseFloat($scope.popOverItem.indicatorValue)
+      });
+      $scope.hidePopover();
+      //this is necessary to avoid poping up the poover for the new created interval
+      event.stopPropagation();
+    };
+    $scope.getTooltipTitle = function () {
+      var title = '';
+      title += 'Criteria: ';
+      if ($scope.lowerBoundary) {
+        title += '0%';
+      } else if ($scope.upperBoundary) {
+        title += '100%';
+      } else {
+        title += ($scope.previousInterval.criteriaValue || '0') + '% -' + $scope.interval.criteriaValue + '%';
+      }
+      title += 'Indicator Values: ';
+      if ($scope.lowerBoundary) {
+        title += '<= ' + ($scope.interval ? $scope.interval.indicatorValue || 0 : 0);
+      } else if ($scope.upperBoundary) {
+        title += '>= ' + ($scope.interval ? $scope.interval.indicatorValue || 0 : 0);
+      } else {
+        title += ($scope.interval ? $scope.interval.indicatorValue || 0 : 0) + '- ' + $scope.interval.indicatorValue;
+      }
+      return title;
+    };
+    if ($scope.previousInterval && $scope.interval) {
+      $scope.tooltip = {
+        title: $scope.getTooltipTitle(),
+        checked: false
+      };
+    }
   }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaAxisChooserDirectiveController', [
@@ -232,16 +556,27 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
     });
   }
 ]);
-// only for testing/demo
 angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
   'de.cismet.crisma.ICMM.Worldstates',
-  'de.cismet.cids.rest.collidngNames.Nodes'
+  'de.cismet.cids.rest.collidngNames.Nodes',
+  'LocalStorageModule'
 ]).controller('eu.crismaproject.worldstateAnalysis.demoApp.controllers.MainController', [
   '$scope',
   'de.cismet.collidingNameService.Nodes',
   'de.cismet.crisma.ICMM.Worldstates',
-  function ($scope, Nodes, Worldstates) {
+  'localStorageService',
+  function ($scope, Nodes, Worldstates, localStorageService) {
     'use strict';
+    $scope.criteriaFunctionSet = localStorageService.get('criteriaFunctionSet') || [];
+    $scope.selectedCriteriaFunction = $scope.criteriaFunctionSet[0];
+    $scope.persistCriteriaFunctions = function () {
+      localStorageService.add('criteriaFunctionSet', $scope.criteriaFunctionSet);
+    };
+    $scope.$watch('criteriaFunctionSet', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        console.log('received changes in criteria function');
+      }
+    }, true);
     $scope.activeItem = {};
     $scope.treeOptions = {
       checkboxClass: 'glyphicon glyphicon-unchecked',
@@ -278,17 +613,42 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
         }
       }
     });
+    $scope.updateSelectedCriteriaFunction = function (index) {
+      $scope.selectedCriteriaFunction = $scope.criteriaFunctionSet[index];
+    };
+    $scope.indicatorVector = [];
     // Retrieve the top level nodes from the icmm api
-    $scope.treeNodes = Nodes.query();
+    $scope.treeNodes = Nodes.query(function () {
+      var wsId, wsNode, ws, iccObject, group;
+      wsNode = $scope.treeNodes[0].objectKey;
+      wsId = wsNode.substring(wsNode.lastIndexOf('/') + 1, wsNode.length);
+      ws = Worldstates.get({ 'wsId': wsId }, function () {
+        var indicatorGroup, indicatorProp;
+        iccObject = Worldstates.utils.stripIccData([ws], false)[0];
+        for (indicatorGroup in iccObject.data) {
+          if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+            group = iccObject.data[indicatorGroup];
+            for (indicatorProp in group) {
+              if (group.hasOwnProperty(indicatorProp)) {
+                if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                  $scope.indicatorVector.push(group[indicatorProp]);
+                }
+              }
+            }
+          }
+        }
+      });
+    });
   }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.RelationAnalysisChartDirectiveController', [
   '$scope',
   'de.cismet.crisma.ICMM.Worldstates',
-  function ($scope, WorldstateService) {
+  'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+  function ($scope, WorldstateService, ccs) {
     'use strict';
     var controller = this;
-    this.createChartData = function (iccData, xAxis, yAxis) {
+    this.createChartData = function (iccData, xAxis, yAxis, xAxisCF, yAxisCf, forCriteria) {
       var i, iccItem, valueX, valueY, data = [];
       if (!iccData || !xAxis || !yAxis) {
         throw 'Invalid configuration. Can no determine chart data for (iccData, xAxis, yaxis):' + iccData + ' , ' + xAxis + ' , ' + yAxis;
@@ -299,8 +659,8 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
         if (!iccItem) {
           throw 'Invalid icc object ' + iccItem;
         }
-        valueX = controller.getDataValueForAxis(xAxis, iccItem);
-        valueY = controller.getDataValueForAxis(yAxis, iccItem);
+        valueX = controller.getDataValueForAxis(xAxis, iccItem, xAxisCF, forCriteria);
+        valueY = controller.getDataValueForAxis(yAxis, iccItem, yAxisCf, forCriteria);
         //                    valueX = Math.random() * 500 + 200;
         //                    valueY = Math.random() * 500 + 200;
         if (firstValueX === 0) {
@@ -316,7 +676,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
       }
       return data;
     };
-    this.getDataValueForAxis = function (axis, iccObject) {
+    this.getDataValueForAxis = function (axis, iccObject, criteriaFunction, forCriteria) {
       var axisProp, iccItem, iccGroup, iccProp, iccGroupProp;
       if (!(axis && axis.name)) {
         return null;
@@ -329,6 +689,9 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
           for (iccProp in iccGroup) {
             if (iccGroup.hasOwnProperty(iccProp)) {
               if (iccGroup[iccProp].displayName === axisProp) {
+                if (forCriteria) {
+                  return ccs.calculateCriteria(iccGroup[iccProp].value, criteriaFunction);
+                }
                 return iccGroup[iccProp].value;
               }
             }
@@ -364,19 +727,33 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
     };
     this.dataChangedWatchCallback = function () {
       if ($scope.worldstates() && $scope.worldstates().length > 0) {
-        $scope.iccData = WorldstateService.utils.stripIccData($scope.worldstates(), $scope.forCriteria);
+        $scope.iccData = WorldstateService.utils.stripIccData($scope.worldstates());
         $scope.iccObject = $scope.iccData[0];
         if ($scope.xAxis && $scope.yAxis) {
           if ($scope.xAxis.name.indexOf('Select') === -1 && $scope.yAxis.name.indexOf('Select') === -1) {
-            $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis);
+            $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis, $scope.xAxisCriteriaFunction, $scope.yAxisCriteriaFunction, $scope.forCriteria);
           }
+        }
+      }
+    };
+    this.updateAxisCriteriaFunctions = function () {
+      var i;
+      for (i = 0; i < $scope.criteriaFunctionSet.criteriaFunctions.length; i++) {
+        if ($scope.criteriaFunctionSet.criteriaFunctions[i].indicator === $scope.xAxis.name) {
+          $scope.xAxisCriteriaFunction = $scope.criteriaFunctionSet.criteriaFunctions[i];
+        }
+        if ($scope.criteriaFunctionSet.criteriaFunctions[i].indicator === $scope.yAxis.name) {
+          $scope.yAxisCriteriaFunction = $scope.criteriaFunctionSet.criteriaFunctions[i];
         }
       }
     };
     this.axisWatchCallback = function () {
       if ($scope.xAxis && $scope.yAxis) {
         if ($scope.xAxis.name.indexOf('Select') === -1 && $scope.yAxis.name.indexOf('Select') === -1) {
-          $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis);
+          if ($scope.criteriaFunctionSet) {
+            controller.updateAxisCriteriaFunctions();
+          }
+          $scope.chartdata = controller.createChartData($scope.iccData, $scope.xAxis, $scope.yAxis, $scope.xAxisCriteriaFunction, $scope.yAxisCriteriaFunction, $scope.forCriteria);
         }
       }
     };
@@ -384,14 +761,32 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
     $scope.$watch('yAxis', this.axisWatchCallback);
     $scope.$watch('forCriteria', this.dataChangedWatchCallback);
     $scope.$watch('worldstates()', this.dataChangedWatchCallback);
+    $scope.$watch('criteriaFunctionSet', this.axisWatchCallback, true);
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('criteriaFunctionManager', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      indicators: '=',
+      criteriaFunctionSet: '=criteriaFunctions'
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/criteriaFunctionManagerTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.CriteriaFunctionManagerDirectiveController'
+    };
+  }]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('criteriaRadar', [
   'de.cismet.crisma.ICMM.Worldstates',
   function (WorldstateService) {
     'use strict';
     var scope, linkFunction, drawLegend;
-    scope = { localModel: '&worldstates' };
+    scope = {
+      localModel: '&worldstates',
+      criteriaFunction: '='
+    };
     drawLegend = function (elem, chartConfig, legendItems) {
       var colorscale, legendSvg, legendContainer, rects, labelWidthHistory, labels, labelWidth, breakIndex, yOff;
       colorscale = d3.scale.category10();
@@ -444,7 +839,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('crit
         sumRectWidth = (i - breakIndex) * 15;
         margin = (i - breakIndex) * 20;
         offset = sumLabelWidth + sumRectWidth + margin;
-        if (offset + labelWidthHistory[i] > chartConfig.w) {
+        if (offset + labelWidthHistory[i] + 15 > chartConfig.w) {
           yOff += 20;
           breakIndex = i;
           offset = 0;
@@ -464,7 +859,22 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('crit
       });
     };
     linkFunction = function (scope, elem) {
-      var dataVector, cfg, width, chartDataModel;
+      var cfg, width, watchCallback;
+      watchCallback = function () {
+        var indicators, chartDataModel;
+        elem.removeData();
+        elem.empty();
+        if (scope.localModel() && scope.localModel().length > 0) {
+          // we are only interest in criteria data
+          indicators = WorldstateService.utils.stripIccData(scope.localModel(), false);
+          chartDataModel = scope.convertToChartDataStructure(indicators);
+          scope.chartData = chartDataModel[0];
+          scope.legendItems = chartDataModel[1];
+          var divNode = d3.select(elem[0]).append('div').attr('style', 'display:block;margin: 0 auto;').node();
+          RadarChart.draw(divNode, scope.chartData, cfg);
+          drawLegend(elem, cfg, scope.legendItems);
+        }
+      };
       //we want the chart to adjust to the size of the element it is placed in
       width = elem.width ? elem.width() : 200;
       cfg = {
@@ -473,27 +883,64 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('crit
         maxValue: 100,
         levels: 4
       };
-      scope.$watchCollection('localModel()', function () {
-        // remove everything from the element...
-        elem.removeData();
-        elem.empty();
-        if (scope.localModel() && scope.localModel().length > 0) {
-          // we are only interest in criteria data
-          dataVector = WorldstateService.utils.stripIccData(scope.localModel(), true);
-          chartDataModel = scope.convertToChartDataStructure(dataVector);
-          scope.chartData = chartDataModel[0];
-          scope.legendItems = chartDataModel[1];
-          var divNode = d3.select(elem[0]).append('div').attr('style', 'display:block;margin: 0 auto;').node();
-          RadarChart.draw(divNode, scope.chartData, cfg);
-          drawLegend(elem, cfg, scope.legendItems);
-        }
-      });
+      scope.$watchCollection('localModel()', watchCallback);
+      scope.$watch('criteriaFunction', watchCallback, true);
     };
     return {
       scope: scope,
       restrict: 'A',
       link: linkFunction,
       controller: 'eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController'
+    };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indicatorBand', [function () {
+    'use strict';
+    var scope;
+    scope = { criteriaFunction: '=?' };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/indicatorBandTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorBandDirectiveController'
+    };
+  }]).directive('indicatorBandItem', [
+  '$popover',
+  function ($popover) {
+    'use strict';
+    var scope;
+    scope = {
+      interval: '=',
+      previousInterval: '=',
+      first: '=',
+      last: '=',
+      lowerBoundary: '@',
+      upperBoundary: '@',
+      onIntervalChanged: '&',
+      getColor: '&'
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/indicatorBandItemTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorBandItemDirectiveController',
+      replace: true,
+      link: function (scope, elem, attrs) {
+        var popover = $popover(elem.find('#popover-target'), {
+            scope: scope,
+            title: attrs.title || 'Create a new interval',
+            template: 'templates/indicatorBandPopoverTemplate.html',
+            contentTemplate: 'templates/indicatorBandPopoverContentTemplate.html',
+            placement: 'bottom',
+            trigger: 'manual'
+          });
+        scope.togglePopover = function () {
+          popover.$promise.then(popover.toggle);
+        };
+        scope.hidePopover = function () {
+          popover.$promise.then(popover.hide);
+        };
+      }
     };
   }
 ]);
@@ -520,7 +967,8 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('rela
     scope = {
       worldstates: '&',
       chartHeight: '@height',
-      forCriteria: '='
+      forCriteria: '=',
+      criteriaFunctionSet: '=criteriaFunction'
     };
     return {
       scope: scope,
@@ -661,5 +1109,180 @@ angular.module('eu.crismaproject.worldstateAnalysis.services', []).factory('eu.c
       getOwa: function () {
         return owa;
       }
+    };
+  }]);
+angular.module('eu.crismaproject.worldstateAnalysis.services').factory('eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService', [function () {
+    'use strict';
+    var calculateCriteria, interpolateValue, getColor, getColorForCriteria;
+    interpolateValue = function (indicatorValue, lowerBound, upperBound) {
+      var max, min, lowerCriteriaValue, upperCriteriaValue, rate;
+      max = Math.max(lowerBound.indicatorValue, upperBound.indicatorValue);
+      min = Math.min(lowerBound.indicatorValue, upperBound.indicatorValue);
+      lowerCriteriaValue = lowerBound.criteriaValue;
+      upperCriteriaValue = upperBound.criteriaValue;
+      rate = (max - indicatorValue) / (max - min);
+      return upperCriteriaValue + (lowerCriteriaValue - upperCriteriaValue) * rate;
+    };
+    calculateCriteria = function (indicatorValue, criteriaFunction) {
+      var i, pre, suc, list = [];
+      //check the format of the criteriaFunction
+      if (!(criteriaFunction.lowerBoundary && criteriaFunction.upperBoundary && criteriaFunction.intervals)) {
+        throw new Error('CriteriaFunction is not valid');
+      }
+      list.push(criteriaFunction.lowerBoundary);
+      list = list.concat(criteriaFunction.intervals);
+      list.push(criteriaFunction.upperBoundary);
+      if (criteriaFunction.lowerBoundary.indicatorValue > criteriaFunction.upperBoundary.indicatorValue) {
+        list.reverse();
+      }
+      //check if the indicatorValue is lower than the lowerBound
+      if (indicatorValue <= list[0].indicatorValue) {
+        return list[0].criteriaValue;
+      } else if (indicatorValue >= list[list.length - 1].indicatorValue) {
+        return list[list.length - 1].criteriaValue;
+      } else {
+        //loop through the intervals...
+        for (i = 1; i < list.length; i++) {
+          pre = list[i - 1];
+          suc = list[i];
+          if (indicatorValue >= pre.indicatorValue && indicatorValue <= suc.indicatorValue) {
+            return interpolateValue(indicatorValue, pre, suc);
+          }
+        }
+        return interpolateValue(indicatorValue, suc, criteriaFunction.upperBoundary);
+      }
+    };
+    getColorForCriteria = function (criteriaValue, criteriaFunction) {
+      var i, interval = null, tmpInterval;
+      if (criteriaValue === 0) {
+        return '#FF6543';
+      }
+      if (criteriaValue === 100) {
+        return '#B5F4BC';
+      }
+      if (criteriaFunction.intervals) {
+        for (i = 0; i < criteriaFunction.intervals.length; i++) {
+          tmpInterval = criteriaFunction.intervals[i];
+          if (criteriaValue < tmpInterval.criteriaValue) {
+            return getColor(tmpInterval, criteriaFunction);
+          }
+        }
+      }
+      return getColor(interval, criteriaFunction);
+    };
+    getColor = function (interval, criteriaFunction) {
+      var tmpInterval, i, total = criteriaFunction.intervals.length, c;
+      var index = -1;
+      if (interval) {
+        for (i = 0; i < total; i++) {
+          tmpInterval = criteriaFunction.intervals[i];
+          if (tmpInterval.criteriaValue === interval.criteriaValue) {
+            index = i;
+          }
+        }
+      }
+      if (total === 0) {
+        //                E_ORANGE_SHERBERT;
+        c = '#FFC48C';
+      } else if (total === 1) {
+        if (index === 0) {
+          //                    c = D_AFFINITY;
+          c = '#FF9F80';
+        } else {
+          //                    c = G_JAYANTHI;
+          c = '#FFF19E';
+        }
+      } else if (total === 2) {
+        if (index === 0) {
+          //                    c = C_FEELING_ORANGE;
+          c = '#FFBA6B';
+        } else if (index === 1) {
+          //                    c = F_PEACE_BABY_YELLOW;
+          c = '#FFDC8A';
+        } else {
+          //                    c = H_HONEY_DO;
+          c = '#EFFAB4';
+        }
+      } else if (total === 3) {
+        if (index === 0) {
+          //                    c = C_FEELING_ORANGE;
+          c = '#FFBA6B';
+        } else if (index === 1) {
+          //                    c = E_ORANGE_SHERBERT;
+          c = '#FFC48C';
+        } else if (index === 2) {
+          //                    c = F_PEACE_BABY_YELLOW;
+          c = '#FFDC8A';
+        } else {
+          //                    c = H_HONEY_DO;
+          c = '#EFFAB4';
+        }
+      } else if (total === 4) {
+        if (index === 0) {
+          //                    c = C_FEELING_ORANGE;
+          c = '#FFBA6B';
+        } else if (index === 1) {
+          //                    c = D_AFFINITY;
+          c = '#FF9F80';
+        } else if (index === 2) {
+          //                    c = F_PEACE_BABY_YELLOW;
+          c = '#FFDC8A';
+        } else if (index === 3) {
+          //                    c = G_JAYANTHI;
+          c = '#FFF19E';
+        } else {
+          //                    c = H_HONEY_DO;
+          c = '#EFFAB4';
+        }
+      } else if (total === 5) {
+        if (index === 0) {
+          //                    c = C_FEELING_ORANGE;
+          c = '#FFBA6B';
+        } else if (index === 1) {
+          //                    c = D_AFFINITY;
+          c = '#FF9F80';
+        } else if (index === 2) {
+          //                    c = F_PEACE_BABY_YELLOW;
+          c = '#FFDC8A';
+        } else if (index === 3) {
+          //                    c = G_JAYANTHI;
+          c = '#FFF19E';
+        } else if (index === 4) {
+          //                    c = H_HONEY_DO;
+          c = '#EFFAB4';
+        } else {
+          //                    c = I_SPLASH_OF_LIME;
+          c = '#D1F2A5';
+        }
+      } else {
+        if (index === 0) {
+          //                    c = C_FEELING_ORANGE;
+          c = '#FFBA6B';
+        } else if (index === 1) {
+          //                    c = D_AFFINITY;
+          c = '#FF9F80';
+        } else if (index === 2) {
+          //                    c = E_ORANGE_SHERBERT;
+          c = '#FFC48C';
+        } else if (index === 3) {
+          //                    c = F_PEACE_BABY_YELLOW;
+          c = '#FFDC8A';
+        } else if (index === 4) {
+          //                    c = G_JAYANTHI;
+          c = '#FFF19E';
+        } else if (index === 5) {
+          //                    c = H_HONEY_DO;
+          c = '#EFFAB4';
+        } else {
+          //                    c = I_SPLASH_OF_LIME;
+          c = '#D1F2A5';
+        }
+      }
+      return c;
+    };
+    return {
+      'calculateCriteria': calculateCriteria,
+      'getColor': getColor,
+      'getColorForCriteria': getColorForCriteria
     };
   }]);

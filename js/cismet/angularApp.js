@@ -8,7 +8,6 @@ angular.module('de.cismet.smartAdmin', [
     'de.cismet.smartAdmin.services',
     'de.cismet.smartAdmin.controllers',
     'de.cismet.smartAdmin.directives',
-    'ui.bootstrap',
     'de.cismet.crisma.widgets.worldstateTreeWidget',
     'de.cismet.cids.rest.collidngNames.Nodes',
     'ngTable',

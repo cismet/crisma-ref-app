@@ -36,7 +36,7 @@
                         {{group.displayName}}</h3>
                 </div>
                 <div class="panel-body no-padding text-align-center">
-                    <table class="table">
+                    <table class="table" style="text-align:left;">
                         <thead>
                             <tr>
                                 <th>
@@ -59,7 +59,7 @@
                                     {{item.indicator}} {{item.indicatorUnit}}
                                 </td>
                                 <td>
-                                    <criteriaeasypie  percent="item.criteria" size="size"></criteriaeasypie>
+                                    <criteriaeasypie  indicator="item.indicator" criteria-function="item.criteriaFunction" size="size"></criteriaeasypie>
                                 </td>
                             </tr>
                         </tbody>

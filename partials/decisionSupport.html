@@ -17,16 +17,51 @@
         <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
             <header>
                 <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                <h2>Criteria Functions</h2>
+                <div class="widget-toolbar" role="menu">
+
+                    <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled" ng-click="persistCriteriaFunctions()">
+                        Persist
+                    </button>
+                </div>
+            </header>
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+
+            <!-- widget content -->
+            <div class="widget-body">
+                <criteria-function-manager indicators="indicatorVector"  criteria-functions="SelectedCriteriaFunction.criteriaFunctionSets"></criteria-function-manager>
+            </div>
+            <!-- end widget content -->
+
+        </div>
+        <!-- end widget div -->
+    </article>
+</div>
+
+
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+        <!-- Widget ID (each widget will need unique ID)-->
+        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                 <h2 ng-if="!isCriteria">Indicator Table</h2>
                 <h2 ng-if="isCriteria">Criteria Table</h2>
                 <div class="widget-toolbar" role="menu">
-                    <div class="btn-group" dropdown is-open="status.isopen">
-                        <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="disabled">
                             Change Mode <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a ng-click="isCriteria = false"><i ng-if="!isCriteria" class="fa fa-check-circle-o"/> Indicator</a></li>
-                            <li><a ng-click="isCriteria = true"><i ng-if="isCriteria" class="fa fa-check-circle-o"/> Criteria</a></li>
+                            <li><a ng-click="isCriteria = false"><i ng-if="!isCriteria" class="fa fa-check-circle-o"></i> Indicator</a></li>
+                            <li><a ng-click="isCriteria = true"><i ng-if="isCriteria" class="fa fa-check-circle-o"> </i> Criteria</a></li>
                         </ul>
                     </div>
                 </div>
@@ -42,13 +77,18 @@
 
             <!-- widget content -->
             <div class="widget-body">
-                <indicator-criteria-table worldstates='worldstates' for-criteria='isCriteria'></indicator-criteria-table>
+                <indicator-criteria-table worldstates='worldstates' 
+                                          for-criteria='isCriteria'
+                                          criteria-function="SelectedCriteriaFunction.selectedCriteriaFunction"
+                                          >
+
+                </indicator-criteria-table>
             </div>
             <!-- end widget content -->
 
         </div>
         <!-- end widget div -->
-
+    </article>
 </div>
 <!-- end widget -->
 
@@ -61,13 +101,13 @@
                 <span class="widget-icon"> <i class="fa fa-table"></i> </span>
                 <h2 ng-if="isCriteria">Worldstate relation analysis chart</h2>
                 <div class="widget-toolbar" role="menu">
-                    <div class="btn-group" dropdown is-open="status.isopen">
-                        <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-disabled="disabled">
                             Change Mode <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a ng-click="forCriteria = false"><i ng-if="!forCriteria" class="fa fa-check-circle-o"/> Indicator</a></li>
-                            <li><a ng-click="forCriteria = true"><i ng-if="forCriteria" class="fa fa-check-circle-o"/> Criteria</a></li>
+                            <li><a ng-click="forCriteria = false"><i ng-if="!forCriteria" class="fa fa-check-circle-o"></i> Indicator</a></li>
+                            <li><a ng-click="forCriteria = true"><i ng-if="forCriteria" class="fa fa-check-circle-o"></i> Criteria</a></li>
                         </ul>
                     </div>
                 </div>
@@ -83,12 +123,18 @@
 
             <!-- widget content -->
             <div class="widget-body">
-                <relation-analysis-chart style="padding-left:50px" height="350" for-criteria='forCriteria' worldstates="worldstates"></relation-analysis-chart>
+                <relation-analysis-chart style="padding-left:50px" height="350" 
+                                         for-criteria='forCriteria' 
+                                         worldstates="worldstates"
+                                         criteria-function="SelectedCriteriaFunction.selectedCriteriaFunction"
+                                         >
+                </relation-analysis-chart>
             </div>
             <!-- end widget content -->
 
         </div>
         <!-- end widget div -->
+    </article>
 </div>
 
 <div class="row">
@@ -118,7 +164,11 @@
                                         {{chartModel[0].name}}</h3>
                                 </div>
                                 <div class="panel-body no-padding text-align-center">
-                                    <div style="margin: 0 auto; padding-top: 20px"  criteria-radar worldstates="chartModel">
+                                    <div style="margin: 0 auto; padding-top: 20px"  
+                                         criteria-radar 
+                                         worldstates="chartModel"
+                                         criteria-function="SelectedCriteriaFunction.selectedCriteriaFunction"
+                                         >
 
                                     </div>
                                 </div>
@@ -133,5 +183,7 @@
             <!-- end widget content -->
         </div>
         <!-- end widget div -->
+    </article>
 </div>
 <!-- end widget -->
+</div>

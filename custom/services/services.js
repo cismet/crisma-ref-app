@@ -1,5 +1,6 @@
 angular.module('de.cismet.custom.services',
     [
+        'LocalStorageModule'
     ]).factory('WorldstateUtils', [function () {
         'use strict';
         var worldstateUtils;
@@ -9,10 +10,10 @@ angular.module('de.cismet.custom.services',
             publicApi = {};
 
             publicApi.stripIccData = function (worldstate, forCriteria) {
-                var data, i, j, k,iccdata;
+                var data, i, j, k, iccdata;
 
                 data = null;
-                iccdata=worldstate.iccdata;
+                iccdata = worldstate.iccdata;
                 for (j = 0; j < iccdata.length && !data; ++j) {
                     for (k = 0; k < iccdata[j].categories.length && !data; ++k) {
                         if (forCriteria && 'Criteria' === iccdata[j].categories[k].key) {
@@ -71,11 +72,30 @@ angular.module('de.cismet.custom.services',
                 case 'money_total_evac_16.png':
                     styleClass = 'fa-dollar';
                     break;
-                    
+
             }
 
             return styleClass;
         };
 
         return public_api;
-    }]);
+    }]).factory('SelectedCriteriaFunction',
+    [
+        'localStorageService',
+        function (localStorageService) {
+            'use strict';
+            var criteriaFunctions, selectedCriteriaFunction, persist;
+            criteriaFunctions = localStorageService.get('criteriaFunctionSet') || [];
+            selectedCriteriaFunction = criteriaFunctions[0] || {};
+
+            persist = function () {
+                localStorageService.add('criteriaFunctionSet', criteriaFunctions);
+            };
+
+            var public_api = {
+                selectedCriteriaFunction: selectedCriteriaFunction,
+                criteriaFunctionSets: criteriaFunctions,
+                persist: persist
+            };
+            return public_api;
+        }]);
