@@ -10,7 +10,7 @@ angular.module('de.cismet.smartAdmin.services',
             'use strict';
             $provide.constant('DEBUG', 'true');
             $provide.constant('CRISMA_DOMAIN', 'CRISMA');
-            $provide.constant('CRISMA_ICMM_API', 'http://localhost:8890');
+            $provide.constant('CRISMA_ICMM_API', 'http://crisma.cismet.de/refApp/icmm_api');
         }
     ]
     ).service('ShortCutService',
