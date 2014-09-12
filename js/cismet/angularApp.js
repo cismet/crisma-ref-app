@@ -45,9 +45,17 @@ angular.module('de.cismet.smartAdmin', [
             templateUrl: "partials/dashboard.html",
             controller: 'DashBoardCtrl'
         })
-        .when('/decisionSupport', {
-            templateUrl: "partials/decisionSupport.html",
-            controller: 'DecisionSupportCtrl'
+        .when('/decisionSupport/criteriaFunctions', {
+            templateUrl: "partials/criteriaFunctionManager.html",
+            controller: 'CriteriaFunctionCtrl'
+        })
+        .when('/decisionSupport/decisionStrategies', {
+            templateUrl: "partials/decisionStrategyManager.html",
+            controller: 'DecisionStrategiesCtrl'
+        })
+        .when('/decisionSupport/analysis', {
+            templateUrl: "partials/analysis.html",
+            controller: 'DecisionSupportAnalysisCtrl'
         })
         .when('/CRISMA.worldstates/:wsId', {
             templateUrl: "partials/WorldstateViewer.html",

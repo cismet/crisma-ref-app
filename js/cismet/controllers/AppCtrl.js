@@ -4,7 +4,7 @@ angular.module(
         'de.cismet.smartAdmin.services',
         'de.cismet.crisma.ICMM.Worldstates',
     ]
-    ).controller('AppCtrl',
+).controller('AppCtrl',
     [
         '$scope',
         'LayoutService',
@@ -12,7 +12,8 @@ angular.module(
         'ShortCutService',
         'WorkspaceService',
         'SelectedCriteriaFunction',
-        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction) {
+        'SelectedDecisionStrategy',
+        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction, SelectedDecisionStrategy) {
             'use strict';
             $scope.scenarioNode = {
                 name: 'Scenarios',
@@ -34,13 +35,25 @@ angular.module(
             $scope.LayoutService = LayoutService;
             $scope.MenuService = MenuService;
             $scope.MenuService.menuItems = [{
-                    name: 'Criteria Functions',
-                    icon: 'fa-th-list',
-                    link: '/criteriaFunctions'
-                }, {
                     name: 'Decision Support',
                     icon: 'fa-bar-chart-o',
-                    link: '/decisionSupport'
+//                    link: '/decisionSupport',
+                    children: [
+                        {
+                            name: 'Decision Strategies',
+                            icon: 'fa-circle-o-notch',
+                            link: '/decisionSupport/decisionStrategies'
+                        },{
+                            name: 'Criteria Functions',
+                            icon: 'fa-tasks',
+                            link: '/decisionSupport/criteriaFunctions'
+                        },
+                        {
+                            name: 'Analysis',
+                            icon: 'fa-bar-chart-o',
+                            link: '/decisionSupport/analysis'
+                        },
+                    ]
                 }, {
                     name: 'Worldstate Tree Widget',
                     icon: 'fa-sitemap',
@@ -89,6 +102,10 @@ angular.module(
             $scope.SelectedCriteriaFunction = SelectedCriteriaFunction;
             $scope.updateSelectedCriteriaFunction = function (index) {
                 SelectedCriteriaFunction.selectedCriteriaFunction = SelectedCriteriaFunction.criteriaFunctionSets[index];
+            };
+            $scope.SelectedDecisionStrategy= SelectedDecisionStrategy;
+            $scope.updateSelectedDecisionStrategy = function (index) {
+                SelectedDecisionStrategy.selectedDecisionStrategy = SelectedDecisionStrategy.decisionStrategies[index];
             };
             //FIXME: Need to be removed
             // Note: You will also need to change this variable in the "variable.less" file.

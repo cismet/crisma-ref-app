@@ -37,6 +37,9 @@
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css">
         <!-- Application related CSS -->
         <link rel="stylesheet" type="text/css" media="screen" href="js/libs/crisma-worldstate-tree-widget-angular/dist/styles/crisma-worldstate-tree-widget-angular.css">
+        <link rel="stylesheet" href="js/libs/ngDialog/css/ngDialog.css">
+        <link rel="stylesheet" href="js/libs/ngDialog/css/ngDialog-theme-default.css">
+        <link rel="stylesheet" href="js/libs/ngDialog/css/ngDialog-theme-plain.css">
         <link rel="stylesheet" type="text/css" media="screen" href="js/libs/worldstate-analysis-widget/dist/styles/worldstate-analysis-widget.css">
         <link rel="stylesheet" type="text/css" media="screen" href="css/app.css">
 
@@ -70,20 +73,48 @@
 
         <!--RIBBON--> 
         <breadcrumb>
-<!--                        <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
-                            <span> <a href="javascript:void(0);" ><i class="fa fa-sitemap"></i></a> </span>
-                        </div>-->
-             <div class="btn-ribbon btn-group" style="margin-top:-5px;">
-                <button type="button" class="btn btn-default btn-sm">{{SelectedCriteriaFunction.selectedCriteriaFunction.name}}</button>
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu" >
-                    <li ng-repeat="cf in SelectedCriteriaFunction.criteriaFunctionSets" role="presentation" ng-click="updateSelectedCriteriaFunction($index)">
-                        <a>{{cf.name}}</a>
-                    </li>
-                </ul>
+            <!--                        <div class="btn-ribbon" ng-click="showShortCut()" tooltip="Show Worldstate Tree" tooltip-placement="left">
+                                        <span> <a href="javascript:void(0);" ><i class="fa fa-sitemap"></i></a> </span>
+                                    </div>-->
+            <div>
+                <!--<div class="col-lg-6">-->
+<!--                    <div class="row">
+                        <label>Selected Criteria function</label>
+                    </div>-->
+                    <!--<div class="row">-->
+                        <div class="btn-ribbon btn-group" style="margin-top:-5px;">
+                            <button type="button" class="btn btn-default btn-sm">{{SelectedCriteriaFunction.selectedCriteriaFunction.name}}</button>
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" >
+                                <li ng-repeat="cf in SelectedCriteriaFunction.criteriaFunctionSets" role="presentation" ng-click="updateSelectedCriteriaFunction($index)">
+                                    <a>{{cf.name}}</a>
+                                </li>
+                            </ul>
+                        </div>                    
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-lg-6">-->
+<!--                    <div class="row">
+                        <label>Selected Decision Strategy</label>
+                    </div>-->
+                    <!--<div class="row">-->
+                        <div class="btn-ribbon btn-group" style="margin-top:-5px;">
+                            <button type="button" class="btn btn-default btn-sm">{{SelectedDecisionStrategy.selectedDecisionStrategy.name}}</button>
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" >
+                                <li ng-repeat="ds in SelectedDecisionStrategy.decisionStrategies" role="presentation" ng-click="updateSelectedDecisionStrategy($index)">
+                                    <a>{{ds.name}}</a>
+                                </li>
+                            </ul>
+                        </div>                    
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </breadcrumb>
         <!-- END RIBBON -->
@@ -119,6 +150,7 @@
     <script src="js/libs/jquery/jquery.min.js"></script>
     <script src="js/libs/jquery-ui/ui/jquery-ui.js"></script>
     <script src="js/libs/dynatree/dist/jquery.dynatree.js"></script>
+    <script src="js/libs/jquery-knob/js/jquery.knob.js"></script>
 
     <!--    <script src="js/libs/angular-1.3.0-beta.5/angular.js"></script>
         <script src="js/libs/angular-1.3.0-beta.5/angular-animate.js"></script>
@@ -141,6 +173,7 @@
     <script src="js/libs/angular-strap/dist/angular-strap.min.js"></script>
     <script src="js/libs/angular-strap/dist/angular-strap.tpl.min.js"></script>
     <script src="js/libs/angular-local-storage/angular-local-storage.js"></script>
+    <script src="js/libs/ngDialog/js/ngDialog.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget.js"></script>
     <script src="js/libs/worldstate-analysis-widget/dist/scripts/worldstate-analysis-widget-tpl.js"></script>
     <script src="js/libs/crisma-worldstate-tree-widget-angular/dist/scripts/crisma-worldstate-tree-widget-angular.js"></script>
@@ -160,7 +193,9 @@
     <script src="js/cismet/controllers/WorkspaceCtrl.js"></script>
     <script src="js/cismet/controllers/WorldstateViewerCtrl.js"></script>
     <script src="js/cismet/controllers/WorldstateTreeCtrl.js"></script>
-    <script src="js/cismet/controllers/DecisionSupportCtrl.js"></script>
+    <script src="js/cismet/controllers/DecisionStrategiesCtrl.js"></script>
+    <script src="js/cismet/controllers/CriteriaFunctionCtrl.js"></script>
+    <script src="js/cismet/controllers/DecisionSupportAnalysisCtrl.js"></script>
     <script src="js/cismet/directives/cismetHeader.js"></script>
     <script src="js/cismet/directives/menuCollapse.js"></script>
     <script src="js/cismet/directives/navArea.js"></script>

@@ -124,148 +124,59 @@ angular.module('de.cismet.crisma.ICMM.Worldstates', ['ngResource']).factory('de.
   function ($resource, CRISMA_ICMM_API, CRISMA_DOMAIN) {
     'use strict';
     var augmentWorldstateWithICCData = function (worldstate) {
-        worldstate.iccdata = [
+        var oldIndicators;
+        oldIndicators = worldstate.iccdata;
+        oldIndicators.renderingDescriptor = [
           {
-            '$self': '/CRISMA.dataitems/2',
-            'id': 2,
-            'name': 'Indicators',
-            'description': 'Indicator data',
-            'lastmodified': new Date().toISOString(),
-            'temporalcoveragefrom': '2010-11-20T10:05:00.000Z',
-            'temporalcoverageto': '2010-11-20T11:55:00.000Z',
-            'spatialcoverage': 'SRID=4326;POINT (47.493611111111 11.100833333333)',
-            'datadescriptor': {
-              '$self': '/CRISMA.datadescriptors/1',
-              'id': 1,
-              'name': 'icc_slot',
-              'description': 'Dataslot for icc data',
-              'categories': [{
-                  '$self': '/CRISMA.categories/3',
-                  'id': 3,
-                  'key': 'ICC_DATA',
-                  'classification': {
-                    '$self': '/CRISMA.classifications/2',
-                    'id': 2,
-                    'key': 'ICC_DATA'
-                  }
-                }],
-              'defaultaccessinfocontenttype': 'application/json',
-              'defaultaccessinfo': null
-            },
-            renderingdescriptor: [
-              {
-                gridWidth: 'col-sm-12',
-                priority: 1,
-                displayHeader: true,
-                sortable: false,
-                fullSize: true,
-                collapsed: false,
-                collapsible: true,
-                bodyDirective: 'icc-data-body',
-                headerDirective: 'icc-data-header',
-                colourClasses: [
-                  'panel-purple',
-                  'panel-orange',
-                  'panel-greenLight',
-                  'panel-blue',
-                  'panel-redLight'
-                ],
-                mergeId: 'iccIndicatorCriteriaWidget',
-                title: 'Indicator & Criteria'
-              },
-              {
-                gridWidth: 'col-sm-12',
-                priority: 0,
-                displayHeader: true,
-                sortable: false,
-                fullSize: true,
-                collapsed: false,
-                collapsible: true,
-                bodyDirective: 'mini-indicator-body',
-                colourClasses: [
-                  'txt-color-blue',
-                  'txt-color-purple',
-                  'txt-color-greenDark',
-                  'txt-color-orange',
-                  'txt-color-redLight'
-                ],
-                widgetArea: false
-              }
+            gridWidth: 'col-sm-12',
+            priority: 1,
+            displayHeader: true,
+            sortable: false,
+            fullSize: true,
+            collapsed: false,
+            collapsible: true,
+            bodyDirective: 'icc-data-body',
+            headerDirective: 'icc-data-header',
+            colourClasses: [
+              'panel-purple',
+              'panel-orange',
+              'panel-greenLight',
+              'panel-blue',
+              'panel-redLight'
             ],
-            'actualaccessinfocontenttype': 'application/json',
-            'actualaccessinfo': '{"casualties":{"displayName":"Casualties","iconResource":"/images//images/flower_16.png","noOfDead":{"displayName":"Number of dead","iconResource":"/images//images/flower_dead_16.png","value":"257","unit":"People"},"noOfInjured":{"displayName":"Number of injured","iconResource":"images/flower_injured_16.png","value":"409","unit":"People"},"noOfHomeless":{"displayName":"Number of homeless","iconResource":"/images/flower_homeless_16.png","value":"129","unit":"People"}},"cost":{"directDamageCost":{"displayName":"Direct damage cost","iconResource":"/images/dollar_direct_16.png","value":"4582048.34","unit":"Dollar"},"displayName":"Economic cost","iconResource":"/images/dollar_16.png","indirectDamageCost":{"displayName":"Indirect damage cost","iconResource":"/images/dollar_indirect_16.png","value":"830923892.47","unit":"Dollar"},"restorationCost":{"displayName":"Direct restoration cost","iconResource":"/images/dollar_restoration_16.png","value":"892930184.91","unit":"Dollar"}},"damagedBuildings":{"displayName":"Damaged buildings","iconResource":"/images/home_16.png","lostBuildings":{"displayName":"Lost buildings","iconResource":"/images/home_lost_16.png","value":"49","unit":"Buildings"},"unsafeBuildings":{"displayName":"Unsafe buildings","iconResource":"/images/home_unsafe_16.png","value":"152","unit":"Buildings"}},"damagedInfrastructure":{"damagedRoadSegments":{"displayName":"Number of damaged road segments","iconResource":"/images/road_damaged_16.png","value":"34","unit":"Roadsegments"},"displayName":"Damaged Infrastructure","iconResource":"/images/road_16.png"},"evacuationCost":{"displayName":"Evacuation cost","iconResource":"/images/money_evac_16.png","totalEvacuationCost":{"displayName":"Total evacuationcost","iconResource":"/images/money_total_evac_16.png","value":"3494023211.23","unit":"Dollar"}}}',
-            'categories': [{
-                '$self': '/CRISMA.categories/2',
-                'id': 2,
-                'key': 'Indicators',
-                'classification': {
-                  '$self': '/CRISMA.classifications/2',
-                  'id': 2,
-                  'key': 'ICC_DATA'
-                }
-              }]
+            mergeId: 'iccIndicatorCriteriaWidget',
+            title: 'Indicator & Criteria'
           },
           {
-            '$self': '/CRISMA.dataitems/3',
-            'id': 3,
-            'name': 'Criteria',
-            'description': 'Criteria data',
-            'lastmodified': new Date().toISOString(),
-            'temporalcoveragefrom': '2010-11-20T10:05:00.000Z',
-            'temporalcoverageto': '2010-11-20T11:55:00.000Z',
-            'spatialcoverage': 'SRID=4326;POINT (47.493611111111 11.100833333333)',
-            'datadescriptor': {
-              '$self': '/CRISMA.datadescriptors/1',
-              'id': 1,
-              'name': 'icc_slot',
-              'description': 'Dataslot for icc data',
-              'categories': [{
-                  '$self': '/CRISMA.categories/3',
-                  'id': 3,
-                  'key': 'ICC_DATA',
-                  'classification': {
-                    '$self': '/CRISMA.classifications/2',
-                    'id': 2,
-                    'key': 'ICC_DATA'
-                  }
-                }],
-              'defaultaccessinfocontenttype': 'application/json',
-              'defaultaccessinfo': null
-            },
-            renderingdescriptor: [{
-                gridWidth: 'col-sm-12',
-                priority: 1,
-                displayHeader: true,
-                sortable: false,
-                fullSize: true,
-                collapsed: false,
-                collapsible: true,
-                bodyDirective: 'icc-data-body',
-                headerDirective: 'icc-data-header',
-                colourClasses: [
-                  'panel-purple',
-                  'panel-orange',
-                  'panel-greenLight',
-                  'panel-blue',
-                  'panel-redLight'
-                ],
-                mergeId: 'iccIndicatorCriteriaWidget',
-                title: 'Indicator & Criteria'
-              }],
-            'actualaccessinfocontenttype': 'application/json',
-            'actualaccessinfo': '{"casualties":{"displayName":"Casualties","iconResource":"images/flower_16.png","noOfDead":{"displayName":"Number of dead","iconResource":"images/flower_dead_16.png","value":"15","unit":"Percent"},"noOfInjured":{"displayName":"Number of injured","iconResource":"images/flower_injured_16.png","value":"80","unit":"Percent"},"noOfHomeless":{"displayName":"Number of homeless","iconResource":"images/flower_homeless_16.png","value":"5","unit":"Percent"}},"cost":{"directDamageCost":{"displayName":"Direct damage cost","iconResource":"images/dollar_direct_16.png","value":"90","unit":"Percent"},"displayName":"Economic cost","iconResource":"images/dollar_16.png","indirectDamageCost":{"displayName":"Indirect damage cost","iconResource":"images/dollar_indirect_16.png","value":"50","unit":"Percent"},"restorationCost":{"displayName":"Direct restoration cost","iconResource":"images/dollar_restoration_16.png","value":"34","unit":"Percent"}},"damagedBuildings":{"displayName":"Damaged buildings","iconResource":"images/home_16.png","lostBuildings":{"displayName":"Lost buildings","iconResource":"images/home_lost_16.png","value":"49","unit":"Percent"},"unsafeBuildings":{"displayName":"Unsafe buildings","iconResource":"images/home_unsafe_16.png","value":"29","unit":"Percent"}},"damagedInfrastructure":{"damagedRoadSegments":{"displayName":"Number of damaged road segments","iconResource":"images/road_damaged_16.png","value":"34","unit":"Percent"},"displayName":"Damaged Infrastructure","iconResource":"images/road_16.png"},"evacuationCost":{"displayName":"Evacuation cost","iconResource":"images/money_evac_16.png","totalEvacuationCost":{"displayName":"Total evacuationcost","iconResource":"images/money_total_evac_16.png","value":"80","unit":"Percent"}}}',
-            'categories': [{
-                '$self': '/CRISMA.categories/6',
-                'id': 6,
-                'key': 'Criteria',
-                'classification': {
-                  '$self': '/CRISMA.classifications/2',
-                  'id': 2,
-                  'key': 'ICC_DATA'
-                }
-              }]
+            gridWidth: 'col-sm-12',
+            priority: 0,
+            displayHeader: true,
+            sortable: false,
+            fullSize: true,
+            collapsed: false,
+            collapsible: true,
+            bodyDirective: 'mini-indicator-body',
+            colourClasses: [
+              'txt-color-blue',
+              'txt-color-purple',
+              'txt-color-greenDark',
+              'txt-color-orange',
+              'txt-color-redLight'
+            ],
+            widgetArea: false
           }
         ];
+        oldIndicators.categories = [{
+            '$self': '/CRISMA.categories/2',
+            'id': 2,
+            'key': 'Indicators',
+            'classification': {
+              '$self': '/CRISMA.classifications/2',
+              'id': 2,
+              'key': 'ICC_DATA'
+            }
+          }];
+        worldstate.iccdata = [oldIndicators];
         return worldstate;
       }, augmentWorldstateDataWithRenderingDescriptors = function (worldstate) {
         var renderingDescriptorPrototype = {
@@ -387,8 +298,8 @@ angular.module('de.cismet.crisma.ICMM.Worldstates', ['ngResource']).factory('de.
           return dataVector;
         };
         return publicApi;
-      }();
-    Worldstate.utils = worldstateUtils;
+      };
+    Worldstate.utils = worldstateUtils();
     return Worldstate;
   }
 ]);

@@ -1,6 +1,7 @@
 angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
   'nvd3ChartDirectives',
-  'eu.crismaproject.worldstateAnalysis.services'
+  'eu.crismaproject.worldstateAnalysis.services',
+  'ngDialog'
 ]).controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaTableDirectiveController', [
   '$scope',
   '$filter',
@@ -20,11 +21,12 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
         keys.sort();
         return keys;
       }, updateTable = function () {
-        var field, group, i, iccData, j, k_outer, k_inner, keys_outer, keys_inner, prop, val, criteriaFunction, k, indicatorVector = WorldstateService.utils.stripIccData($scope.worldstates);
+        var field, group, i, iccData, j, k_outer, k_inner, keys_outer, keys_inner, prop, val, criteriaFunction, k, unit, indicatorVector;
+        indicatorVector = WorldstateService.utils.stripIccData($scope.worldstates);
         if (!(!$scope.worldstates || $scope.worldstates.length === 0)) {
           $scope.rows = [];
           $scope.columns = [{
-              title: $scope.forCriteria ? 'Criteria' : 'Indicators',
+              title: $scope.forCriteria ? 'Level of satisfaction (higher is better)' : 'Indicators',
               field: 'f1',
               visible: true
             }];
@@ -68,6 +70,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
               keys_inner = getOrderedProperties(group);
               for (k_inner = 0; k_inner < keys_inner.length; ++k_inner) {
                 prop = keys_inner[k_inner];
+                unit = $scope.forCriteria ? '% LoS' : group[prop].unit;
                 if (prop !== 'displayName' && prop !== 'iconResource') {
                   for (k = 0; k < $scope.criteriaFunction.criteriaFunctions.length; k++) {
                     if ($scope.criteriaFunction.criteriaFunctions[k].indicator === group[prop].displayName) {
@@ -83,7 +86,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
                   if (val % 1 !== 0) {
                     val = $filter('number')(val, 2);
                   }
-                  $scope.rows[j++][field] = { name: val + ' ' + group[prop].unit };
+                  $scope.rows[j++][field] = { name: val + ' ' + unit };
                 }
               }
             }
@@ -94,7 +97,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers', [
         } else {
           $scope.tableParams = new NgTableParams({
             page: 1,
-            count: $scope.rows.length
+            count: 10000
           }, {
             counts: [],
             total: $scope.worldstates.length,
@@ -164,6 +167,331 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp', [
   'eu.crismaproject.worldstateAnalysis.services',
   'de.cismet.crisma.widgets.worldstateTreeWidget',
   'mgcrea.ngStrap'
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.DecisionStrategyDirectiveController', [
+  '$scope',
+  'de.cismet.crisma.ICMM.Worldstates',
+  function ($scope, Worldstates) {
+    'use strict';
+    var ctrl;
+    ctrl = this;
+    this.extractIndicators = function (worldstates) {
+      var indicatorGroup, indicatorProp, iccObject, group, j, indicatorMap;
+      indicatorMap = {};
+      $scope.indicatorSize = 0;
+      if (worldstates && worldstates.length > 0) {
+        for (j = 0; j < worldstates.length; j++) {
+          iccObject = Worldstates.utils.stripIccData([worldstates[j]], false)[0];
+          for (indicatorGroup in iccObject.data) {
+            if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+              group = iccObject.data[indicatorGroup];
+              for (indicatorProp in group) {
+                if (group.hasOwnProperty(indicatorProp)) {
+                  if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                    if (!indicatorMap[indicatorProp]) {
+                      indicatorMap[indicatorProp] = group[indicatorProp];
+                      $scope.indicatorSize++;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return indicatorMap;
+    };
+    $scope.decisionStrategy = $scope.decisionStrategy || {};
+    $scope.indicatorSize = $scope.indicatorSize || 0;
+    $scope.indicatorMap = $scope.indicatorMap || {};
+    $scope.$watch('worldstates', function () {
+      $scope.indicatorMap = ctrl.extractIndicators($scope.worldstates);
+    }, true);
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.levelOfEmphasisDirectiveController', [
+  '$scope',
+  'eu.crismaproject.worldstateAnalysis.services.AnalysisService',
+  function ($scope, AnalysisService) {
+    'use strict';
+    var controller, owa, i;
+    controller = this;
+    owa = AnalysisService.getOwa();
+    this.updateLseVectors = function () {
+      if ($scope.indicatorSize >= 1) {
+        controller.onlyPositiveLse = [];
+        for (i = 0; i < $scope.indicatorSize; i++) {
+          if (i === 0) {
+            this.onlyPositiveLse[i] = 1;
+          } else {
+            this.onlyPositiveLse[i] = 0;
+          }
+        }
+        controller.overEmphPosLse = owa.hLSWeights($scope.indicatorSize <= 1 ? 1 : $scope.indicatorSize);
+        controller.neutralLse = owa.meanWeights($scope.indicatorSize <= 1 ? 1 : $scope.indicatorSize);
+        controller.overEmphNegLse = owa.lLSWeights($scope.indicatorSize <= 1 ? 1 : $scope.indicatorSize);
+        controller.onlyNegativeLse = [];
+        for (i = 0; i < $scope.indicatorSize; i++) {
+          if (i === $scope.indicatorSize - 1) {
+            controller.onlyNegativeLse[i] = 1;
+          } else {
+            controller.onlyNegativeLse[i] = 0;
+          }
+        }
+      }
+    };
+    this.updateSatisfactionEmphasis = function (lse) {
+      var weights;
+      switch (parseInt(lse)) {
+      case -2: {
+          weights = controller.onlyNegativeLse;
+          break;
+        }
+      case -1: {
+          weights = controller.overEmphNegLse;
+          break;
+        }
+      case 0: {
+          weights = controller.neutralLse;
+          break;
+        }
+      case 1: {
+          weights = controller.overEmphPosLse;
+          break;
+        }
+      case 2: {
+          weights = controller.onlyPositiveLse;
+          break;
+        }
+      }
+      return weights;
+    };
+    this.satisfactionEmphasisEquals = function (v1, v2) {
+      var i;
+      if (v1 && v2) {
+        if (v1.length === v2.length) {
+          for (i = 0; i < v1.length; i++) {
+            if (v1[i] !== v2[i]) {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+      return false;
+    };
+    this.updateInternalModel = function (satisfactionEmphVector) {
+      if (controller.satisfactionEmphasisEquals(satisfactionEmphVector, this.onlyNegativeLse)) {
+        return -2;
+      } else if (controller.satisfactionEmphasisEquals(satisfactionEmphVector, this.overEmphNegLse)) {
+        return -1;
+      } else if (controller.satisfactionEmphasisEquals(satisfactionEmphVector, this.neutralLse)) {
+        return 0;
+      } else if (controller.satisfactionEmphasisEquals(satisfactionEmphVector, this.overEmphPosLse)) {
+        return 1;
+      } else if (controller.satisfactionEmphasisEquals(satisfactionEmphVector, this.onlyPositiveLse)) {
+        return 2;
+      }
+      return 0;
+    };
+    controller.updateLseVectors();
+    if ($scope.indicatorSize >= 1) {
+      $scope.model = { lse: $scope.satisfactionEmphasis ? controller.updateInternalModel($scope.satisfactionEmphasis) : 0 };
+    }
+    $scope.satisfactionEmphasis = $scope.satisfactionEmphasis || controller.updateSatisfactionEmphasis(0);
+    $scope.$watch('model', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.indicatorSize >= 1) {
+        $scope.satisfactionEmphasis = controller.updateSatisfactionEmphasis($scope.model.lse);
+      }
+    }, true);
+    $scope.$watch('satisfactionEmphasis', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.indicatorSize >= 1) {
+        $scope.model.lse = controller.updateInternalModel($scope.satisfactionEmphasis);
+      }
+    }, true);
+    $scope.$watch('indicatorSize', function () {
+      controller.updateLseVectors();
+      if ($scope.indicatorSize >= 1) {
+        if (!($scope.model && $scope.model.lse)) {
+          $scope.model = { lse: $scope.satisfactionEmphasis ? controller.updateInternalModel($scope.satisfactionEmphasis) : 0 };
+        }
+        $scope.satisfactionEmphasis = controller.updateSatisfactionEmphasis($scope.model.lse);
+      }
+    }, true);
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.WorldstateAnalysisWidgetDirectiveController', [
+  '$scope',
+  'de.cismet.crisma.ICMM.Worldstates',
+  'localStorageService',
+  '$timeout',
+  function ($scope, Worldstates, localStorageService, $timeout) {
+    'use strict';
+    var createChartModels, getIndicators;
+    $scope.forCriteriaTable = true;
+    $scope.chartModels = [];
+    createChartModels = function () {
+      var j, modelArr;
+      $scope.chartModels = [];
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        for (j = 0; j < $scope.worldstates.length; j++) {
+          modelArr = [];
+          if ($scope.worldstates[j]) {
+            modelArr.push($scope.worldstates[j]);
+          }
+          if ($scope.worldstateRef) {
+            modelArr = modelArr.concat($scope.worldstateRef);
+          }
+          $scope.chartModels.push(modelArr);
+        }
+      }
+    };
+    getIndicators = function () {
+      var indicatorGroup, indicatorProp, iccObject, group, j, indicatorName, indicator, add, forEachFunc;
+      forEachFunc = function (value, index, arr) {
+        if (indicatorName === value.displayName) {
+          add = false;
+        }
+        if (index === arr.length - 1 && add) {
+          $scope.indicatorVector.push(indicator);
+        }
+      };
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        for (j = 0; j < $scope.worldstates.length; j++) {
+          iccObject = Worldstates.utils.stripIccData([$scope.worldstates[j]], false)[0];
+          for (indicatorGroup in iccObject.data) {
+            if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+              group = iccObject.data[indicatorGroup];
+              for (indicatorProp in group) {
+                if (group.hasOwnProperty(indicatorProp)) {
+                  if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                    if ($scope.indicatorVector.length > 0) {
+                      indicatorName = group[indicatorProp].displayName;
+                      indicator = group[indicatorProp];
+                      add = true;
+                      $scope.indicatorVector.forEach(forEachFunc);
+                    } else {
+                      $scope.indicatorVector.push(group[indicatorProp]);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    $scope.persistCriteriaFunctions = function () {
+      $scope.showPersistSpinner = true;
+      $scope.showPersistDone = false;
+      $timeout(function () {
+        localStorageService.add('criteriaFunctionSet', $scope.criteriaFunctionSets);
+        $scope.showPersistSpinner = false;
+        $scope.showPersistDone = true;
+        $timeout(function () {
+          $scope.showPersistDone = false;
+        }, 1500);
+      }, 500);
+    };
+    Worldstates.query({ level: 5 }, function (data) {
+      $scope.allWorldstates = data;
+    });
+    $scope.$watch('worldstateRef', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        createChartModels();
+        getIndicators();
+      }
+    });
+    $scope.$watch('worldstates', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates) {
+        createChartModels();
+        getIndicators();
+      }
+    }, true);
+    $scope.indicatorVector = [];
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.criteriaEmphasesController', [
+  '$scope',
+  function ($scope) {
+    'use strict';
+    var ctrl, criteriaEmpInternalWatch;
+    ctrl = this;
+    this.updateCriteriaEmphases = function () {
+      var i, item;
+      for (i = 0; i < $scope.critEmphInternal.length; i++) {
+        item = $scope.critEmphInternal[i];
+        if ($scope.criteriaEmphases[i]) {
+          $scope.criteriaEmphases[i].criteriaEmphasis = item.criteriaEmphasis;
+        } else {
+          $scope.criteriaEmphases.push({
+            indicator: item.indicator,
+            criteriaEmphasis: item.criteriaEmphasis
+          });
+        }
+      }
+    };
+    this.updateInternalCriteriaEmphases = function () {
+      var critEmphExists, newCritEmphInternal, indicatorName;
+      newCritEmphInternal = [];
+      for (indicatorName in $scope.indicatorMap) {
+        if ($scope.indicatorMap.hasOwnProperty(indicatorName)) {
+          //check if there is a value for that indicator in the bounded critEmphases
+          critEmphExists = false;
+          if ($scope.criteriaEmphases && $scope.criteriaEmphases.length !== 0) {
+            /*jshint -W083 */
+            $scope.criteriaEmphases.forEach(function (critEmph) {
+              if (critEmph.indicator.displayName === $scope.indicatorMap[indicatorName].displayName) {
+                critEmphExists = true;
+                newCritEmphInternal.push(critEmph);
+              }
+            });
+          }
+          // create a default criteriaEmphasis of 100
+          if (!critEmphExists) {
+            newCritEmphInternal.push({
+              indicator: $scope.indicatorMap[indicatorName],
+              criteriaEmphasis: 100
+            });
+          }
+        }
+      }
+      $scope.critEmphInternal = newCritEmphInternal;
+    };
+    this.registerInternalWatch = function () {
+      //internal changes (knob) must be propagated...
+      criteriaEmpInternalWatch = $scope.$watch('critEmphInternal', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          ctrl.updateCriteriaEmphases();
+        }
+      }, true);
+    };
+    $scope.knobMax = 100;
+    $scope.knobOptions = {
+      'width': 100,
+      'height': 80,
+      'displayInput': true,
+      'angleOffset': -125,
+      'angleArc': 250
+    };
+    $scope.criteriaEmphases = $scope.criteriaEmphases || [];
+    $scope.indicatorMap = {};
+    $scope.$watch('indicatorMap', function () {
+      if ($scope.indicatorMap && Object.keys($scope.indicatorMap).length !== 0) {
+        ctrl.updateInternalCriteriaEmphases();
+      }
+    }, true);
+    $scope.$watch('criteriaEmphases', function (newVal, oldVal) {
+      // we need to derigster the watch for the internal model, because it changes the external model
+      if (newVal !== oldVal) {
+        criteriaEmpInternalWatch();
+        ctrl.updateInternalCriteriaEmphases();
+        $scope.criteriaEmphases = $scope.critEmphInternal;
+        ctrl.registerInternalWatch();
+      }
+    }, true);
+    ctrl.registerInternalWatch();
+  }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.CriteriaFunctionManagerDirectiveController', [
   '$scope',
@@ -242,8 +570,9 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
                   }
                 }
                 dataItem.push({
-                  axis: indiactor.displayName,
-                  value: ccs.calculateCriteria(indiactor.value, criteriaFunction)
+                  axis: $scope.useNumbers ? dataItem.length + 1 : indiactor.displayName,
+                  tooltip: indiactor.displayName,
+                  value: Math.round(ccs.calculateCriteria(indiactor.value, criteriaFunction) * 100) / 100
                 });
               }
             }
@@ -256,6 +585,66 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
         legendItems
       ];
     };
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.decisionStrategyManagerDirectiveController', [
+  '$scope',
+  'de.cismet.crisma.ICMM.Worldstates',
+  function ($scope, Worldstates) {
+    'use strict';
+    $scope.editable = [];
+    $scope.currentIntervalFunctions = [];
+    $scope.selectedDecisionStrategyIndex = -1;
+    $scope.tooltipDelete = { title: 'Delete this decision strategy' };
+    $scope.tooltipAdd = { title: 'Create a new decision strategy' };
+    $scope.tooltipSave = { title: 'Save changes' };
+    $scope.tooltipRename = { title: 'Rename decision strategy' };
+    $scope.tooltipRenameDone = { title: 'Done' };
+    $scope.addDecisionStrategy = function () {
+      var i, decisionStrategy = [];
+      for (i = 0; i < $scope.worldstates.length; i++) {
+        decisionStrategy.push({ indicator: $scope.worldstates[i].displayName });
+      }
+      $scope.decisionStrategies.push({ name: 'Decision Strategy ' + ($scope.decisionStrategies.length + 1) });
+      $scope.editable.push(false);
+    };
+    $scope.removeDecisionStrategy = function () {
+      $scope.decisionStrategies.splice($scope.selectedDecisionStrategyIndex, 1);
+    };
+    $scope.isActiveItem = function (index) {
+      if ($scope.selectedDecisionStrategyIndex === index) {
+        return 'list-group-item-info';
+      } else {
+        return '';
+      }
+    };
+    $scope.setSelectedDecisionStrategy = function (index) {
+      $scope.selectedDecisionStrategyIndex = index;
+      $scope.currentDecisionStrategy = $scope.decisionStrategies[$scope.selectedDecisionStrategyIndex];
+    };
+    $scope.updateModel = function () {
+      var i, indicatorGroup, indicatorProp, iccObject, group;
+      $scope.indicatorVector = [];
+      for (i = 0; i < $scope.worldstates.length; i++) {
+        iccObject = Worldstates.utils.stripIccData([$scope.worldstates[i]], false)[0];
+        for (indicatorGroup in iccObject.data) {
+          if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+            group = iccObject.data[indicatorGroup];
+            for (indicatorProp in group) {
+              if (group.hasOwnProperty(indicatorProp)) {
+                if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                  $scope.indicatorVector.push(group[indicatorProp]);
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    $scope.worldstates = $scope.worldstates || [];
+    $scope.$watch('worldstates', function () {
+      $scope.updateModel();
+    }, true);
   }
 ]);
 angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorBandDirectiveController', [
@@ -300,7 +689,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
         break;
       // C_FEELING_ORANGE;
       case '#FFBA6B':
-        colorClass = 'color-e';
+        colorClass = 'color-c';
         break;
       //D_AFFINITY;
       case '#FF9F80':
@@ -503,6 +892,80 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
     }
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.indicatorBarChartDirectiveController', [
+  '$scope',
+  'de.cismet.crisma.ICMM.Worldstates',
+  '$filter',
+  function ($scope, WorldstateService, $filter) {
+    'use strict';
+    var ctrl, formatValueFunc;
+    ctrl = this;
+    formatValueFunc = d3.format('.3s');
+    this.createChartModels = function () {
+      var i, indicatorMap, indicators, indicatorGroup, indicatorGroupProp, indicatorProp;
+      indicatorMap = {};
+      for (i = 0; i < $scope.worldstates.length; i++) {
+        indicators = WorldstateService.utils.stripIccData([$scope.worldstates[i]])[0].data;
+        for (indicatorGroupProp in indicators) {
+          if (indicators.hasOwnProperty(indicatorGroupProp)) {
+            indicatorGroup = indicators[indicatorGroupProp];
+            for (indicatorProp in indicatorGroup) {
+              if (indicatorGroup.hasOwnProperty(indicatorProp) && indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                if (!indicatorMap[indicatorProp]) {
+                  indicatorMap[indicatorProp] = {
+                    key: indicatorGroup[indicatorProp].displayName,
+                    forceY: [
+                      0,
+                      0
+                    ],
+                    values: []
+                  };
+                }
+                if (parseInt(indicatorGroup[indicatorProp].value) > indicatorMap[indicatorProp].forceY) {
+                  indicatorMap[indicatorProp].forceY[1] = parseInt(indicatorGroup[indicatorProp].value);
+                }
+                indicatorMap[indicatorProp].values.push([
+                  $scope.worldstates[i].name,
+                  parseInt(indicatorGroup[indicatorProp].value)
+                ]);
+              }
+            }
+          }
+        }
+      }
+      var a = [];
+      for (indicators in indicatorMap) {
+        if (indicatorMap.hasOwnProperty(indicators)) {
+          a.push([indicatorMap[indicators]]);
+        }
+      }
+      $scope.chartModels = a;
+    };
+    var colorCategory = d3.scale.category20().range();
+    $scope.colorFunction = function () {
+      return function (d, i) {
+        return colorCategory[i % colorCategory.length];
+      };
+    };
+    $scope.yAxisTickFormat = function (d) {
+      var d3String = formatValueFunc(d);
+      return d3String.replace('M', 'Mio').replace('G', 'Mrd').replace('T', 'B');
+    };
+    $scope.toolTipContentFunction = function () {
+      return function (key, x, y, e) {
+        return '<h3 style="font-weight:normal; font-size:18px">' + x + '</h3>' + '<p>' + key + ': ' + $filter('number')(e.value) + '</p>';
+      };
+    };
+    $scope.getLegendColor = function ($index) {
+      return { 'color': $scope.colorFunction()(0, $index) };
+    };
+    $scope.$watch('worldstates', function () {
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        ctrl.createChartModels();
+      }
+    }, true);
+  }
+]);
 angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaAxisChooserDirectiveController', [
   '$scope',
   function ($scope) {
@@ -565,18 +1028,115 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
   'de.cismet.collidingNameService.Nodes',
   'de.cismet.crisma.ICMM.Worldstates',
   'localStorageService',
-  function ($scope, Nodes, Worldstates, localStorageService) {
+  '$timeout',
+  function ($scope, Nodes, Worldstates, localStorageService, $timeout) {
     'use strict';
-    $scope.criteriaFunctionSet = localStorageService.get('criteriaFunctionSet') || [];
-    $scope.selectedCriteriaFunction = $scope.criteriaFunctionSet[0];
-    $scope.persistCriteriaFunctions = function () {
-      localStorageService.add('criteriaFunctionSet', $scope.criteriaFunctionSet);
+    var createChartModels, getIndicators;
+    $scope.forCriteriaTable = false;
+    $scope.chartModels = [];
+    createChartModels = function () {
+      var j, modelArr;
+      $scope.chartModels = [];
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        for (j = 0; j < $scope.worldstates.length; j++) {
+          modelArr = [];
+          if ($scope.worldstates[j]) {
+            modelArr.push($scope.worldstates[j]);
+          }
+          if ($scope.worldstateRef) {
+            modelArr = modelArr.concat($scope.worldstateRef);
+          }
+          $scope.chartModels.push(modelArr);
+        }
+      }
     };
+    getIndicators = function () {
+      var indicatorGroup, indicatorProp, iccObject, group, j, indicatorName, indicator, add, forEachFunc;
+      forEachFunc = function (value, index, arr) {
+        if (indicatorName === value.displayName) {
+          add = false;
+        }
+        if (index === arr.length - 1 && add) {
+          $scope.indicatorVector.push(indicator);
+        }
+      };
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        for (j = 0; j < $scope.worldstates.length; j++) {
+          iccObject = Worldstates.utils.stripIccData([$scope.worldstates[j]], false)[0];
+          for (indicatorGroup in iccObject.data) {
+            if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+              group = iccObject.data[indicatorGroup];
+              for (indicatorProp in group) {
+                if (group.hasOwnProperty(indicatorProp)) {
+                  if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                    if ($scope.indicatorVector.length > 0) {
+                      indicatorName = group[indicatorProp].displayName;
+                      indicator = group[indicatorProp];
+                      add = true;
+                      $scope.indicatorVector.forEach(forEachFunc);
+                    } else {
+                      $scope.indicatorVector.push(group[indicatorProp]);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    $scope.persistCriteriaFunctions = function () {
+      $scope.showPersistSpinner = true;
+      $scope.showPersistDone = false;
+      $timeout(function () {
+        localStorageService.add('criteriaFunctionSet', $scope.criteriaFunctionSets);
+        $scope.showPersistSpinner = false;
+        $scope.showPersistDone = true;
+        $timeout(function () {
+          $scope.showPersistDone = false;
+        }, 1500);
+      }, 500);
+    };
+    Worldstates.query({ level: 5 }, function (data) {
+      $scope.allWorldstates = data;
+    });
+    $scope.$watch('worldstateRef', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        createChartModels();
+        getIndicators();
+      }
+    });
+    $scope.$watch('worldstates', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates) {
+        createChartModels();
+        getIndicators();
+      }
+    }, true);
+    $scope.indicatorVector = [];
+    $scope.criteriaFunctionSet = localStorageService.get('criteriaFunctionSet') || [];
+    $scope.criteriaFunctionSets = $scope.criteriaFunctionSet;
+    $scope.selectedCriteriaFunction = $scope.criteriaFunctionSet[0];
     $scope.$watch('criteriaFunctionSet', function (newVal, oldVal) {
       if (newVal !== oldVal) {
         console.log('received changes in criteria function');
       }
     }, true);
+    $scope.showDsPersistSpinner = false;
+    $scope.showDsPersistDone = false;
+    $scope.decisionStrategies = localStorageService.get('decisionStrategies') || [];
+    $scope.selectedDecisionStrategy = $scope.decisionStrategies[0];
+    $scope.persistDecisionStrategies = function () {
+      $scope.showDsPersistSpinner = true;
+      $scope.showDsPersistDone = false;
+      $timeout(function () {
+        localStorageService.add('decisionStrategies', $scope.decisionStrategies);
+        $scope.showDsPersistSpinner = false;
+        $scope.showDsPersistDone = true;
+        $timeout(function () {
+          $scope.showDsPersistDone = false;
+        }, 1500);
+      }, 500);
+    };
     $scope.activeItem = {};
     $scope.treeOptions = {
       checkboxClass: 'glyphicon glyphicon-unchecked',
@@ -615,6 +1175,9 @@ angular.module('eu.crismaproject.worldstateAnalysis.demoApp.controllers', [
     });
     $scope.updateSelectedCriteriaFunction = function (index) {
       $scope.selectedCriteriaFunction = $scope.criteriaFunctionSet[index];
+    };
+    $scope.updateSelectedDecisionStrategy = function (index) {
+      $scope.selectedDecisionStrategy = $scope.decisionStrategies[index];
     };
     $scope.indicatorVector = [];
     // Retrieve the top level nodes from the icmm api
@@ -655,7 +1218,7 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
       }
       var firstValueX = 0;
       for (i = 0; i < iccData.length; i++) {
-        iccItem = iccData[0];
+        iccItem = iccData[i];
         if (!iccItem) {
           throw 'Invalid icc object ' + iccItem;
         }
@@ -764,6 +1327,310 @@ angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu
     $scope.$watch('criteriaFunctionSet', this.axisWatchCallback, true);
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.controllers').controller('eu.crismaproject.worldstateAnalysis.controllers.worldstateRankingTableDirectiveController', [
+  '$scope',
+  '$filter',
+  'ngTableParams',
+  'de.cismet.crisma.ICMM.Worldstates',
+  'eu.crismaproject.worldstateAnalysis.services.CriteriaCalculationService',
+  'eu.crismaproject.worldstateAnalysis.services.AnalysisService',
+  'ngDialog',
+  function ($scope, $filter, NgTableParams, Worldstates, ccs, as, ngDialog) {
+    'use strict';
+    var getOrderedProperties, updateTable, getRankedWorldstates, getCriteriaVectorForWorldstate, extractIndicators, getCritAndWeightVector;
+    getOrderedProperties = function (obj) {
+      var p, keys;
+      keys = [];
+      for (p in obj) {
+        if (obj.hasOwnProperty(p)) {
+          keys.push(p);
+        }
+      }
+      keys.sort();
+      return keys;
+    };
+    extractIndicators = function (worldstate) {
+      var indicatorGroup, indicatorProp, iccObject, group, indicators;
+      indicators = [];
+      if (worldstate) {
+        iccObject = Worldstates.utils.stripIccData([worldstate], false)[0];
+        for (indicatorGroup in iccObject.data) {
+          if (iccObject.data.hasOwnProperty(indicatorGroup)) {
+            group = iccObject.data[indicatorGroup];
+            for (indicatorProp in group) {
+              if (group.hasOwnProperty(indicatorProp)) {
+                if (indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                  indicators.push(group[indicatorProp]);
+                }
+              }
+            }
+          }
+        }
+      }
+      return indicators;
+    };
+    getCriteriaVectorForWorldstate = function (ws, critFunc) {
+      var indicators, criterias, i;
+      indicators = extractIndicators(ws);
+      criterias = [];
+      if (indicators && indicators.length === critFunc.criteriaFunctions.length) {
+        for (i = 0; i < indicators.length; i++) {
+          /*jshint -W083 */
+          critFunc.criteriaFunctions.forEach(function (cf) {
+            if (cf.indicator === indicators[i].displayName) {
+              criterias.push({
+                indicator: indicators[i],
+                criteria: ccs.calculateCriteria(indicators[i].value, cf) / 100
+              });
+            }
+          });
+        }
+      }
+      return criterias;
+    };
+    getCritAndWeightVector = function (dec, criteria) {
+      var critWeight, i, critEmph;
+      critWeight = {};
+      critWeight.criteria = [];
+      critWeight.weights = [];
+      for (i = 0; i < dec.criteriaEmphases.length; i++) {
+        critEmph = dec.criteriaEmphases[i];
+        /*jshint -W083 */
+        criteria.forEach(function (c) {
+          if (c.indicator.displayName === critEmph.indicator.displayName) {
+            critWeight.criteria.push(c.criteria);
+            critWeight.weights.push(critEmph.criteriaEmphasis / 100);
+          }
+        });
+      }
+      return critWeight;
+    };
+    getRankedWorldstates = function (worldstates, criteriaFunction, decisionStrategy) {
+      var i, ws, crit, score, critWeight, rankedWs, insertIndex;
+      rankedWs = [];
+      for (i = 0; i < worldstates.length; i++) {
+        ws = worldstates[i];
+        crit = getCriteriaVectorForWorldstate(ws, criteriaFunction);
+        critWeight = getCritAndWeightVector(decisionStrategy, crit);
+        score = as.getOwa().aggregateLS(critWeight.criteria, decisionStrategy.satisfactionEmphasis, critWeight.weights);
+        if (rankedWs.length === 0) {
+          rankedWs.push({
+            worldstate: ws,
+            score: score
+          });
+        } else {
+          insertIndex = -1;
+          /*jshint -W083 */
+          rankedWs.forEach(function (rankItem, index) {
+            if (insertIndex === -1 && rankItem && rankItem.score && score <= rankItem.score) {
+              insertIndex = index;
+            }
+          });
+          if (insertIndex !== -1) {
+            rankedWs.splice(insertIndex, 0, {
+              worldstate: ws,
+              score: score
+            });
+          } else {
+            rankedWs.push({
+              worldstate: ws,
+              score: score
+            });
+          }
+        }
+      }
+      rankedWs = rankedWs.reverse();
+      rankedWs.forEach(function (item, index) {
+        item.rank = index + 1;
+      });
+      return rankedWs;
+    };
+    $scope.clickToOpen = function (index) {
+      $scope.ws = $scope.tableData[index].ws;
+      ngDialog.open({
+        template: 'templates/criteriaRadarPopupTemplate.html',
+        scope: $scope,
+        className: 'ngdialog-theme-default ngdialog-theme-custom ngdialog-theme-width'
+      });
+    };
+    updateTable = function () {
+      var rankedWorldstates, i, obj, iccData, indicatorGroup, group, indicatorProp, indicator, crit, addedCriteriaCols;
+      if ($scope.criteriaFunction && $scope.decisionStrategy && $scope.worldstates && $scope.worldstates.length > 0) {
+        addedCriteriaCols = [];
+        //assume the getRankedWorldstates method returns an ascending ordered array / map etc
+        rankedWorldstates = getRankedWorldstates($scope.worldstates, $scope.criteriaFunction, $scope.decisionStrategy);
+        if (!rankedWorldstates && rankedWorldstates.length <= 0) {
+          throw new Error('Could not rank the worldstates...');
+        }
+        $scope.tooltip = { checked: false };
+        $scope.tooltip.title = '';
+        $scope.tableData = [];
+        if ($scope.showRadarChart) {
+          var f = extractIndicators($scope.worldstates[0]);
+          for (i = 0; i < f.length; i++) {
+            $scope.tooltip.title = $scope.tooltip.title + '<br/>' + (i + 1) + ': ' + f[i].displayName;
+          }
+        }
+        $scope.columns = [
+          {
+            title: 'Rank',
+            field: 'rank'
+          },
+          {
+            title: 'Worldstate',
+            field: 'worldstate'
+          },
+          {
+            title: 'Score',
+            field: 'score'
+          }
+        ];
+        for (i = 0; i < rankedWorldstates.length; i++) {
+          obj = {
+            'rank': rankedWorldstates[i].rank,
+            'worldstate': rankedWorldstates[i].worldstate.name,
+            'ws': rankedWorldstates[i].worldstate,
+            'score': $filter('number')(rankedWorldstates[i].score * 100, 2) + ' %'
+          };
+          if ($scope.showIndicators) {
+            //we want to add the indicator and criteria....
+            iccData = Worldstates.utils.stripIccData([rankedWorldstates[i].worldstate])[0].data;
+            for (indicatorGroup in iccData) {
+              if (iccData.hasOwnProperty(indicatorGroup)) {
+                group = iccData[indicatorGroup];
+                for (indicatorProp in group) {
+                  if (group.hasOwnProperty(indicatorProp) && indicatorProp !== 'displayName' && indicatorProp !== 'iconResource') {
+                    indicator = group[indicatorProp];
+                    crit = 0;
+                    /*jshint -W083 */
+                    $scope.criteriaFunction.criteriaFunctions.forEach(function (cf) {
+                      if (cf.indicator === indicator.displayName) {
+                        crit = ccs.calculateCriteria(indicator.value, cf);
+                      }
+                    });
+                    obj[indicator.displayName] = {
+                      indicator: $filter('number')(indicator.value) + ' ' + indicator.unit,
+                      los: $filter('number')(crit, 2) + ' % LoS'
+                    };
+                    if (addedCriteriaCols.indexOf(indicator.displayName) === -1) {
+                      addedCriteriaCols.push(indicator.displayName);
+                      $scope.columns.push({
+                        title: $scope.showRadarChart ? indicator.displayName + ' (' + ($scope.columns.length - 2) + ')' : indicator.displayName,
+                        field: indicator.displayName
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          }
+          $scope.tableData.push(obj);
+        }
+        if ($scope.tableParams) {
+          $scope.tableParams.reload();
+        } else {
+          $scope.tableParams = new NgTableParams({
+            page: 1,
+            count: 1000,
+            sorting: { name: 'asc' }
+          }, {
+            counts: [],
+            total: 1,
+            getData: function ($defer, params) {
+              // use build-in angular filter
+              var orderedData = params.sorting() ? $filter('orderBy')($scope.tableData, params.orderBy()) : $scope.tableData;
+              params.total(orderedData.length);
+              // set total for recalc pagination
+              $defer.resolve($scope.tableData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+            }
+          });
+        }
+      }
+    };
+    $scope.tableVisibleSwitch = '0';
+    $scope.$watch('worldstates', function () {
+      if ($scope.worldstates && $scope.worldstates.length > 0) {
+        updateTable();
+      }
+    }, true);
+    $scope.$watch('decisionStrategy', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates && $scope.worldstates.length > 0) {
+        updateTable();
+      }
+    }, true);
+    $scope.$watch('criteriaFunction', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates && $scope.worldstates.length > 0) {
+        updateTable();
+      }
+    }, true);
+    $scope.$watch('showIndicators', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates && $scope.worldstates.length > 0) {
+        updateTable();
+      }
+    });
+    $scope.$watch('showRadarChart', function (newVal, oldVal) {
+      if (newVal !== oldVal && $scope.worldstates && $scope.worldstates.length > 0) {
+        updateTable();
+      }
+    });
+  }
+]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('knob', function () {
+  'use strict';
+  return {
+    restrict: 'EACM',
+    template: function () {
+      return '<input ng-model="knobData">';
+    },
+    replace: true,
+    scope: {
+      knobData: '=',
+      knobOptions: '='
+    },
+    link: function (scope, elem) {
+      var renderKnob = function () {
+        var $elem, knobOptions;
+        knobOptions = scope.knobOptions || {
+          'max': 100,
+          'width': 100,
+          'height': 100,
+          'displayInput': false,
+          'angleOffset': -125,
+          'angleArc': 250
+        };
+        knobOptions.release = function (v) {
+          scope.knobData = v;
+          scope.$apply();
+        };
+        $elem = elem;
+        $elem.val(scope.knobData);
+        $elem.knob(knobOptions);
+        //
+        elem.find('div').css('display', 'block').css('margin', '0 auto');
+      };
+      scope.$watch('knobData', function () {
+        renderKnob();
+      }, true);
+      scope.$watch('knobOptions', function () {
+        renderKnob();
+      });
+    }
+  };
+});
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('criteriaEmphasis', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      criteriaEmphases: '=',
+      indicatorMap: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/criteriaEmphasesTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.criteriaEmphasesController'
+    };
+  }]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('criteriaFunctionManager', [function () {
     'use strict';
     var scope;
@@ -782,10 +1649,18 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('crit
   'de.cismet.crisma.ICMM.Worldstates',
   function (WorldstateService) {
     'use strict';
-    var scope, linkFunction, drawLegend;
+    var scope, linkFunction, drawLegend, augmentWithTooltips;
     scope = {
       localModel: '&worldstates',
-      criteriaFunction: '='
+      criteriaFunction: '=',
+      showLegend: '=',
+      showAxisText: '=',
+      useNumbers: '='
+    };
+    augmentWithTooltips = function (elem) {
+      d3.select(elem[0]).selectAll('circle').select('title').text(function (j) {
+        return j.tooltip + ': ' + Math.max(j.value, 0);
+      });
     };
     drawLegend = function (elem, chartConfig, legendItems) {
       var colorscale, legendSvg, legendContainer, rects, labelWidthHistory, labels, labelWidth, breakIndex, yOff;
@@ -872,28 +1747,64 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('crit
           scope.legendItems = chartDataModel[1];
           var divNode = d3.select(elem[0]).append('div').attr('style', 'display:block;margin: 0 auto;').node();
           RadarChart.draw(divNode, scope.chartData, cfg);
-          drawLegend(elem, cfg, scope.legendItems);
+          if (scope.showLegend) {
+            drawLegend(elem, cfg, scope.legendItems);
+          }
+          if (scope.useNumbers) {
+            augmentWithTooltips(elem, cfg, scope.legendItems);
+          }
         }
       };
       //we want the chart to adjust to the size of the element it is placed in
       width = elem.width ? elem.width() : 200;
+      //                width =  200;
       cfg = {
         w: width,
         h: width,
         maxValue: 100,
-        levels: 4
+        levels: 4,
+        axisText: angular.isDefined(scope.showAxisText) ? scope.showAxisText ? true : false : false,
+        showTooltip: scope.useNumbers
       };
       scope.$watchCollection('localModel()', watchCallback);
       scope.$watch('criteriaFunction', watchCallback, true);
     };
     return {
       scope: scope,
-      restrict: 'A',
+      restrict: 'AE',
       link: linkFunction,
       controller: 'eu.crismaproject.worldstateAnalysis.controllers.CriteriaRadarChartDirectiveController'
     };
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('decisionStrategy', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '=',
+      decisionStrategy: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/decisionStrategyTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.DecisionStrategyDirectiveController'
+    };
+  }]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('decisionStrategyManager', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '=',
+      decisionStrategies: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/decisionStrategyManagerTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.decisionStrategyManagerDirectiveController'
+    };
+  }]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indicatorBand', [function () {
     'use strict';
     var scope;
@@ -944,6 +1855,17 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indi
     };
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indicatorBarCharts', [function () {
+    'use strict';
+    var scope;
+    scope = { worldstates: '=' };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/indicatorBarChartTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.indicatorBarChartDirectiveController'
+    };
+  }]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indicatorCriteriaAxisChooser', [function () {
     'use strict';
     var scope;
@@ -957,6 +1879,21 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('indi
       restrict: 'E',
       templateUrl: 'templates/indicatorCriteriaAxisChooserTemplate.html',
       controller: 'eu.crismaproject.worldstateAnalysis.controllers.IndicatorCriteriaAxisChooserDirectiveController'
+    };
+  }]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('levelOfEmphasis', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      satisfactionEmphasis: '=',
+      indicatorSize: '=',
+      expertMode: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/levelOfEmphasisTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.levelOfEmphasisDirectiveController'
     };
   }]);
 angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('relationAnalysisChart', [
@@ -978,6 +1915,434 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('rela
     };
   }
 ]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('worldstateAnalysisWidget', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '=',
+      criteriaFunctionSets: '=',
+      selectedCriteriaFunction: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/worldstateAnalysisWidgetTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.WorldstateAnalysisWidgetDirectiveController'
+    };
+  }]);
+angular.module('eu.crismaproject.worldstateAnalysis.directives').directive('worldstateRankingTable', [function () {
+    'use strict';
+    var scope;
+    scope = {
+      worldstates: '=',
+      criteriaFunction: '=',
+      decisionStrategy: '=',
+      showIndicators: '=',
+      showRadarChart: '='
+    };
+    return {
+      scope: scope,
+      restrict: 'E',
+      templateUrl: 'templates/worldstateRankingTableTemplate.html',
+      controller: 'eu.crismaproject.worldstateAnalysis.controllers.worldstateRankingTableDirectiveController'
+    };
+  }]);
+var RadarChart = {
+    draw: function (id, d, options) {
+      var cfg = {
+          radius: 5,
+          w: 600,
+          h: 600,
+          factor: 1,
+          factorLegend: 0.85,
+          levels: 3,
+          maxValue: 0,
+          radians: 2 * Math.PI,
+          opacityArea: 0.5,
+          ToRight: 5,
+          TranslateX: 80,
+          TranslateY: 30,
+          ExtraWidthX: 100,
+          ExtraWidthY: 100,
+          color: d3.scale.category10()
+        };
+      if ('undefined' !== typeof options) {
+        for (var i in options) {
+          if ('undefined' !== typeof options[i]) {
+            cfg[i] = options[i];
+          }
+        }
+      }
+      cfg.maxValue = Math.max(cfg.maxValue, d3.max(d, function (i) {
+        return d3.max(i.map(function (o) {
+          return o.value;
+        }));
+      }));
+      var allAxis = d[0].map(function (i, j) {
+          return i.axis;
+        });
+      var total = allAxis.length;
+      var radius = cfg.factor * Math.min(cfg.w / 2, cfg.h / 2);
+      var Format = d3.format('%');
+      d3.select(id).select('svg').remove();
+      var g = d3.select(id).append('svg').attr('width', cfg.w + cfg.ExtraWidthX).attr('height', cfg.h + cfg.ExtraWidthY).append('g').attr('transform', 'translate(' + cfg.TranslateX + ',' + cfg.TranslateY + ')');
+      ;
+      var tooltip;
+      //Circular segments
+      for (var j = 0; j < cfg.levels - 1; j++) {
+        var levelFactor = cfg.factor * radius * ((j + 1) / cfg.levels);
+        g.selectAll('.levels').data(allAxis).enter().append('svg:line').attr('x1', function (d, i) {
+          return levelFactor * (1 - cfg.factor * Math.sin(i * cfg.radians / total));
+        }).attr('y1', function (d, i) {
+          return levelFactor * (1 - cfg.factor * Math.cos(i * cfg.radians / total));
+        }).attr('x2', function (d, i) {
+          return levelFactor * (1 - cfg.factor * Math.sin((i + 1) * cfg.radians / total));
+        }).attr('y2', function (d, i) {
+          return levelFactor * (1 - cfg.factor * Math.cos((i + 1) * cfg.radians / total));
+        }).attr('class', 'line').style('stroke', 'grey').style('stroke-opacity', '0.75').style('stroke-width', '0.3px').attr('transform', 'translate(' + (cfg.w / 2 - levelFactor) + ', ' + (cfg.h / 2 - levelFactor) + ')');
+      }
+      //Text indicating at what % each level is
+      for (var j = 0; j < cfg.levels; j++) {
+        var levelFactor = cfg.factor * radius * ((j + 1) / cfg.levels);
+        g.selectAll('.levels').data([1]).enter().append('svg:text').attr('x', function (d) {
+          return levelFactor * (1 - cfg.factor * Math.sin(0));
+        }).attr('y', function (d) {
+          return levelFactor * (1 - cfg.factor * Math.cos(0));
+        }).attr('class', 'legend').style('font-family', 'sans-serif').style('font-size', '10px').attr('transform', 'translate(' + (cfg.w / 2 - levelFactor + cfg.ToRight) + ', ' + (cfg.h / 2 - levelFactor) + ')').attr('fill', '#737373').text(Format((j + 1) * cfg.maxValue / cfg.levels));
+      }
+      series = 0;
+      var axis = g.selectAll('.axis').data(allAxis).enter().append('g').attr('class', 'axis');
+      axis.append('line').attr('x1', cfg.w / 2).attr('y1', cfg.h / 2).attr('x2', function (d, i) {
+        return cfg.w / 2 * (1 - cfg.factor * Math.sin(i * cfg.radians / total));
+      }).attr('y2', function (d, i) {
+        return cfg.h / 2 * (1 - cfg.factor * Math.cos(i * cfg.radians / total));
+      }).attr('class', 'line').style('stroke', 'grey').style('stroke-width', '1px');
+      axis.append('text').attr('class', 'legend').text(function (d) {
+        return d;
+      }).style('font-family', 'sans-serif').style('font-size', '11px').attr('text-anchor', 'middle').attr('dy', '1.5em').attr('transform', function (d, i) {
+        return 'translate(0, -10)';
+      }).attr('x', function (d, i) {
+        return cfg.w / 2 * (1 - cfg.factorLegend * Math.sin(i * cfg.radians / total)) - 60 * Math.sin(i * cfg.radians / total);
+      }).attr('y', function (d, i) {
+        return cfg.h / 2 * (1 - Math.cos(i * cfg.radians / total)) - 20 * Math.cos(i * cfg.radians / total);
+      });
+      d.forEach(function (y, x) {
+        dataValues = [];
+        g.selectAll('.nodes').data(y, function (j, i) {
+          dataValues.push([
+            cfg.w / 2 * (1 - parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor * Math.sin(i * cfg.radians / total)),
+            cfg.h / 2 * (1 - parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor * Math.cos(i * cfg.radians / total))
+          ]);
+        });
+        dataValues.push(dataValues[0]);
+        g.selectAll('.area').data([dataValues]).enter().append('polygon').attr('class', 'radar-chart-serie' + series).style('stroke-width', '2px').style('stroke', cfg.color(series)).attr('points', function (d) {
+          var str = '';
+          for (var pti = 0; pti < d.length; pti++) {
+            str = str + d[pti][0] + ',' + d[pti][1] + ' ';
+          }
+          return str;
+        }).style('fill', function (j, i) {
+          return cfg.color(series);
+        }).style('fill-opacity', cfg.opacityArea).on('mouseover', function (d) {
+          z = 'polygon.' + d3.select(this).attr('class');
+          g.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          g.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          g.selectAll('polygon').transition(200).style('fill-opacity', cfg.opacityArea);
+        });
+        series++;
+      });
+      series = 0;
+      d.forEach(function (y, x) {
+        g.selectAll('.nodes').data(y).enter().append('svg:circle').attr('class', 'radar-chart-serie' + series).attr('r', cfg.radius).attr('alt', function (j) {
+          return Math.max(j.value, 0);
+        }).attr('cx', function (j, i) {
+          dataValues.push([
+            cfg.w / 2 * (1 - parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor * Math.sin(i * cfg.radians / total)),
+            cfg.h / 2 * (1 - parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor * Math.cos(i * cfg.radians / total))
+          ]);
+          return cfg.w / 2 * (1 - Math.max(j.value, 0) / cfg.maxValue * cfg.factor * Math.sin(i * cfg.radians / total));
+        }).attr('cy', function (j, i) {
+          return cfg.h / 2 * (1 - Math.max(j.value, 0) / cfg.maxValue * cfg.factor * Math.cos(i * cfg.radians / total));
+        }).attr('data-id', function (j) {
+          return j.axis;
+        }).style('fill', cfg.color(series)).style('fill-opacity', 0.9).on('mouseover', function (d) {
+          newX = parseFloat(d3.select(this).attr('cx')) - 10;
+          newY = parseFloat(d3.select(this).attr('cy')) - 5;
+          tooltip.attr('x', newX).attr('y', newY).text(Format(d.value)).transition(200).style('opacity', 1);
+          z = 'polygon.' + d3.select(this).attr('class');
+          g.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          g.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          tooltip.transition(200).style('opacity', 0);
+          g.selectAll('polygon').transition(200).style('fill-opacity', cfg.opacityArea);
+        }).append('svg:title').text(function (j) {
+          return Math.max(j.value, 0);
+        });
+        series++;
+      });
+      //Tooltip
+      tooltip = g.append('text').style('opacity', 0).style('font-family', 'sans-serif').style('font-size', '13px');
+    }
+  };
+var RadarChart = {
+    draw: function (e, t, n) {
+      var r = {
+          radius: 5,
+          w: 600,
+          h: 600,
+          factor: 1,
+          factorLegend: 0.85,
+          levels: 3,
+          maxValue: 0,
+          radians: 2 * Math.PI,
+          opacityArea: 0.5,
+          color: d3.scale.category10()
+        };
+      if ('undefined' !== typeof n) {
+        for (var i in n) {
+          if ('undefined' !== typeof n[i]) {
+            r[i] = n[i];
+          }
+        }
+      }
+      r.maxValue = Math.max(r.maxValue, d3.max(t, function (e) {
+        return d3.max(e.map(function (e) {
+          return e.value;
+        }));
+      }));
+      var s = t[0].map(function (e, t) {
+          return e.axis;
+        });
+      var o = s.length;
+      var u = r.factor * Math.min(r.w / 2, r.h / 2);
+      d3.select(e).select('svg').remove();
+      var a = d3.select(e).append('svg').attr('width', r.w).attr('height', r.h).append('g');
+      var f;
+      for (var l = 0; l < r.levels; l++) {
+        var c = r.factor * u * ((l + 1) / r.levels);
+        a.selectAll('.levels').data(s).enter().append('svg:line').attr('x1', function (e, t) {
+          return c * (1 - r.factor * Math.sin(t * r.radians / o));
+        }).attr('y1', function (e, t) {
+          return c * (1 - r.factor * Math.cos(t * r.radians / o));
+        }).attr('x2', function (e, t) {
+          return c * (1 - r.factor * Math.sin((t + 1) * r.radians / o));
+        }).attr('y2', function (e, t) {
+          return c * (1 - r.factor * Math.cos((t + 1) * r.radians / o));
+        }).attr('class', 'line').style('stroke', 'grey').style('stroke-width', '0.5px').attr('transform', 'translate(' + (r.w / 2 - c) + ', ' + (r.h / 2 - c) + ')');
+      }
+      series = 0;
+      var h = a.selectAll('.axis').data(s).enter().append('g').attr('class', 'axis');
+      h.append('line').attr('x1', r.w / 2).attr('y1', r.h / 2).attr('x2', function (e, t) {
+        return r.w / 2 * (1 - r.factor * Math.sin(t * r.radians / o));
+      }).attr('y2', function (e, t) {
+        return r.h / 2 * (1 - r.factor * Math.cos(t * r.radians / o));
+      }).attr('class', 'line').style('stroke', 'grey').style('stroke-width', '1px');
+      h.append('text').attr('class', 'legend').text(function (e) {
+        return e;
+      }).style('font-family', 'sans-serif').style('font-size', '10px').attr('transform', function (e, t) {
+        return 'translate(0, -10)';
+      }).attr('x', function (e, t) {
+        return r.w / 2 * (1 - r.factorLegend * Math.sin(t * r.radians / o)) - 20 * Math.sin(t * r.radians / o);
+      }).attr('y', function (e, t) {
+        return r.h / 2 * (1 - Math.cos(t * r.radians / o)) + 20 * Math.cos(t * r.radians / o);
+      });
+      t.forEach(function (e, t) {
+        dataValues = [];
+        a.selectAll('.nodes').data(e, function (e, t) {
+          dataValues.push([
+            r.w / 2 * (1 - parseFloat(Math.max(e.value, 0)) / r.maxValue * r.factor * Math.sin(t * r.radians / o)),
+            r.h / 2 * (1 - parseFloat(Math.max(e.value, 0)) / r.maxValue * r.factor * Math.cos(t * r.radians / o))
+          ]);
+        });
+        dataValues.push(dataValues[0]);
+        a.selectAll('.area').data([dataValues]).enter().append('polygon').attr('class', 'radar-chart-serie' + series).style('stroke-width', '2px').style('stroke', r.color(series)).attr('points', function (e) {
+          var t = '';
+          for (var n = 0; n < e.length; n++) {
+            t = t + e[n][0] + ',' + e[n][1] + ' ';
+          }
+          return t;
+        }).style('fill', function (e, t) {
+          return r.color(series);
+        }).style('fill-opacity', r.opacityArea).on('mouseover', function (e) {
+          z = 'polygon.' + d3.select(this).attr('class');
+          a.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          a.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          a.selectAll('polygon').transition(200).style('fill-opacity', r.opacityArea);
+        });
+        series++;
+      });
+      series = 0;
+      t.forEach(function (e, t) {
+        a.selectAll('.nodes').data(e).enter().append('svg:circle').attr('class', 'radar-chart-serie' + series).attr('r', r.radius).attr('alt', function (e) {
+          return Math.max(e.value, 0);
+        }).attr('cx', function (e, t) {
+          dataValues.push([
+            r.w / 2 * (1 - parseFloat(Math.max(e.value, 0)) / r.maxValue * r.factor * Math.sin(t * r.radians / o)),
+            r.h / 2 * (1 - parseFloat(Math.max(e.value, 0)) / r.maxValue * r.factor * Math.cos(t * r.radians / o))
+          ]);
+          return r.w / 2 * (1 - Math.max(e.value, 0) / r.maxValue * r.factor * Math.sin(t * r.radians / o));
+        }).attr('cy', function (e, t) {
+          return r.h / 2 * (1 - Math.max(e.value, 0) / r.maxValue * r.factor * Math.cos(t * r.radians / o));
+        }).attr('data-id', function (e) {
+          return e.axis;
+        }).style('fill', r.color(series)).style('fill-opacity', 0.9).on('mouseover', function (e) {
+          newX = parseFloat(d3.select(this).attr('cx')) - 10;
+          newY = parseFloat(d3.select(this).attr('cy')) - 5;
+          f.attr('x', newX).attr('y', newY).text(e.value).transition(200).style('opacity', 1);
+          z = 'polygon.' + d3.select(this).attr('class');
+          a.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          a.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          f.transition(200).style('opacity', 0);
+          a.selectAll('polygon').transition(200).style('fill-opacity', r.opacityArea);
+        }).append('svg:title').text(function (e) {
+          return Math.max(e.value, 0);
+        });
+        series++;
+      });
+      f = a.append('text').style('opacity', 0).style('font-family', 'sans-serif').style('font-size', 13);
+    }
+  };
+var RadarChart = {
+    draw: function (id, d, options) {
+      var cfg = {
+          radius: 5,
+          w: 600,
+          h: 600,
+          factor: 0.95,
+          factorLegend: 1,
+          levels: 3,
+          maxValue: 0,
+          radians: 2 * Math.PI,
+          opacityArea: 0.5,
+          color: d3.scale.category10(),
+          fontSize: 10
+        };
+      if ('undefined' !== typeof options) {
+        for (var i in options) {
+          if ('undefined' !== typeof options[i]) {
+            cfg[i] = options[i];
+          }
+        }
+      }
+      cfg.maxValue = Math.max(cfg.maxValue, d3.max(d, function (i) {
+        return d3.max(i.map(function (o) {
+          return o.value;
+        }));
+      }));
+      var allAxis = d[0].map(function (i, j) {
+          return i.axis;
+        });
+      var total = allAxis.length;
+      var radius = cfg.factor * Math.min(cfg.w / 2, cfg.h / 2);
+      d3.select(id).select('svg').remove();
+      var g = d3.select(id).append('svg').attr('width', cfg.w).attr('height', cfg.h).append('g');
+      var tooltip;
+      function getPosition(i, range, factor, func) {
+        factor = typeof factor !== 'undefined' ? factor : 1;
+        return range * (1 - factor * func(i * cfg.radians / total));
+      }
+      function getHorizontalPosition(i, range, factor) {
+        return getPosition(i, range, factor, Math.sin);
+      }
+      function getVerticalPosition(i, range, factor) {
+        return getPosition(i, range, factor, Math.cos);
+      }
+      for (var j = 0; j < cfg.levels; j++) {
+        var levelFactor = radius * ((j + 1) / cfg.levels);
+        g.selectAll('.levels').data(allAxis).enter().append('svg:line').attr('x1', function (d, i) {
+          return getHorizontalPosition(i, levelFactor);
+        }).attr('y1', function (d, i) {
+          return getVerticalPosition(i, levelFactor);
+        }).attr('x2', function (d, i) {
+          return getHorizontalPosition(i + 1, levelFactor);
+        }).attr('y2', function (d, i) {
+          return getVerticalPosition(i + 1, levelFactor);
+        }).attr('class', 'line').style('stroke', 'grey').style('stroke-width', '0.5px').attr('transform', 'translate(' + (cfg.w / 2 - levelFactor) + ', ' + (cfg.h / 2 - levelFactor) + ')');
+      }
+      series = 0;
+      var axis = g.selectAll('.axis').data(allAxis).enter().append('g').attr('class', 'axis');
+      axis.append('line').attr('x1', cfg.w / 2).attr('y1', cfg.h / 2).attr('x2', function (j, i) {
+        return getHorizontalPosition(i, cfg.w / 2, cfg.factor);
+      }).attr('y2', function (j, i) {
+        return getVerticalPosition(i, cfg.h / 2, cfg.factor);
+      }).attr('class', 'line').style('stroke', 'grey').style('stroke-width', '1px');
+      if (cfg.axisText) {
+        axis.append('text').attr('class', 'legend').text(function (d) {
+          return d;
+        }).style('font-family', 'sans-serif').style('font-size', cfg.fontSize + 'px').style('text-anchor', function (d, i) {
+          var p = getHorizontalPosition(i, 0.5);
+          return p < 0.4 ? 'start' : p > 0.6 ? 'end' : 'middle';
+        }).attr('transform', function (d, i) {
+          var p = getVerticalPosition(i, cfg.h / 2);
+          return p < cfg.fontSize ? 'translate(0, ' + (cfg.fontSize - p) + ')' : '';
+        }).attr('x', function (d, i) {
+          return getHorizontalPosition(i, cfg.w / 2, cfg.factorLegend);
+        }).attr('y', function (d, i) {
+          return getVerticalPosition(i, cfg.h / 2, cfg.factorLegend);
+        });
+      }
+      d.forEach(function (y, x) {
+        dataValues = [];
+        g.selectAll('.nodes').data(y, function (j, i) {
+          dataValues.push([
+            getHorizontalPosition(i, cfg.w / 2, parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor),
+            getVerticalPosition(i, cfg.h / 2, parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor)
+          ]);
+        });
+        dataValues.push(dataValues[0]);
+        g.selectAll('.area').data([dataValues]).enter().append('polygon').attr('class', 'radar-chart-serie' + series).style('stroke-width', '2px').style('stroke', cfg.color(series)).attr('points', function (d) {
+          var str = '';
+          for (var pti = 0; pti < d.length; pti++) {
+            str = str + d[pti][0] + ',' + d[pti][1] + ' ';
+          }
+          return str;
+        }).style('fill', function (j, i) {
+          return cfg.color(series);
+        }).style('fill-opacity', cfg.opacityArea).on('mouseover', function (d) {
+          z = 'polygon.' + d3.select(this).attr('class');
+          g.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          g.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          g.selectAll('polygon').transition(200).style('fill-opacity', cfg.opacityArea);
+        });
+        series++;
+      });
+      series = 0;
+      d.forEach(function (y, x) {
+        g.selectAll('.nodes').data(y).enter().append('svg:circle').attr('class', 'radar-chart-serie' + series).attr('r', cfg.radius).attr('alt', function (j) {
+          return Math.max(j.value, 0);
+        }).attr('cx', function (j, i) {
+          dataValues.push([
+            getHorizontalPosition(i, cfg.w / 2, parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor),
+            getVerticalPosition(i, cfg.h / 2, parseFloat(Math.max(j.value, 0)) / cfg.maxValue * cfg.factor)
+          ]);
+          return getHorizontalPosition(i, cfg.w / 2, Math.max(j.value, 0) / cfg.maxValue * cfg.factor);
+        }).attr('cy', function (j, i) {
+          return getVerticalPosition(i, cfg.h / 2, Math.max(j.value, 0) / cfg.maxValue * cfg.factor);
+        }).attr('data-id', function (j) {
+          return j.axis;
+        }).style('fill', cfg.color(series)).style('fill-opacity', 0.9).on('mouseover', function (d) {
+          newX = parseFloat(d3.select(this).attr('cx')) - 10;
+          newY = parseFloat(d3.select(this).attr('cy')) - 5;
+          tooltip.attr('x', newX).attr('y', newY).text(d.value).transition(200).style('opacity', 1);
+          z = 'polygon.' + d3.select(this).attr('class');
+          g.selectAll('polygon').transition(200).style('fill-opacity', 0.1);
+          g.selectAll(z).transition(200).style('fill-opacity', 0.7);
+        }).on('mouseout', function () {
+          tooltip.transition(200).style('opacity', 0);
+          g.selectAll('polygon').transition(200).style('fill-opacity', cfg.opacityArea);
+        }).append('svg:title').text(function (j) {
+          return Math.max(j.value, 0);
+        });
+        series++;
+      });
+      //Tooltip
+      tooltip = g.append('text').style('opacity', 0).style('font-family', 'sans-serif').style('font-size', '13px');
+    }
+  };
 angular.module('eu.crismaproject.worldstateAnalysis.services', []).factory('eu.crismaproject.worldstateAnalysis.services.AnalysisService', [function () {
     'use strict';
     var owa;

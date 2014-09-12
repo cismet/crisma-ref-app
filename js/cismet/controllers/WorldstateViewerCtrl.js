@@ -18,7 +18,7 @@ angular.module(
             var dataItems = $scope.worldstate.worldstatedata.concat($scope.worldstate.iccdata);
             for (var i = 0; i < dataItems.length; i++) {
                 var dataslot = dataItems[i],
-                    renderingdescriptors = dataslot.renderingdescriptor;
+                    renderingdescriptors = dataslot.renderingdescriptor || dataslot.renderingDescriptor ;
                 for (var j = 0; j < renderingdescriptors.length; j++) {
                     var obj = {
                         dataslot: dataslot,
@@ -42,7 +42,7 @@ angular.module(
             for (var prop in $scope.mergedDataMap) {
                 if ($scope.mergedDataMap.hasOwnProperty(prop)) {
                     var mergedDataslots = $scope.mergedDataMap[prop];
-                    if (mergedDataslots.length > 1) {
+                    if (mergedDataslots.length >= 1) {
                         $scope.visualisationData.push({
                             dataslot: mergedDataslots,
                             renderingdescriptor: mergedDataslots[0].renderingdescriptor,

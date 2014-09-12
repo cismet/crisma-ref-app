@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-list-alt fa-fw "></i> 
+            Decision Support - Criteria Functions
+        </h1>
+    </div>
+    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+
+    </div>
+</div>
+
+<div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+        <!-- Widget ID (each widget will need unique ID)-->
+        <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                <h2>Criteria Functions</h2>
+                <div class="widget-toolbar" role="menu">
+                    <div class="input-group ">
+                        <div class="input-group-btn " style="display: block" ng-click="persistCriteriaFunctions()">
+                            <button
+                                type ="button" 
+                                class="btn btn-success btn-sm">
+                                Persist
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" >
+                                <i ng-if="!(showPersistSpinner || showPersistDone)" class="glyphicon glyphicon-floppy-disk"></i>
+                                <i ng-if="showPersistSpinner" class="spin glyphicon glyphicon-refresh" ></i>
+                                <i ng-if="showPersistDone" class="glyphicon glyphicon-ok"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- widget edit box -->
+            <div class="jarviswidget-editbox">
+                <!-- This area used as dropdown edit box -->
+
+            </div>
+            <!-- end widget edit box -->
+
+            <!-- widget content -->
+            <div class="widget-body">
+                <criteria-function-manager indicators="indicatorVector"  criteria-functions="SelectedCriteriaFunction.criteriaFunctionSets"></criteria-function-manager>
+            </div>
+            <!-- end widget content -->
+
+        </div>
+        <!-- end widget div -->
+    </article>
+</div>
+

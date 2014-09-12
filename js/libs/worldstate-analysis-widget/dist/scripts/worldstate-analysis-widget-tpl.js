@@ -1,6 +1,34 @@
 angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$templateCache', function($templateCache) {
   'use strict';
 
+  $templateCache.put('templates/criteriaEmphasesTemplate.html',
+    "<div class=\"panel panel-default\">\n" +
+    "    <div class=\"panel-heading\" style=\" white-space: nowrap;\n" +
+    "         overflow: hidden;\n" +
+    "         text-overflow: ellipsis;\">\n" +
+    "        Criteria Emphasis\n" +
+    "    </div>\n" +
+    "    <div class=\"panel-body\" >\n" +
+    "        <div class=\"row\">\n" +
+    "\n" +
+    "            <div  class=\"col-lg-2 col-md-2 col-sm-2 col-xs-4\" style=\"margin-bottom: 20px;\" ng-repeat=\"item in critEmphInternal\">\n" +
+    "                <div class=\"row\">\n" +
+    "                    <div  style=\"display:block;margin:0 auto;width:100px;\">\n" +
+    "                        <knob knob-data=\"item.criteriaEmphasis\" knob-max=\"knobMax\" knob-options=\"knobOptions\"></knob>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"row\">\n" +
+    "                    <div  style=\"display:block;margin:0 auto;width:100px;text-align: center;\">\n" +
+    "                        <span>{{item.indicator.displayName}}</span>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('templates/criteriaFunctionManagerTemplate.html',
     "<div class=\"col-lg-12\">\n" +
     "    <div class=\"row\">\n" +
@@ -87,6 +115,106 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
   );
 
 
+  $templateCache.put('templates/criteriaRadarPopupTemplate.html',
+    "<div class=\"ngdialog-message\" \n" +
+    "     style=\"width:500px;min-width: 500px\"\n" +
+    "    criteria-radar \n" +
+    "    worldstates=\"[ws]\" \n" +
+    "    show-legend=\"false\"\n" +
+    "    show-axis-text=\"true\"\n" +
+    "    use-numbers=\"false\"\n" +
+    "    criteria-function=\"criteriaFunction\">>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('templates/decisionStrategyManagerTemplate.html',
+    "<div class=\"col-lg-12\">\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"col-lg-3\">\n" +
+    "            <div class=\"row\">\n" +
+    "                <div class=\"list-group\">\n" +
+    "                    <a class=\"list-group-item active\">\n" +
+    "                        Decision Strategies\n" +
+    "                        <i data-placement=\"top\" \n" +
+    "                           data-type=\"info\" \n" +
+    "                           data-delay=\"500\" \n" +
+    "                           data-container=\"body\"\n" +
+    "                           data-animation=\"am-fade-and-scale\" \n" +
+    "                           bs-tooltip=\"tooltipSave.title\"\n" +
+    "                           ng-click=\"addDecisionStrategy()\" class=\"pull-right glyphicon glyphicon-plus-sign\"></i>\n" +
+    "                    </a>\n" +
+    "                    <a class=\"list-group-item\" \n" +
+    "                       ng-click=\"setSelectedDecisionStrategy($index)\"\n" +
+    "                       ng-class=\"isActiveItem($index)\" \n" +
+    "                       ng-repeat=\"cf in decisionStrategies\">\n" +
+    "                        <span ng-hide=\"editable[$index]\">{{cf.name}}</span>\n" +
+    "                        <input style =\"color:black;\" ng-hide=\"!editable[$index]\" type=\"text\" ng-model=\"cf.name\">\n" +
+    "                        <div class=\"pull-right\" ng-hide=\"$index !== selectedDecisionStrategiesIndex\">\n" +
+    "\n" +
+    "                            <i ng-hide=\"editable[$index]\" \n" +
+    "                               data-placement=\"top\" data-type=\"info\" \n" +
+    "                               data-delay=\"500\" \n" +
+    "                               data-animation=\"am-fade-and-scale\" \n" +
+    "                               data-container=\"body\"\n" +
+    "                               bs-tooltip=\"tooltipRename.title\"\n" +
+    "                               ng-click=\"editable[$index] = true\" \n" +
+    "                               style=\"margin-right: 10px;\"\n" +
+    "                               class=\"glyphicon glyphicon-pencil\"></i>\n" +
+    "                            <i ng-hide=\"!editable[$index]\"\n" +
+    "                               data-placement=\"top\" \n" +
+    "                               data-type=\"info\" \n" +
+    "                               data-delay=\"500\" \n" +
+    "                               data-animation=\"am-fade-and-scale\" \n" +
+    "                               data-container=\"body\"\n" +
+    "                               bs-tooltip=\"tooltipRenameDone.title\"\n" +
+    "                               ng-click=\"editable[$index] = false\"\n" +
+    "                               style=\"margin-right: 10px;\"\n" +
+    "                               class=\"glyphicon glyphicon-ok\"></i>\n" +
+    "                            <i data-placement=\"top\" \n" +
+    "                               data-type=\"info\" \n" +
+    "                               data-delay=\"500\" \n" +
+    "                               data-animation=\"am-fade-and-scale\" \n" +
+    "                               bs-tooltip=\"tooltipSave.title\"\n" +
+    "                               data-container=\"body\"\n" +
+    "                               ng-click=\"removeDecisionStrategy()\"\n" +
+    "                               class=\"glyphicon glyphicon-minus-sign\"></i>\n" +
+    "                        </div>\n" +
+    "                    </a>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-lg-9\" ng-if=\"selectedDecisionStrategyIndex >= 0 && decisionStrategies[selectedDecisionStrategyIndex]\">\n" +
+    "            <decision-strategy worldstates=\"worldstates\" decision-strategy=\"currentDecisionStrategy\">\n" +
+    "\n" +
+    "            </decision-strategy>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "</div>\n"
+  );
+
+
+  $templateCache.put('templates/decisionStrategyTemplate.html',
+    "<div>\n" +
+    "    <div class=\"col-lg-3\">\n" +
+    "        <level-of-emphasis \n" +
+    "            satisfaction-emphasis=\"decisionStrategy.satisfactionEmphasis\"\n" +
+    "            indicator-size=\"indicatorSize\"\n" +
+    "            >\n" +
+    "        </level-of-emphasis>\n" +
+    "    </div>\n" +
+    "    <div class=\"col-lg-9\">\n" +
+    "        <div class=\"row\">\n" +
+    "            <criteria-emphasis indicator-map=\"indicatorMap\" criteria-emphases=\"decisionStrategy.criteriaEmphases\">\n" +
+    "                \n" +
+    "            </criteria-emphasis>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('templates/indicatorBandItemTemplate.html',
     "<div id=\"popover-parent\" class=\"progress-bar table-display\" \n" +
     "     aria-valuemin=\"0\" aria-valuemax=\"100\"\n" +
@@ -105,8 +233,8 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
     "            <span ng-if=\"upperBoundary\">100%</span>\n" +
     "            <span ng-if=\"!lowerBoundary && !upperBoundary\">{{previousInterval.criteriaValue||'0' | number}}% - {{interval.criteriaValue| number}}% </span>\n" +
     "            <br/> \n" +
-    "            <span ng-if=\"lowerBoundary\">&lt;=</span>\n" +
-    "            <span ng-if=\"upperBoundary\">&gt;=</span>\n" +
+    "            <span ng-if=\"lowerBoundary\">&gt;=</span>\n" +
+    "            <span ng-if=\"upperBoundary\">&lt;=</span>\n" +
     "            <span ng-if=\"!lowerBoundary && !upperBoundary\">{{previousInterval.indicatorValue||'0' | number}} -</span>\n" +
     "            <span>{{interval.indicatorValue| number}}</span>\n" +
     "        </div>\n" +
@@ -124,14 +252,14 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
   $templateCache.put('templates/indicatorBandPopoverContentTemplate.html',
     "<form role=\"form\">\n" +
     "    <div class=\"form-group\">\n" +
-    "        <label for=\"exampleInputEmail1\">Level of satisfactory</label>\n" +
+    "        <label for=\"exampleInputEmail1\">Level of satisfaction</label>\n" +
     "        <input ng-model=\"popOverItem.criteriaValue\"\n" +
     "               ng-disabled=\"lowerBoundary || upperBoundary\"\n" +
     "               type=\"text\" class=\"form-control\"\n" +
     "               placeholder=\"Level of satisfactory\">\n" +
     "    </div>\n" +
     "    <div class=\"form-group\">\n" +
-    "        <label for=\"exampleInputPassword1\">Indicator Value</label>\n" +
+    "        <label for=\"exampleInputPassword1\">Indicator value</label>\n" +
     "        <input ng-model=\"popOverItem.indicatorValue\" \n" +
     "               type=\"text\" class=\"form-control\"  \n" +
     "               placeholder=\"Indicator Value\">\n" +
@@ -211,6 +339,54 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
   );
 
 
+  $templateCache.put('templates/indicatorBarChartTemplate.html',
+    "<div>\n" +
+    "    <div class=\"row\"ng-if=\"!worldstates || worldstates.length <= 0\">\n" +
+    "        <div class=\"col-lg-12\">\n" +
+    "            <div ng-hide=\"worldstates.length > 0\" class=\"alert alert-warning\">\n" +
+    "                <strong>Warning: </strong>There are no worldstates selected.\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"row\" ng-if=\"worldstates && worldstates.length > 0\" >\n" +
+    "        <div class=\"col-lg-12\" style=\"text-align: center; margin: 20px 0px;\">\n" +
+    "            <span ng-repeat=\"ws in worldstates\" style=\"margin:0px 10px;\">\n" +
+    "                <i class=\"glyphicon glyphicon-stop\" ng-style=\"getLegendColor($index)\"></i>{{ws.name}}\n" +
+    "            </span>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"row\" ng-if=\"worldstates && worldstates.length > 0\">\n" +
+    "        <div class=\"col-lg-4\"  ng-repeat=\"chartModel in chartModels\">\n" +
+    "            <div class=\"row\">\n" +
+    "                <div class=\"col-lg-12\" style=\"text-align: center\">\n" +
+    "                    <label>{{chartModel[0].key}}</label>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"row\">\n" +
+    "                <div class=\"col-lg12\" nvd3-discrete-bar-chart style=\"margin-top: -40px;\"\n" +
+    "                     data=\"chartModel\"\n" +
+    "                     width=\"400\"\n" +
+    "                     height=\"200\"\n" +
+    "                     showXAxis=\"false\"\n" +
+    "                     showYAxis=\"true\"\n" +
+    "                     interactive=\"true\"\n" +
+    "                     showValues=\"true\"\n" +
+    "                     staggerlabels=\"true\"\n" +
+    "                     forceY=\"{{chartModel.forceY}}\"\n" +
+    "                     yaxistickformat=\"yAxisTickFormat\"\n" +
+    "                     valueFormat=\"yAxisTickFormat\"\n" +
+    "                     color=\"colorFunction()\"\n" +
+    "                     tooltips=\"true\"\n" +
+    "                     tooltipcontent=\"toolTipContentFunction()\">\n" +
+    "                    <svg></svg>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('templates/indicatorCriteriaAxisChooserTemplate.html',
     "<div class=\"btn-group\">\n" +
     "    <button type=\"button\" class=\"btn btn-default btn-sm\"> <img ng-src=\"{{selectedAxis.icon}}\" style=\"margin-right:5px;float:left\"/>{{selectedAxis.name}}</button>\n" +
@@ -253,6 +429,57 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
     "        </tbody>\n" +
     "    </table>  \n" +
     "</div>"
+  );
+
+
+  $templateCache.put('templates/levelOfEmphasisTemplate.html',
+    "<div class=\"panel panel-default\">\n" +
+    "    <div class=\"panel-heading\" style=\" white-space: nowrap;\n" +
+    "         overflow: hidden;\n" +
+    "         text-overflow: ellipsis;\">\n" +
+    "        Level of satisfaction emphasis {{model.lse}}\n" +
+    "    </div>\n" +
+    "    <div class=\"panel-body\" >\n" +
+    "        <div ng-if=\"!expertMode && indicatorSize>=1\">\n" +
+    "            <form name=\"myForm\" >\n" +
+    "\n" +
+    "                <div class=\"radio\">\n" +
+    "                    <label>\n" +
+    "                        <input type=\"radio\" ng-model=\"model.lse\"  value=\"2\">\n" +
+    "                        only positive\n" +
+    "                    </label>\n" +
+    "                </div>\n" +
+    "                <div class=\"radio\">\n" +
+    "                    <label>\n" +
+    "                        <input type=\"radio\" ng-model=\"model.lse\"  value=\"1\">\n" +
+    "                        over-emphasise positives\n" +
+    "                    </label>\n" +
+    "                </div>\n" +
+    "                <div class=\"radio\">\n" +
+    "                    <label>\n" +
+    "                        <input type=\"radio\" ng-model=\"model.lse\"  value=\"0\" checked=\"true\">\n" +
+    "                        neutral\n" +
+    "                    </label>\n" +
+    "                </div>\n" +
+    "                <div class=\"radio\">\n" +
+    "                    <label>\n" +
+    "                        <input type=\"radio\" ng-model=\"model.lse\"  value=\"-1\">\n" +
+    "                        over-emphasise negatives\n" +
+    "                    </label>\n" +
+    "                </div>\n" +
+    "                <div class=\"radio\">\n" +
+    "                    <label>\n" +
+    "                        <input type=\"radio\" ng-model=\"model.lse\" value=\"-2\">\n" +
+    "                        only negative\n" +
+    "                    </label>\n" +
+    "                </div>\n" +
+    "            </form>\n" +
+    "        </div>\n" +
+    "        <div ng-if=\"expertMode\">\n" +
+    "            <div class=\"alert alert-warning\" role=\"alert\">Expert Mode not yet implemented!</div>    \n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
   );
 
 
@@ -302,6 +529,212 @@ angular.module('eu.crismaproject.worldstateAnalysis.directives').run(['$template
     "            <svg></svg>\n" +
     "        </div>\n" +
     "    </div>\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('templates/worldstateAnalysisWidgetTemplate.html',
+    "<div class=\"col-lg-12\">\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"panel panel-default\">\n" +
+    "            <div class=\"panel-heading\">\n" +
+    "                <span class=\"pull-left\">\n" +
+    "                    <!--<i class=\"glyphicon glyphicon-list-alt\"></i>-->\n" +
+    "                    <h3 style=\"display:inline\" class=\"panel-title\" ng-if=\"!forCriteriaTable\">Indicator table</h3>\n" +
+    "                    <h3 style=\"display:inline\" class=\"panel-title\" ng-if=\"forCriteriaTable\">Criteria table</h3>\n" +
+    "                </span>\n" +
+    "                <span class=\"pull-right\">\n" +
+    "                    <div class=\"btn-group\">\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-primary dropdown-toggle\" data-toggle=\"dropdown\" ng-disabled=\"disabled\">\n" +
+    "                            Change Mode <span class=\"caret\"></span>\n" +
+    "                        </button>\n" +
+    "                        <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "                            <li><a ng-click=\"forCriteriaTable = false\"><i ng-show=\"!forCriteriaTable\" class=\"glyphicon glyphicon-ok-circle\"></i> <span ng-style=\"{'padding-left' : !forCriteriaTable? '0px': '19px'}\">Indicator</span></a></li>\n" +
+    "                            <li><a ng-click=\"forCriteriaTable = true\"><i ng-show=\"forCriteriaTable\" class=\"glyphicon glyphicon-ok-circle\"> </i>  <span ng-style=\"{'padding-left' : forCriteriaTable? '0px': '19px'}\">Criteria</span></a></li>\n" +
+    "                        </ul>\n" +
+    "                    </div>\n" +
+    "                </span>\n" +
+    "                <span class=\"clearfix\"></span>\n" +
+    "            </div>\n" +
+    "            <div class=\"panel-body\">\n" +
+    "                <indicator-criteria-table worldstates='worldstates' \n" +
+    "                                          for-criteria='forCriteriaTable'\n" +
+    "                                          criteria-function=\"selectedCriteriaFunction\"\n" +
+    "                                          >\n" +
+    "\n" +
+    "                </indicator-criteria-table>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <!-- end widget -->\n" +
+    "\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"panel panel-default\">\n" +
+    "            <div class=\"panel-heading\">\n" +
+    "                <span class=\"pull-left\">\n" +
+    "                    <!--<span class=\"widget-icon\"> <i class=\"fa fa-table\"></i> </span>-->\n" +
+    "                    <h3 style=\"display:inline\" class=\"panel-title\">Worldstate relation analysis chart</h3>\n" +
+    "                </span>\n" +
+    "                <span class=\"pull-right\">\n" +
+    "                    <div class=\"btn-group\">\n" +
+    "                        <button type=\"button\" class=\"btn btn-sm btn-primary dropdown-toggle\" data-toggle=\"dropdown\" ng-disabled=\"disabled\">\n" +
+    "                            Change Mode <span class=\"caret\"></span>\n" +
+    "                        </button>\n" +
+    "                        <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "                            <li><a ng-click=\"isCriteria = false\"><i ng-show=\"!isCriteria\" class=\"glyphicon glyphicon-ok-circle\"></i> <span ng-style=\"{'padding-left' : !isCriteria? '0px': '19px'}\">Indicator</span></a></li>\n" +
+    "                            <li><a ng-click=\"isCriteria = true\"><i ng-show=\"isCriteria\" class=\"glyphicon glyphicon-ok-circle\"> </i>  <span ng-style=\"{'padding-left' : isCriteria? '0px': '19px'}\">Criteria</span></a></li>\n" +
+    "                        </ul>\n" +
+    "                    </div>\n" +
+    "                </span>\n" +
+    "                <span class=\"clearfix\"></span>\n" +
+    "            </div>\n" +
+    "            <div class=\"panel-body\">\n" +
+    "                <relation-analysis-chart style=\"padding-left:50px\" height=\"350\" \n" +
+    "                                         for-criteria='isCriteria' \n" +
+    "                                         worldstates=\"worldstates\"\n" +
+    "                                         criteria-function=\"selectedCriteriaFunction\"\n" +
+    "                                         >\n" +
+    "                </relation-analysis-chart>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"panel panel-default\">\n" +
+    "            <div class=\"panel-heading\">\n" +
+    "                <span class=\"pull-left\">\n" +
+    "                    <!--<span class=\"widget-icon\"> <i class=\"fa fa-table\"></i> </span>-->\n" +
+    "                    <h3 style=\"display:inline\" class=\"panel-title\">Criteria radar chart comparison</h3>\n" +
+    "                </span>\n" +
+    "                <span class=\"pull-right\">\n" +
+    "\n" +
+    "                </span>\n" +
+    "                <span class=\"clearfix\"></span>\n" +
+    "            </div>\n" +
+    "            <div class=\"panel-body\">\n" +
+    "                <div class=\"col-lg-3\">\n" +
+    "                    <select multiple=\"\" ng-model=\"worldstateRef\" \n" +
+    "                            ng-options=\"ws.name for ws in allWorldstates\"\n" +
+    "                            style=\"width: 100%;height: 100%\">\n" +
+    "                    </select>\n" +
+    "                </div>\n" +
+    "                <div class=\"col-lg-9\">\n" +
+    "                    <div class=\"row\">\n" +
+    "                        <div class=\"col-lg-4\" ng-repeat=\"chartModel in chartModels\">\n" +
+    "                            <div class=\"panel panel-default\">\n" +
+    "                                <div class=\"panel-heading\">\n" +
+    "                                    <h3 class=\"panel-title ng-binding\">\n" +
+    "                                        <i class=\"fa fa-globe\"></i>\n" +
+    "                                        {{chartModel[0].name}}</h3>\n" +
+    "                                </div>\n" +
+    "                                <div class=\"panel-body no-padding text-align-center\">\n" +
+    "                                    <div style=\"margin: 0 auto; padding-top: 20px\"  \n" +
+    "                                         criteria-radar \n" +
+    "                                         worldstates=\"chartModel\"\n" +
+    "                                         criteria-function=\"selectedCriteriaFunction\"\n" +
+    "                                         >\n" +
+    "                                    </div>\n" +
+    "                                </div>\n" +
+    "                                <!--                            <div class=\"panel-footer no-padding\">\n" +
+    "                                                            </div>-->\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"row\">\n" +
+    "        <div class=\"panel panel-default\">\n" +
+    "            <div class=\"panel-heading\" style=\"display:table;width:100%\">\n" +
+    "                <h3 style=\"display:table-cell;vertical-align: middle\n" +
+    "                    \" class=\"panel-title\">Criteria functions</h3>\n" +
+    "                <div class=\"pull-right\">\n" +
+    "\n" +
+    "                    <div class=\"input-group \">\n" +
+    "                        <div class=\"input-group-btn \" style=\"display: block\" ng-click=\"persistCriteriaFunctions()\">\n" +
+    "                            <button\n" +
+    "                                type =\"button\" \n" +
+    "                                class=\"btn btn-success btn-sm\">\n" +
+    "                                Persist\n" +
+    "                            </button>\n" +
+    "                            <button type=\"button\" class=\"btn btn-success btn-sm\" >\n" +
+    "                                <i ng-if=\"!showPersistSpinner && !showPersistDone\" class=\"glyphicon glyphicon-floppy-disk\"></i>\n" +
+    "                                <i ng-if=\"showPersistSpinner\" class=\"spin glyphicon glyphicon-refresh\" ></i>\n" +
+    "                                <i ng-if=\"showPersistDone\" class=\"glyphicon glyphicon-ok\"></i>\n" +
+    "                            </button>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"panel-body\">\n" +
+    "                <criteria-function-manager indicators=\"indicatorVector\"  criteria-functions=\"criteriaFunctionSets\"></criteria-function-manager>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "<!-- end widget -->"
+  );
+
+
+  $templateCache.put('templates/worldstateRankingTableTemplate.html',
+    "<div id=\"indicatorCriteriaTable\" style=\"overflow-x: auto\">\n" +
+    "    <div ng-hide=\"worldstates.length > 0\" class=\"alert alert-warning\">\n" +
+    "        <strong>Warning: </strong>There are no worldstates selected.\n" +
+    "    </div>\n" +
+    "    <table ng-hide=\"worldstates.length <= 0\" \n" +
+    "           ng-table=\"tableParams\" \n" +
+    "           show-filter=\"false\" \n" +
+    "           class=\"table table-striped\"\n" +
+    "           style=\"white-space: nowrap\">\n" +
+    "        <thead>\n" +
+    "            <tr>\n" +
+    "                <th ng-repeat=\"column in columns\"\n" +
+    "                     ng-if=\"$index < 3\"\n" +
+    "                    class=\"\"\n" +
+    "                    >\n" +
+    "                    {{column.title}}\n" +
+    "                </th>\n" +
+    "                <th ng-if=\"showRadarChart\">\n" +
+    "                    Criteria radar\n" +
+    "                </th>\n" +
+    "                <th ng-repeat=\"column in columns\"\n" +
+    "                     ng-if=\"$index >= 3\"\n" +
+    "                    class=\"\"\n" +
+    "                    >\n" +
+    "                    {{column.title}}\n" +
+    "                </th>\n" +
+    "            </tr>\n" +
+    "        </thead>\n" +
+    "        <tbody>\n" +
+    "            <tr ng-repeat=\"item in $data\">\n" +
+    "                <td ng-repeat=\"col in columns\" ng-if=\"$index < 3\" style=\"vertical-align: middle\">\n" +
+    "                    {{item[col.field]}}\n" +
+    "                </td>\n" +
+    "                <td ng-if=\"showRadarChart\"\n" +
+    "                    style=\"min-width:150px; width:150px; margin: 0 auto; padding-top: 20px\" \n" +
+    "                    criteria-radar \n" +
+    "                    worldstates=\"[item.ws]\" \n" +
+    "                    show-legend=\"false\"\n" +
+    "                    show-axis-text=\"true\"\n" +
+    "                    use-numbers=\"true\"\n" +
+    "                    criteria-function=\"criteriaFunction\"\n" +
+    "                    ng-click=\"clickToOpen($index)\"\n" +
+    "                   >\n" +
+    "                </td>\n" +
+    "                <td ng-repeat=\"col in columns\"  ng-if=\"$index >= 3\" style=\"vertical-align: middle\">\n" +
+    "                    <span>\n" +
+    "                        {{item[col.field].indicator}}\n" +
+    "                        <br/>\n" +
+    "                        {{item[col.field].los}}\n" +
+    "                    </span>\n" +
+    "                </td>\n" +
+    "\n" +
+    "            </tr>\n" +
+    "        </tbody>\n" +
+    "    </table>\n" +
     "</div>"
   );
 

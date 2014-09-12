@@ -98,4 +98,23 @@ angular.module('de.cismet.custom.services',
                 persist: persist
             };
             return public_api;
+        }]).factory('SelectedDecisionStrategy',
+    [
+        'localStorageService',
+        function (localStorageService) {
+            'use strict';
+            var decisionStrategies, selectedDecisionStrategy, persist;
+            decisionStrategies = localStorageService.get('decisionStrategies') || [];
+            selectedDecisionStrategy = decisionStrategies[0] || {};
+
+            persist = function () {
+                localStorageService.add('decisionStrategies', decisionStrategies);
+            };
+
+            var public_api = {
+                selectedDecisionStrategy: selectedDecisionStrategy,
+                decisionStrategies: decisionStrategies,
+                persist: persist
+            };
+            return public_api;
         }]);
