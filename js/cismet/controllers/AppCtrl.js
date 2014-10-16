@@ -3,6 +3,7 @@ angular.module(
     [
         'de.cismet.smartAdmin.services',
         'de.cismet.crisma.ICMM.Worldstates',
+        'de.cismet.crisma.ICMM.services'
     ]
 ).controller('AppCtrl',
     [
