@@ -59,7 +59,7 @@
                                     {{item.indicator}} {{item.indicatorUnit}}
                                 </td>
                                 <td>
-                                    <criteriaeasypie  indicator="item.indicator" criteria-function="item.criteriaFunction" size="size"></criteriaeasypie>
+                                    <criteriaeasypie ng-if="item.criteriaFunction" indicator="item.indicator" criteria-function="item.criteriaFunction" size="size"></criteriaeasypie>
                                 </td>
                             </tr>
                         </tbody>

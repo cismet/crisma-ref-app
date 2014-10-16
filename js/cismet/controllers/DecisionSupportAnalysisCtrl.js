@@ -7,9 +7,10 @@ angular.module(
         'de.cismet.crisma.ICMM.Worldstates',
         'SelectedCriteriaFunction',
         'SelectedDecisionStrategy',
-        function ($scope, Workspace, Worldstates, SelectedCriteriaFunction, SelectedDecisionStrategy) {
+        'de.cismet.crisma.ICMM.services.icmm',
+        function ($scope, Workspace, Worldstates, SelectedCriteriaFunction, SelectedDecisionStrategy, Icmm) {
 //            $scope.worldstates = [];
-            var worldstates = [], createChartModels, getIndicators;
+            var worldstates = [], createChartModels;
             $scope.SelectedCriteriaFunction = SelectedCriteriaFunction;
             $scope.SelectedDecisionStrategy = SelectedDecisionStrategy;
             $scope.worldstateRef;
@@ -39,16 +40,19 @@ angular.module(
             for (var i = 0; i < Workspace.worldstates.length; i++) {
                 var objectKey = Workspace.worldstates[i].objectKey;
                 var worldstateId = objectKey.substring(objectKey.lastIndexOf("/") + 1, objectKey.length);
-                Worldstates.get({wsId: worldstateId}, function (worldstate) {
-                    worldstates.push(worldstate);
+                Worldstates.get({wsId: worldstateId,level: 3, fields: 'id,name,key,iccdata,actualaccessinfo, actualaccessinfocontenttype, categories', deduplicate: false}, function (worldstate) {
+                    worldstates.push(Icmm.convertToCorrectIccDataFormat(worldstate));
                     if (worldstates.length === Workspace.worldstates.length) {
                         $scope.worldstates = worldstates;
                         createChartModels();
                     }
                 });
-            }
-            ;
-            Worldstates.query({level:5},function (data) {
+            };
+            
+            Worldstates.query({level: 3, fields: 'id,name,key,iccdata,actualaccessinfo, actualaccessinfocontenttype, categories', deduplicate: false}, function (data) {
+                data.forEach(function(ws){
+                    ws = Icmm.convertToCorrectIccDataFormat(ws);
+                });
                 $scope.allWorldstates = data;
             });
 

@@ -1,41 +1,7 @@
 angular.module('de.cismet.custom.services',
     [
         'LocalStorageModule'
-    ]).factory('WorldstateUtils', [function () {
-        'use strict';
-        var worldstateUtils;
-        worldstateUtils = function () {
-            var publicApi;
-
-            publicApi = {};
-
-            publicApi.stripIccData = function (worldstate, forCriteria) {
-                var data, i, j, k, iccdata;
-
-                data = null;
-                iccdata = worldstate.iccdata;
-                for (j = 0; j < iccdata.length && !data; ++j) {
-                    for (k = 0; k < iccdata[j].categories.length && !data; ++k) {
-                        if (forCriteria && 'Criteria' === iccdata[j].categories[k].key) {
-                            data = iccdata[j];
-                        } else if (!forCriteria && 'Indicators' === iccdata[j].categories[k].key) {
-                            data = iccdata[j];
-                        }
-                    }
-                }
-
-                if (!data) {
-                    throw 'worldstate without proper icc data:' + worldstate;
-                }
-
-                return JSON.parse(data.actualaccessinfo);
-
-            };
-
-            return publicApi;
-        };
-        return worldstateUtils();
-    }]).factory('IconService', [function () {
+    ]).factory('IconService', [function () {
         'use strict';
         var public_api = {};
 
@@ -86,7 +52,7 @@ angular.module('de.cismet.custom.services',
             'use strict';
             var criteriaFunctions, selectedCriteriaFunction, persist;
             criteriaFunctions = localStorageService.get('criteriaFunctionSet') || [];
-            selectedCriteriaFunction = criteriaFunctions[0] || {};
+            selectedCriteriaFunction = criteriaFunctions[0] ;
 
             persist = function () {
                 localStorageService.add('criteriaFunctionSet', criteriaFunctions);
@@ -105,7 +71,7 @@ angular.module('de.cismet.custom.services',
             'use strict';
             var decisionStrategies, selectedDecisionStrategy, persist;
             decisionStrategies = localStorageService.get('decisionStrategies') || [];
-            selectedDecisionStrategy = decisionStrategies[0] || {};
+            selectedDecisionStrategy = decisionStrategies[0];
 
             persist = function () {
                 localStorageService.add('decisionStrategies', decisionStrategies);

@@ -294,39 +294,45 @@ angular.module(
     ).directive(
     'iccDataBody',
     [
-        'WorldstateUtils',
         'IconService',
         'SelectedCriteriaFunction',
-        function (WorldstateUtils, IconService, SelectedCriteriaFunction) {
+        'de.cismet.crisma.ICMM.Worldstates',
+        function (IconService, SelectedCriteriaFunction, Worldstates) {
             'use strict';
             return {
                 restrict: 'E',
                 templateUrl: 'custom/templates/iccDataBody.html',
                 replace: true,
                 controller: function ($scope) {
+                    var page, i, j, indicatorGroup, critFuncSet, critFun, items, item,
+                        indicatorItem;
                     //we need to split the indicators into groups of 3 items.
                     $scope.IconService = IconService;
                     $scope.SelectedCriteriaFunction = SelectedCriteriaFunction;
 
-                    $scope.$watch('SelectedCriteriaFunction.selectedCriteriaFunction', function () {
-                        var i, j, critFuncSet, critFun, indicator, indicatorGroup;
-                        //we need to update the criteriaFunction binding in the groups..
-                        var indicatorGroups = [];
-                        $scope.pagedIccGroups.forEach(function (group) {
-                            indicatorGroups = indicatorGroups.concat(group);
-                        });
-                        critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
-                        for (i = 0; i < indicatorGroups.length; i++) {
-                            indicatorGroup = indicatorGroups[i];
-                            for (j = 0; j < indicatorGroup.items.length; j++) {
-                                indicator = indicatorGroup.items[j];
+                    $scope.$watch('SelectedCriteriaFunction.selectedCriteriaFunction', function (newVal, oldVal) {
+                        var i, j, critFuncSet, critFun, indicator, indicatorGroup, indicatorGroups;
+                        if(newVal !== oldVal && SelectedCriteriaFunction.selectedCriteriaFunction){
+                            //we need to update the criteriaFunction binding in the groups..
+                            indicatorGroups = [];
+                            $scope.pagedIccGroups.forEach(function (group) {
+                                indicatorGroups = indicatorGroups.concat(group);
+                            });
+                            critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
+                            if (critFuncSet) {
+                                for (i = 0; i < indicatorGroups.length; i++) {
+                                    indicatorGroup = indicatorGroups[i];
+                                    for (j = 0; j < indicatorGroup.items.length; j++) {
+                                        indicator = indicatorGroup.items[j];
 
-                                critFuncSet.forEach(function (cf) {
-                                    if (cf.indicator === indicator.displayName) {
-                                        critFun = cf;
+                                        critFuncSet.forEach(function (cf) {
+                                            if (cf.indicator === indicator.displayName) {
+                                                critFun = cf;
+                                            }
+                                        });
+                                        indicator.criteriaFunction = critFun;
                                     }
-                                });
-                                indicator.criteriaFunction = critFun;
+                                }
                             }
                         }
                     }, true);
@@ -335,36 +341,41 @@ angular.module(
                         return $scope.renderingDescriptor.colourClasses[(3 * pageIndex) + index];
                     };
 
-                    $scope.indicators = WorldstateUtils.stripIccData($scope.dataslot[0].worldstate);
+                    $scope.indicators = Worldstates.utils.stripIccData([$scope.dataslot[0].worldstate])[0].data;
 
                     $scope.pagedIccGroups = [];
-                    var page = [];
-                    for (var i = 0; i < Object.keys($scope.indicators).length; i++) {
-                        var indicatorGroup = $scope.indicators[Object.keys($scope.indicators)[i]];
+                    page = [];
+                    for (i = 0; i < Object.keys($scope.indicators).length; i++) {
+                        indicatorGroup = $scope.indicators[Object.keys($scope.indicators)[i]];
                         if (i > 0 && i % 3 === 0) {
                             $scope.pagedIccGroups.push(page);
                             page = [];
                         }
 
-                        var items = [];
-                        var critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
-                        var critFun;
-                        for (var j = 0; j < Object.keys(indicatorGroup).length; j++) {
-                            var indicatorItem = indicatorGroup[Object.keys(indicatorGroup)[j]];
-                            if (indicatorItem.value) {
-                                critFuncSet.forEach(function (cf) {
-                                    if (cf.indicator === indicatorItem.displayName) {
-                                        critFun = cf;
+                        items = [];
+
+                        for (j = 0; j < Object.keys(indicatorGroup).length; j++) {
+                            indicatorItem = indicatorGroup[Object.keys(indicatorGroup)[j]];
+                            item = {
+                                displayName: indicatorItem.displayName,
+                                iconResource: indicatorItem.iconResource,
+                                indicator: indicatorItem.value,
+                                indicatorUnit: indicatorItem.unit,
+                            };
+//                            if (indicatorItem.value) {
+                                if (SelectedCriteriaFunction.selectedCriteriaFunction) {
+                                    critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
+                                    if (critFuncSet && critFuncSet.length > 0) {
+                                        critFuncSet.forEach(function (cf) {
+                                            if (cf.indicator === indicatorItem.displayName) {
+                                                critFun = cf;
+                                            }
+                                        });
+                                        item.criteriaFunction = critFun;
                                     }
-                                });
-                                items.push({
-                                    displayName: indicatorItem.displayName,
-                                    iconResource: indicatorItem.iconResource,
-                                    indicator: indicatorItem.value,
-                                    indicatorUnit: indicatorItem.unit,
-                                    criteriaFunction: critFun
-                                });
-                            }
+                                }
+                                items.push(item);
+//                            }
                         }
 
                         page.push({
@@ -385,11 +396,11 @@ angular.module(
     ).directive(
     'miniIndicatorBody',
     [
-        'WorldstateUtils',
         'IconService',
         'WorkspaceService',
         'de.cismet.collidingNameService.Nodes',
-        function (WorldstateUtils, IconService, WorkspaceService, Nodes) {
+        'de.cismet.crisma.ICMM.Worldstates',
+        function (IconService, WorkspaceService, Nodes, Worldstates) {
             'use strict';
             return {
                 restrict: 'E',
@@ -397,7 +408,7 @@ angular.module(
                 replace: true,
                 controller: function ($scope) {
                     $scope.IconService = IconService;
-                    $scope.indicators = WorldstateUtils.stripIccData($scope.worldstate, false);
+                    $scope.indicators = Worldstates.utils.stripIccData([$scope.worldstate])[0].data;
                     $scope.importantIndicators = [];
 
                     $scope.getColor = function (index) {
@@ -557,7 +568,7 @@ angular.module(
                         $scope.percent = Math.round($scope.percent * 10) / 10;
                     };
                     $scope.opts = {
-                        barColor: function(percent){
+                        barColor: function (percent) {
                             return CriteriaCalculationService.getColorForCriteria(percent, $scope.criteriaFunction);
                         },
                         trackColor: '#f2f2f2',

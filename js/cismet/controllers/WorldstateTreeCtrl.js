@@ -13,7 +13,7 @@ angular.module(
 //                folderIconClosed: 'icon-folder-close.png',
 //                folderIconOpen: 'icon-folder-open.png',
                 leafIcon: 'icon-file.png',
-                imagePath: '/img/worldstate-tree/',
+                imagePath: '/images/worldstate-tree/',
                 folderIconClosed: 'icon-world.png',
                 folderIconOpen: 'icon-world.png',
                 leafIcon : 'icon-world.png'
