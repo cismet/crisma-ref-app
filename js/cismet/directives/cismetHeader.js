@@ -3,7 +3,6 @@ angular.module(
     [
         'de.cismet.smartAdmin.services',
         'ngAnimate',
-        'google-maps',
         'de.cismet.custom.directives',
         'leaflet-directive',
         'de.cismet.cids.widgets.nodeListWidget.directives',
