@@ -15,7 +15,7 @@
                 <ul id="sparks" class="">
                     <!--<li class="sparks-info">-->
                     <li class="sparks-info" ng-repeat="indicator in importantIndicators">
-                        <h5> {{indicator.displayName}} <span ng-class="getColor($index)"><i class="fa" ng-class="IconService.getStyleClassForIconResource(indicator.iconResource)"></i>&nbsp;{{indicator.value}}&nbsp;{{indicator.unit}}</span></h5>
+                        <h5> {{indicator.displayName}} <span ng-class="getColor($index)"><i class="fa" ng-class="IconService.getStyleClassForIconResource(indicator.iconResource)"></i>&nbsp;{{indicator.value | number}}&nbsp;{{indicator.unit}}</span></h5>
                         <!--<div class="txt-color-blue sparkline  hidden-mobile hidden-md hidden-sm sparkline  hidden-mobile hidden-md hidden-sm" values="spark1Values"><canvas width="5" height="26" style="display: inline-block; width: 5px; height: 26px; vertical-align: top;"></canvas></div>-->
                     </li>
                 </ul>

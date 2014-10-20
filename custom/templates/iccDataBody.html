@@ -51,12 +51,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in group.items" ng-if="item.indicator">
+                            <tr ng-repeat="item in group.items" >
                                 <td>
                                     {{item.displayName}}
                                 </td>
                                 <td>
-                                    {{item.indicator}} {{item.indicatorUnit}}
+                                    {{item.indicator | number}} {{item.indicatorUnit}}
                                 </td>
                                 <td>
                                     <criteriaeasypie ng-if="item.criteriaFunction" indicator="item.indicator" criteria-function="item.criteriaFunction" size="size"></criteriaeasypie>

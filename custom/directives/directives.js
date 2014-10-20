@@ -312,7 +312,7 @@ angular.module(
 
                     $scope.$watch('SelectedCriteriaFunction.selectedCriteriaFunction', function (newVal, oldVal) {
                         var i, j, critFuncSet, critFun, indicator, indicatorGroup, indicatorGroups;
-                        if(newVal !== oldVal && SelectedCriteriaFunction.selectedCriteriaFunction){
+                        if (newVal !== oldVal && SelectedCriteriaFunction.selectedCriteriaFunction) {
                             //we need to update the criteriaFunction binding in the groups..
                             indicatorGroups = [];
                             $scope.pagedIccGroups.forEach(function (group) {
@@ -355,14 +355,15 @@ angular.module(
                         items = [];
 
                         for (j = 0; j < Object.keys(indicatorGroup).length; j++) {
-                            indicatorItem = indicatorGroup[Object.keys(indicatorGroup)[j]];
-                            item = {
-                                displayName: indicatorItem.displayName,
-                                iconResource: indicatorItem.iconResource,
-                                indicator: indicatorItem.value,
-                                indicatorUnit: indicatorItem.unit,
-                            };
-//                            if (indicatorItem.value) {
+                            var property = Object.keys(indicatorGroup)[j]
+                            if (property !== 'displayName' && property !== 'iconResource') {
+                                indicatorItem = indicatorGroup[property];
+                                item = {
+                                    displayName: indicatorItem.displayName,
+                                    iconResource: indicatorItem.iconResource,
+                                    indicator: indicatorItem.value,
+                                    indicatorUnit: indicatorItem.unit,
+                                };
                                 if (SelectedCriteriaFunction.selectedCriteriaFunction) {
                                     critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
                                     if (critFuncSet && critFuncSet.length > 0) {
@@ -375,7 +376,7 @@ angular.module(
                                     }
                                 }
                                 items.push(item);
-//                            }
+                            }
                         }
 
                         page.push({
