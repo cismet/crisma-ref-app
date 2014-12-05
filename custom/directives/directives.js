@@ -8,12 +8,21 @@ angular.module(
     ).directive(
     'wmsLeaflet',
     [
+        'leafletData',
+        '$timeout',
         function () {
+            var instances = 0;
             return {
                 restrict: 'E',
                 templateUrl: 'custom/templates/leafletWMS.html',
                 replace: true,
-                controller: function ($scope) {
+                link: function(scope, elem){
+                    scope.removeAllImagesFromDom = function(){
+                        elem.find('img').attr('src','');
+                    };
+                },
+                controller: function ($scope, leafletData, $timeout) {
+                    $scope.instanceId = 'object'+ (++instances);
                     $scope.defaults = {
                         scrollWheelZoom: false
                     };
@@ -77,9 +86,21 @@ angular.module(
                         $scope.layers.overlays[dataslot.name] = createOverlayObject(dataslot);
                     }
 
+                    $scope.$on('$destroy', function () {
+//                    $timeout(function(){
+                        leafletData.getMap($scope.instanceId).then(function(map){
+                            //winwod.stop() works in chrome, not sure if in ff
+//                            window.stop();
+//                            // setting the src to a null value
+//                            
+                       $scope.removeAllImagesFromDom();
+//                            map.remove(); 
+                        });
+                    });
+//                    },500);
                 }
-            }
-            ;
+            };
+
         }
     ]
     ).directive(
