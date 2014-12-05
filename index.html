@@ -144,7 +144,7 @@
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
 
-    <script src="bower_components/leaflet/dist/leaflet.js"></script>
+    <script src="bower_components/leaflet/dist/leaflet-src.js"></script>
     <script src="bower_components/leaflet-plugins/layer/tile/Google.js"></script>
     <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
     <script src="bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js"></script>
@@ -197,7 +197,7 @@
     <script src="js/cismet/angularApp.js"></script>
     <script src="js/cismet/directives/breadcrumb.js"></script>
     <script src="js/cismet/directives/widget.js"></script>
-    <script src="js/cismet/directives/bodyHeightAdapter.js"></script>
+    <script src="js/cismet/directives/dynamicHeightAdapter.js"></script>
 
     <!--custom directives-->
     <script src="custom/services/services.js"></script>
@@ -211,8 +211,8 @@
                     'use strict';
                     $provide.constant('DEBUG', 'true');
                     $provide.constant('CRISMA_DOMAIN', 'CRISMA');
-//                    $provide.constant('CRISMA_ICMM_API', 'http://crisma.cismet.de/refApp/icmm_api');
-                    $provide.constant('CRISMA_ICMM_API', 'http://localhost:8890');
+                    $provide.constant('CRISMA_ICMM_API', 'http://crisma.cismet.de/icmm_api');
+//                    $provide.constant('CRISMA_ICMM_API', 'http://localhost:8890');
                 }
             ]
         );
