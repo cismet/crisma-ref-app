@@ -462,6 +462,7 @@ angular.module(
 
                         scope = $rootScope.$new(true);
                         scope.worldstate = $scope.worldstate;
+                        scope.params = {};
 
                         modalInstance = $modal({
                             template: 'custom/templates/simEq.html',
@@ -469,6 +470,12 @@ angular.module(
                             show: true,
                             backdrop: 'static'
                         });
+                        
+                        scope.$watch('params', function (n) {
+                            if(n && n.run) {
+                                console.log('TODO: run eq sim');
+                            }
+                        }, true);
                     };
                     
                     $scope.buildingResistance = function () {
