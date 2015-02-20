@@ -7,8 +7,20 @@
                 </h1>
             </div>
             <div class=" btn-group" style="margin-top: 10px;">
-                <a ng-click="addToWorkspace()" tooltip-placement="bottom" tooltip="Add Worldstate to Workspace" class="btn btn-default"><strong><i class="fa fa-plus fa-lg text-danger"></i></strong></a>
+                <a ng-click="addToWorkspace()" tooltip-placement="bottom" tooltip="Add Worldstate to Workspace" class="btn btn-default"><strong><i class="fa fa-plus fa-lg"></i></strong></a>
                 <a ng-click="removeFromWorkspace()" tooltip-placement="bottom" tooltip="Remove Worldstate from Workspace" class="btn btn-default"><strong><i class="fa fa-minus fa-lg"></i></strong></a>
+            </div>
+            <div class=" btn-group" style="margin-top: 10px;">
+                <a ng-click="simEq()"
+                   tooltip-placement="bottom"
+                   tooltip="Perform Earthquake Simulation"
+                   class="btn btn-default" >
+                    <strong>
+                        <i class="fa fa-bullseye fa-lg"></i>
+                    </strong>
+                </a>
+                <a ng-click="buildingResistance()" tooltip-placement="bottom" tooltip="Perform Building Resistance Analysis" class="btn btn-default"><strong><i class="fa fa-building fa-lg"></i></strong></a>
+                <a ng-click="peopleEvacuation()" tooltip-placement="bottom" tooltip="Perform People Evacuation Analysis" class="btn btn-default"><strong><i class="fa fa-user fa-lg"></i></strong></a>
             </div>
             <div style="float:right;">
 

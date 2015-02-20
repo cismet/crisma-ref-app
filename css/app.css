@@ -126,3 +126,20 @@ span.glyphicon{
 .intervalMarker span.glyphicon{
     color:black;
 }
+
+
+.input-icon {
+    position: absolute;
+    pointer-events: none;
+}
+
+.latlonfix {
+    padding-bottom: 9px;
+    padding-top: 9px;
+    right: 10px;
+    margin-top: -33px;
+    -webkit-padding-start: 40px;
+    -webkit-padding-end: 40px;
+    -moz-padding-start: 50px;
+    -moz-padding-end: 50px;
+}
