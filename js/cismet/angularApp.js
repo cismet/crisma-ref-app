@@ -37,6 +37,47 @@ angular.module('de.cismet.smartAdmin', [
             templateUrl: "partials/workspace.html",
             controller: 'WorkspaceCtrl'
         })
+        .when('/simulations', {
+            templateUrl: "partials/simulationsView.html",
+            controller: 'de.cismet.smartAdmin.controllers.simulationsViewController',
+            resolve: {
+                simulations: [
+                    'de.cismet.smartAdmin.services.simulation',
+                    function (simulationService) {
+                        return simulationService.updateSimulations().$promise;
+                    }
+                ]
+            }
+        })
+        .when('/simulations/:sId', {
+            templateUrl: "partials/simulationsDetailView.html",
+            controller: 'de.cismet.smartAdmin.controllers.simulationsDetailViewController',
+            resolve: {
+                simulation: [
+                    '$route',
+                    'de.cismet.smartAdmin.services.simulation',
+                    function ($route, simulationService) {
+                        var i, sims;
+                        
+                        sims = simulationService.allSimulations;
+                        
+                        if(sims) {
+                            // find() may not be available yet
+                            for(i = 0; i < sims.length; ++i) {
+                                if(sims[i].id === parseInt($route.current.params.sId)) {
+                                    return sims[i];
+                                }
+                            }
+                            
+                            throw 'ILLEGAL STATE';
+                        } else {
+                            // may not be available yet
+                            return simulationService.getSimulation($route.current.params.sId).$promise;
+                        }
+                    }
+                ]
+            }
+        })
         .when('/worldstateTreeWidget', {
             templateUrl: "partials/worldstateTree.html",
             controller: 'WorldstateTreeCtrl'

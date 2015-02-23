@@ -14,8 +14,12 @@ angular.module(
         'WorkspaceService',
         'SelectedCriteriaFunction',
         'SelectedDecisionStrategy',
-        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction, SelectedDecisionStrategy) {
+        'de.cismet.smartAdmin.services.simulation',
+        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction, SelectedDecisionStrategy, simulationService) {
             'use strict';
+            
+            $scope.simulationService = simulationService;
+            
             $scope.scenarioNode = {
                 name: 'Scenarios',
                 icon: 'fa-globe',
@@ -32,6 +36,16 @@ angular.module(
                     return $scope.workspaceService.worldstates.length;
                 }
             };
+            
+            $scope.simulationsNode = {
+                name: 'Simulations',
+                icon: 'fa-cogs',
+                link: '/simulations',
+                badge: function () {
+                    return $scope.simulationService.runningSimulations.length;
+                }
+            };
+            
             $scope.workspaceService = WorkspaceService;
             $scope.LayoutService = LayoutService;
             $scope.MenuService = MenuService;
@@ -66,7 +80,8 @@ angular.module(
 //                    link: '/worldstateInformation',
 //                },
                 $scope.scenarioNode,
-                $scope.workspaceNode
+                $scope.workspaceNode,
+                $scope.simulationsNode
             ];
 
             //we need to fetch all Scenario Worldstates and after that 
@@ -92,6 +107,15 @@ angular.module(
 //                    for(var i=0;i< $scope.workspaceNode.children.length;i++){
 //                        $scope.workspaceNode.children[i].link='/workspace';
 //                    }
+                }
+            });
+            
+            $scope.$watchCollection('simulationService.runningSimulations', function (newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    $scope.simulationsNode.children = $scope.simulationService.runningSimulations;
+                    $scope.simulationsNode.children.forEach(function(v) {
+                        v.link = 'simulations/' + v.id;
+                    });
                 }
             });
 
