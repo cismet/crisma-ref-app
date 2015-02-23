@@ -1,7 +1,6 @@
-angular.module('de.cismet.custom.services',
-    [
-        'LocalStorageModule'
-    ]).factory('IconService', [function () {
+angular.module(
+    'de.cismet.custom.services'
+).factory('IconService', [function () {
         'use strict';
         var public_api = {};
 
