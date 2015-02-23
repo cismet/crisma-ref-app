@@ -8,6 +8,7 @@ angular.module(
 ).controller('AppCtrl',
     [
         '$scope',
+        '$location',
         'LayoutService',
         'MenuService',
         'ShortCutService',
@@ -15,7 +16,7 @@ angular.module(
         'SelectedCriteriaFunction',
         'SelectedDecisionStrategy',
         'de.cismet.smartAdmin.services.simulation',
-        function ($scope, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction, SelectedDecisionStrategy, simulationService) {
+        function ($scope, $location, LayoutService, MenuService, ShortCutService, WorkspaceService, SelectedCriteriaFunction, SelectedDecisionStrategy, simulationService) {
             'use strict';
             
             $scope.simulationService = simulationService;
@@ -147,5 +148,8 @@ angular.module(
             // 			widgets running at once (must have $.enableJarvisWidgets = true)
             $.enableMobileWidgets = false;
 
+            $scope.$on('$routeChangeError', function (e, route) {
+                $location.path('/error404');
+            });
         }
     ]);
