@@ -9,6 +9,7 @@ angular.module(
             'use strict';
             
             $scope.simulation = simulation;
+            $scope.JSON = JSON;
         }
     ]
 );
