@@ -1,8 +1,4 @@
-angular.module('de.cismet.smartAdmin.services',
-    [
-        'ngResource',
-        'de.cismet.custom.services'
-    ]
+angular.module('de.cismet.smartAdmin.services'
     ).service('ShortCutService',
     [
         'LayoutService',
