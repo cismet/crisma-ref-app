@@ -1,0 +1,17 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="de.cismet.custom.controllers.simEqController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <ng-include src="'custom/templates/simEqBody.html'"></ng-include>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="startSimulation()">Start Simulation</button>
+            </div>
+        </div>
+    </div>
+</div>
