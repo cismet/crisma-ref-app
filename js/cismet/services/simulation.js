@@ -1,47 +1,46 @@
 angular.module(
     'de.cismet.smartAdmin.services'
 ).factory(
-    'de.cismet.smartAdmin.services.simulation', 
+    'de.cismet.smartAdmin.services.simulation',
     [
         '$resource',
         '$interval',
+        'de.cismet.smartAdmin.services.utils',
         'CRISMA_DOMAIN',
         'CRISMA_ICMM_API',
-        function ($resource, $interval, CRISMA_DOMAIN, CRISMA_ICMM_API) {
+        function ($resource, $interval, utils, CRISMA_DOMAIN, CRISMA_ICMM_API) {
             'use strict';
-            
-            var allSimulations, getSimulation, getSimulations, processResults, res, runningSimulations, 
-                    updateArray, updateSimulations;
-            
+
+            var allSimulations, getSimulation, getSimulations, processResults, res, runningSimulations,
+                simEquals, updateSimulations;
+
+            simEquals = function (other) {
+                if (other) {
+                    if (this === other) {
+                        return true;
+                    } else {
+                        return this.id === other.id &&
+                            this.transitionstatus === other.transitionstatus;
+                    }
+                }
+
+                return false;
+            };
+
             processResults = function (data) {
-                if(data) {
-                    return JSON.parse(data).$collection;
+                if (data) {
+                    var arr;
+                    arr = JSON.parse(data).$collection;
+                    arr.forEach(function (v) {
+                        v.equals = simEquals;
+                    });
+
+                    return arr;
                 } else {
                     return [];
                 }
             };
-            
-            updateArray = function (arr, newArr) {
-                var i, found;
-                
-                found = false;
-                newArr.forEach(function (vo) {
-                    found = arr.some(function (vi) {
-                        return vi.id === vo.id;
-                    });
-                    
-                    if (!found) arr.push(vo);
-                });
-                
-                for (i = arr.length - 1; i >= 0; --i) {
-                    found = newArr.some(function (v) {
-                        return v.id === arr[i].id;
-                    });
-                    
-                    if (!found) arr.splice(i, 1);
-                }
-            };
-            
+
             res = $resource(CRISMA_ICMM_API + '/' + CRISMA_DOMAIN + '.transitions/:tId',
                 {
                     tId: '@id',
@@ -59,56 +58,56 @@ angular.module(
                         transformResponse: processResults
                     }
                 });
-            
+
             getSimulations = function () {
                 return res.query();
             };
-            
+
             getSimulation = function (sId) {
                 return res.get({tId: sId});
             };
-            
+
             runningSimulations = [];
             allSimulations = [];
-            
+
             updateSimulations = function () {
                 var simulations;
                 console.log('update');
-                
+
                 simulations = getSimulations();
-                
+
                 simulations.$promise.then(function () {
                     var running;
-                    
+
                     running = [];
-                    simulations.forEach(function(simulation) {
+                    simulations.forEach(function (simulation) {
                         if (simulation.transitionstatus) {
-                            if(simulation.transitionstatus === 'running' || 
+                            if (simulation.transitionstatus === 'running' ||
                                     JSON.parse(simulation.transitionstatus).status === 'running') {
                                 running.push(simulation);
                             }
                         }
                     });
-                    
-                    updateArray(allSimulations, simulations);
-                    updateArray(runningSimulations, running);
+
+                    utils.updateArray(allSimulations, simulations);
+                    utils.updateArray(runningSimulations, running);
                 });
-                
+
                 return simulations;
             };
-            
+
             // poll simulations
             $interval(
                 function () {
                     updateSimulations();
-                }, 
+                },
                 10000,
-                0, 
+                0,
                 true
             );
-    
+
             updateSimulations();
-            
+
             return {
                 getSimulations: getSimulations,
                 getSimulation: getSimulation,
