@@ -1,0 +1,34 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="de.cismet.custom.controllers.buildingMitigationController">
+    <wizard on-finish="wizard.finish()" name="buildingMitigationWizard" current-step="wizard.currentStep">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <wz-step title="Select Area">
+                    area
+                </wz-step>
+                <wz-step title="Define Budget">
+                    budget
+                </wz-step>
+                <wz-step title="Define Improvements">
+                    improvements
+                </wz-step>
+                <wz-step title="Define Costs">
+                    costs
+                </wz-step>
+                <wz-step title="Parameterize Earthquake">
+                    <ng-include src="'custom/templates/simEqBody.html'" ng-controller="de.cismet.custom.controllers.simEqController"></ng-include>
+                </wz-step>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
+                <button type="button" class="btn btn-primary" wz-next>{{wizard.proceedButtonText}}</button>
+                <!--<button type="button" class="btn btn-primary" ng-click="startSimulation()">Start Simulation</button>-->
+            </div>
+        </div>
+    </div>
+    </wizard>
+</div>

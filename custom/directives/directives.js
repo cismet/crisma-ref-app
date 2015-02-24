@@ -4,7 +4,8 @@ angular.module(
         'easypiechart',
         'de.cismet.custom.services',
         'eu.crismaproject.worldstateAnalysis.services',
-        'mgcrea.ngStrap.modal'
+        'mgcrea.ngStrap.modal',
+        'mgo-angular-wizard'
     ]
     ).directive(
     'wmsLeaflet',
@@ -465,7 +466,7 @@ angular.module(
                         scope.params = {};
 
                         modalInstance = $modal({
-                            template: 'custom/templates/simEq.html',
+                            template: 'custom/templates/simEqModal.html',
                             scope: scope,
                             show: true,
                             backdrop: 'static'
@@ -479,6 +480,24 @@ angular.module(
                     };
                     
                     $scope.buildingResistance = function () {
+                        var modalInstance, scope;
+
+                        scope = $rootScope.$new(true);
+                        scope.worldstate = $scope.worldstate;
+                        scope.params = {};
+
+                        modalInstance = $modal({
+                            template: 'custom/templates/buildingMitigationModal.html',
+                            scope: scope,
+                            show: true,
+                            backdrop: 'static'
+                        });
+                        
+                        scope.$watch('params', function (n) {
+                            if(n && n.run) {
+                                console.log('TODO: run eq sim');
+                            }
+                        }, true);
                         
                     };
                     

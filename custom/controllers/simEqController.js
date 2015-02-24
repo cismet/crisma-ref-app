@@ -49,7 +49,7 @@ angular.module(
                 setEpicenter([$scope.params.latitude, $scope.params.longitude]);
             };
             
-            leafletData.getMap('mainmap').then(function (map) {
+            leafletData.getMap('eqParamMap').then(function (map) {
                 map.on('click', function (event) {
                     $scope.params.latitude = event.latlng.lat;
                     $scope.params.longitude = event.latlng.lng;
