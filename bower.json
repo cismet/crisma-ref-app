@@ -31,6 +31,7 @@
     "leaflet": "0.7.3",
     "leaflet-plugins": "1.1.2",
     "angular-leaflet-directive": "0.7.8",
+    "plugn-leaflet-draw": "0.2.6",
     "jquery.easy-pie-chart": "2.1.4"
   },
   "resolutions": {
