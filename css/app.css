@@ -143,3 +143,9 @@ span.glyphicon{
     -moz-padding-start: 50px;
     -moz-padding-end: 50px;
 }
+
+/* this fixes the nasty nvd3 svg override which causes the vector layers of leaflet to not be displayed anymore */
+.leaflet-overlay-pane svg {
+    width: initial;
+    height: initial;
+}
