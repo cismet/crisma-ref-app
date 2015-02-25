@@ -25,6 +25,8 @@ angular.module(
                 if (n) {
                     if ($scope.wizard.isFinishStep()) {
                         $scope.wizard.proceedButtonText = 'Finish';
+                    } else {
+                        $scope.wizard.proceedButtonText = 'Next';
                     }
 
                     if (n === 'Parameterize Earthquake') {
