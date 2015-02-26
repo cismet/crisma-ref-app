@@ -4,11 +4,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" ng-click="$hide()">&times;</button>
-                <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
+                <h4 class="modal-title">Building mitigation analysis: {{worldstate.name}}</h4>
             </div>
             <div class="modal-body">
                 <wz-step title="Select Area">
-                    <area-chooser selectable-areas-title="'Municipality'" selectable-areas="[]"></area-chooser>
+                    <area-chooser geom="params.area" selectable-areas-title="'Municipality'" selectable-areas="[]"></area-chooser>
                 </wz-step>
                 <wz-step title="Define Budget">
                     budget
@@ -25,8 +25,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
-                <button type="button" class="btn btn-primary" wz-next>{{wizard.proceedButtonText}}</button>
-                <!--<button type="button" class="btn btn-primary" ng-click="startSimulation()">Start Simulation</button>-->
+                <button type="button" class="btn btn-default" wz-previous style="margin-left: 20px;">Previous</button>
+                <button type="button" class="btn btn-primary" wz-next ng-disabled="!wizard.canProceed">{{wizard.proceedButtonText}}</button>
             </div>
         </div>
     </div>

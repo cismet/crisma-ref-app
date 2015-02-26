@@ -11,12 +11,23 @@ angular.module(
 
             $scope.wizard = {};
             $scope.wizard.currentStep = '';
+            $scope.wizard.canProceed = false;
             $scope.wizard.isFinishStep = function () {
                 return $scope.wizard.currentStep === 'Parameterize Earthquake';
             };
             $scope.wizard.finish = function () {
                 $scope.params.run = true;
                 $scope.$hide();
+            };
+
+            // the wizard framework is not sufficient for user friendly display of states
+            $scope.wizard.validators = {noVal: function () { return true; }};
+            $scope.wizard.validators['Select Area'] = function () {
+                if ($scope.params.area && $scope.params.area.geometry.coordinates) {
+                    return true;
+                }
+
+                return false;
             };
 
             $scope.wizard.proceedButtonText = 'Next';
@@ -39,6 +50,16 @@ angular.module(
                     $scope.wizard.proceedButtonText = 'Next';
                 }
             });
+            $scope.$watch('params', function () {
+                // if currentstep is not set the wizard is just about to start
+                if ($scope.wizard.currentStep && $scope.wizard.currentStep !== '') {
+                    $scope.wizard.canProceed =
+                        ($scope.wizard.validators[$scope.wizard.currentStep] || $scope.wizard.validators.noVal)();
+                } else {
+                    $scope.wizard.canProceed = false;
+                }
+
+            }, true);
         }
     ]
 );
