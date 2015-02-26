@@ -8,7 +8,7 @@ angular.module(
             var controller, scope;
             
             scope = {
-                geojson: '=',
+                geom: '=',
                 selectableAreas: '=',
                 selectableAreasTitle: '='
             };
@@ -40,7 +40,7 @@ angular.module(
                             };
                         }
                         
-                        $scope.geojson = geojson;
+                        $scope.geom = geojson;
                     };
                     
                     editGroup = new L.FeatureGroup();
