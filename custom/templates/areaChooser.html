@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-4">
-            <button class="btn btn-default"
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
                     type="button" 
                     name="useSelectableArea"
                     value="selectableArea"
@@ -9,7 +9,7 @@
                     bs-radio>Use {{selectableAreasTitle}}
             </button>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <button type="button" 
                     class="btn btn-default" 
                     ng-model="selectableArea" 
@@ -25,8 +25,8 @@
         </div>
     </div>
     <div class="row" style="margin-top: 5px;">
-        <div class="col-lg-4">
-            <button class="btn btn-default"
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
                     type="button" 
                     name="usePointAndDistance"
                     value="pointDistance"
@@ -34,7 +34,7 @@
                     bs-radio>Use Point and Distance
             </button>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <form name="distanceInput" ng-show="selectedOption === 'pointDistance'">
                 <input class="form-control"
                        name="input"
@@ -48,8 +48,8 @@
         </div>
     </div>
     <div class="row" style="margin-top: 5px;">
-        <div class="col-lg-4">
-            <button class="btn btn-default"
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
                     type="button" 
                     name="useFreePolygon"
                     value="freePolygon"
@@ -57,7 +57,7 @@
                     bs-radio>Use Free Hand Polygon
             </button>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-7">
         </div>
     </div>
     <div class="row">

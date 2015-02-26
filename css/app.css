@@ -149,3 +149,7 @@ span.glyphicon{
     width: initial;
     height: initial;
 }
+
+.area-chooser-radio-button {
+    width: 100%;
+}
