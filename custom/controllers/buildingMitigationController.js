@@ -11,7 +11,7 @@ angular.module(
 
             $scope.wizard = {};
             $scope.wizard.currentStep = '';
-            $scope.wizard.canProceed = false;
+            $scope.wizard.canProceed = true;
             $scope.wizard.isFinishStep = function () {
                 return $scope.wizard.currentStep === 'Parameterize Earthquake';
             };
@@ -27,10 +27,15 @@ angular.module(
                     return true;
                 }
 
-                return false;
+                return true;
             };
 
             $scope.wizard.proceedButtonText = 'Next';
+            
+            $scope.params.improvements = {};
+            $scope.params.improvements.timeframe = 50;
+            $scope.budget = {};
+            $scope.budget.timeframeOptions = [{"value": 50, "label": '<i class="fa fa-calendar"/>&nbsp;50 Years'}];
 
             $scope.$watch('wizard.currentStep', function (n) {
                 if (n) {
@@ -56,7 +61,7 @@ angular.module(
                     $scope.wizard.canProceed =
                         ($scope.wizard.validators[$scope.wizard.currentStep] || $scope.wizard.validators.noVal)();
                 } else {
-                    $scope.wizard.canProceed = false;
+                    $scope.wizard.canProceed = true;
                 }
 
             }, true);

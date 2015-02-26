@@ -1,0 +1,138 @@
+<div class="container-fluid">
+    <form name="improvementsInput">
+        <div class="row">
+            <div class="col-lg-4">
+                <div>ANALYSIS Timeframe</div>
+            </div>
+            <div class="col-lg-4">
+                <div>MITIGATION Budget</div>
+            </div>
+            <div class="col-lg-4">
+                <div>INTEREST Rate</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <button type="button"
+                        name="timeframe"
+                        class="btn btn-default"
+                        ng-model="params.improvements.timeframe"
+                        ng-options="val.value as val.label for val in budget.timeframeOptions"
+                        data-html="true"
+                        bs-select
+                        style="width: 100%">
+                </button>
+            </div>
+            <div class="col-lg-4">
+                <input type="number"
+                       class="form-control"
+                       name="availableBudget"
+                       ng-model="params.improvements.availableBudget"
+                       min="0">
+                <span class='fa fa-money input-icon latlonfix'>&nbsp;€</span>
+            </div>
+            <div class="col-lg-4">
+                <input type="number" 
+                       class="form-control"
+                       name="interestRate"
+                       ng-model="params.improvements.interestRate"
+                       min="0">
+                <span class='fa fa-line-chart input-icon latlonfix'>&nbsp;%</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+                <div>Target class: <b>B'</b></div>
+            </div>
+            <div class="col-lg-3">
+                <div>Target class: <b>C'</b></div>
+            </div>
+            <div class="col-lg-3">
+                <div>Target class: <b>D'</b></div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-lg-3">
+                <div style="height: 34px; display: table-cell; vertical-align: middle;">Origin class: <b>A</b></div>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="aToB"
+                       ng-model="params.improvements.aToB"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="aToC"
+                       ng-model="params.improvements.aToC"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="aToD"
+                       ng-model="params.improvements.aToD"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 3px;">
+            <div class="col-lg-3">
+                <div style="height: 34px; display: table-cell; vertical-align: middle;">Origin class: <b>B</b></div>
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="bToC"
+                       ng-model="params.improvements.bToC"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="bToD"
+                       ng-model="params.improvements.bToD"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 3px;">
+            <div class="col-lg-3">
+                <div style="height: 34px; display: table-cell; vertical-align: middle;">Origin class: <b>C</b></div>
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="cToD"
+                       ng-model="params.improvements.cToD"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+    </form>
+</div>
