@@ -6,6 +6,7 @@ angular.module(
         'eu.crismaproject.worldstateAnalysis.services',
         'mgcrea.ngStrap.modal',
         'mgo-angular-wizard',
-        'mgcrea.ngStrap.button'
+        'mgcrea.ngStrap.button',
+        'mgcrea.ngStrap.select'
     ]
 );

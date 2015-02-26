@@ -15,8 +15,7 @@ angular.module(
             
             controller = [
                 '$scope',
-                '$filter',
-                function ($scope, $filter) {
+                function ($scope) {
                     var circleLayer, defaultCtrlOpts, drawCtrl, editGroup, getCircleCtrlOpts, getPolygonCtrlOpts, polygonLayer, selectableAreaLayer;
                     
                     $scope.center = {lat: 42.355244, lng: 13.393662, zoom: 12};
@@ -30,6 +29,7 @@ angular.module(
                     editGroup = new L.FeatureGroup();
                     defaultCtrlOpts = {
                         edit: {
+                            edit: false,
                             remove: false
                         },
                         draw: {
@@ -53,6 +53,7 @@ angular.module(
                         
                         ctrlOpts = getDefaultCtrlOpts();
                         ctrlOpts.draw.circle = {};
+                        ctrlOpts.edit.edit = true;
                         
                         return ctrlOpts;
                     };
@@ -61,6 +62,7 @@ angular.module(
                         
                         ctrlOpts = getDefaultCtrlOpts();
                         ctrlOpts.draw.polygon = {};
+                        ctrlOpts.edit.edit = true;
                         
                         return ctrlOpts;
                     };
@@ -87,6 +89,16 @@ angular.module(
                             }
                             
                             editGroup.addLayer(event.layer);
+                        });
+                        
+                        
+                        map.on('draw:edited', function (event) {
+                            // it should only be one layer
+                            event.layers.eachLayer(function (layer) {
+                                if (layer.getRadius) {
+                                    $scope.selectedDistance = Math.round(circleLayer.getRadius() * 100) / 100;
+                                } 
+                            });
                         });
                     });
                     

@@ -13,10 +13,14 @@
             <button type="button" 
                     class="btn btn-default" 
                     ng-model="selectableArea" 
-                    ng-options="area.name in selectableArea"
+                    ng-options="area.name for area in selectableAreas"
                     ng-show="selectedOption === 'selectableArea'"
                     data-placeholder="Choose {{selectableAreasTitle}}"
-                    bs-select>
+                    data-placement='bottom-right'
+                    data-all-none-buttons="'true'"
+                    bs-select
+                    ng-disabled="true"
+                    style="width: 100%; text-align: right;">
             </button>
         </div>
     </div>
