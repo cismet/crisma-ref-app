@@ -1,0 +1,182 @@
+<div class="container-fluid">
+    <form name="improvementsInput">
+        <div class="row">
+            <div class="col-lg-4">
+                <div>ANALYSIS Timeframe</div>
+            </div>
+            <div class="col-lg-4">
+                <div>MITIGATION Budget</div>
+            </div>
+            <div class="col-lg-4">
+                <div>INTEREST Rate</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <button type="button"
+                        name="timeframe"
+                        class="btn btn-default"
+                        ng-model="params.improvements.timeframe"
+                        ng-options="val.value as val.label for val in params.budget.timeframeOptions"
+                        ng-disabled="true"
+                        data-html="true"
+                        bs-select
+                        style="width: 100%">
+                </button>
+            </div>
+            <div class="col-lg-4">
+                <input type="number"
+                       class="form-control"
+                       name="availableBudget"
+                       ng-model="params.improvements.availableBudget"
+                       ng-disabled="true"
+                       min="0">
+                <span class="fa fa-eur input-icon latlonfix"></span>
+            </div>
+            <div class="col-lg-4">
+                <input type="number" 
+                       class="form-control"
+                       name="interestRate"
+                       ng-model="params.improvements.interestRate"
+                       ng-disabled="true"
+                       min="0">
+                <span class="input-icon latlonfix">&nbsp;%</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div bs-tooltip="'Mitigation cost by class'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-3">
+                    <div>Seismic retrofit</div>
+                </div>
+                <div class="col-lg-3">
+                    <div>Energy retrofit</div>
+                </div>
+                <div class="col-lg-3">
+                    <div><b>Total</b></div>
+                </div>
+            </div>
+            <div class="row margin-top-10">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>A</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costASeismic"
+                           ng-model="params.cost.a.seismic"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costAEnergy"
+                           ng-model="params.cost.a.energy"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costATotal"
+                           ng-model="params.cost.a.total"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>B</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costBSeismic"
+                           ng-model="params.cost.b.seismic"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costBEnergy"
+                           ng-model="params.cost.b.energy"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costBTotal"
+                           ng-model="params.cost.b.total"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>C</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costCSeismic"
+                           ng-model="params.cost.c.seismic"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costCEnergy"
+                           ng-model="params.cost.c.energy"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="costCTotal"
+                           ng-model="params.cost.c.total"
+                           min="0"
+                           ng-disabled="true">
+                    <span class='fa fa-eur input-icon latlonfix'></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="bs-text-cell-center"><b>Total cost</b></div>
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="costTotal"
+                       ng-model="params.cost.total"
+                       min="0"
+                       ng-disabled="true">
+                <span class='fa fa-eur input-icon latlonfix'></span>
+            </div>
+        </div>
+    </form>
+</div>
