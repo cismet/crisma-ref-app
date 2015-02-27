@@ -10,14 +10,11 @@
                 <wz-step title="Select Area">
                     <area-chooser geom="params.area" selectable-areas-title="'Municipality'" selectable-areas="[]"></area-chooser>
                 </wz-step>
-                <wz-step title="Define Budget">
+                <wz-step title="Define Improvements">
                     <ng-include src="'custom/templates/buildingBudget.html'"></ng-include>
                 </wz-step>
-                <wz-step title="Define Improvements">
-                    improvements
-                </wz-step>
-                <wz-step title="Define Costs">
-                    costs
+                <wz-step title="Show Costs">
+                    <ng-include src="'custom/templates/buildingMitigationCosts.html'"></ng-include>
                 </wz-step>
                 <wz-step title="Parameterize Earthquake">
                     <ng-include src="'custom/templates/simEqBody.html'" ng-controller="de.cismet.custom.controllers.simEqController"></ng-include>
