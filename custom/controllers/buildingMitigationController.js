@@ -65,6 +65,8 @@ angular.module(
             $scope.params.tax = {};
             $scope.params.tax.energy = 0;
             $scope.params.tax.seismic = 0;
+            
+            $scope.params.yearOfEvent = 0;
 
             $scope.$watch('wizard.currentStep', function (n) {
                 if (n) {
