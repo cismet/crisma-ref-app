@@ -1,0 +1,308 @@
+<div class="container-fluid">
+    <form name="populationsInput">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="bs-text-cell-center">Population count</div>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="populationCount"
+                       ng-model="params.population.count"
+                       min="0"
+                       ng-disabled="true">
+                <span class="fa fa-users input-icon latlonfix"></span>
+            </div>
+            <div class="col-lg-3">
+                <div class="bs-text-cell-center">Building count</div>
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="buildingsCount"
+                       ng-model="params.buildings.count"
+                       min="0"
+                       ng-disabled="true">
+                <span class="fa fa-building input-icon latlonfix"></span>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Time Crisis parameters'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Crisis duration</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Crisis Time Total Duration (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeTotalDuration"
+                           ng-model="params.time.totalDuration"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Evacuation peak</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Time of spontaneous evacuation peak (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeSpontaneousEvacPeak"
+                           ng-model="params.time.spontaneousEvacPeak"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Tent camp ready</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Temporary temp camp ready (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeTentCampReady"
+                           ng-model="params.time.tentCampReady"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Tech survey start</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Building Tech survey start (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeTechSurveyStart"
+                           ng-model="params.time.techSurveyStart"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Evacuation parameters'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Camp capacity</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Total capacity of camps (people)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="evacCampCapacity"
+                           ng-model="params.evac.CampCapacity"
+                           min="0">
+                    <span class="fa fa-users input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Evacuation peak</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Spontaneous evacuation peak'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="evacSpontaneousEvacPeak"
+                           ng-model="params.evac.spontaneousEvacPeak"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Pop. in Camps</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Population in Tent Camps'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="evacPopInTentCamps"
+                           ng-model="params.evac.popInTentCamps"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Pop. in Hotels</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Population in Hotels'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="evacPopInHotels"
+                           ng-model="params.evac.popInHotels"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Building Technical Surveys parameters'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Surveyor Teams</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Number of Surveyor Teams (2p)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="techSurveyorTeams"
+                           ng-model="params.tech.surveyorTeams"
+                           min="0">
+                    <span class="fa fa-users input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Building Surveys</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Number of Building Surveys per Day and Team'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="techBuildingSurveys"
+                           ng-model="params.tech.buildingSurveys"
+                           min="0">
+                    <span class="fa fa-building input-icon latlonfix"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Evacuation pertubation parameters'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="bs-text-cell-center">Small earthquake perceived by population</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Perception of a small earthquake by the population (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeEqPerception"
+                           ng-model="params.time.eqPerception"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">News alarming</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'News alarming the population (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeNewsAlarming"
+                           ng-model="params.time.newsAlarming"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">News reassuring</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'News reassuring the population (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeNewsReassuring"
+                           ng-model="params.time.newsReassuring"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Mandatory evacuation percentage per building class'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>A</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="evacClassA"
+                           ng-model="params.evac.classA"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>B</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="evacClassB"
+                           ng-model="params.evac.classB"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>C</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="evacClassC"
+                           ng-model="params.evac.classC"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Class <b>D</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="evacClassD"
+                           ng-model="params.evac.classD"
+                           min="0"
+                           max="100">
+                    <span class="input-icon latlonfix">%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <hr>
+        </div>
+        
+        <div bs-tooltip="'Analysis parameters'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Earthquake strike</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Big Earthquake Strike time (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timeEqStrike"
+                           ng-model="params.time.eqStrike"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Point of Analysis</div>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Point of Analysis time (day)'" data-trigger="hover" data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="timePointOfAnalysis"
+                           ng-model="params.time.pointOfAnalysis"
+                           min="0">
+                    <span class="fa fa-calendar input-icon latlonfix"></span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
