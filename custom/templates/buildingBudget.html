@@ -1,0 +1,310 @@
+<div class="container-fluid">
+    <form name="improvementsInput">
+        <div class="row">
+            <div class="col-lg-4">
+                <div>ANALYSIS Timeframe</div>
+            </div>
+            <div class="col-lg-4">
+                <div>MITIGATION Budget</div>
+            </div>
+            <div class="col-lg-4">
+                <div>INTEREST Rate</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <button type="button"
+                        name="timeframe"
+                        class="btn btn-default"
+                        ng-model="params.improvements.timeframe"
+                        ng-options="val.value as val.label for val in params.budget.timeframeOptions"
+                        data-html="true"
+                        bs-select
+                        style="width: 100%">
+                </button>
+            </div>
+            <div class="col-lg-4">
+                <input type="number"
+                       class="form-control"
+                       name="availableBudget"
+                       ng-model="params.improvements.availableBudget"
+                       min="0">
+                <span class="fa fa-eur input-icon latlonfix"></span>
+            </div>
+            <div class="col-lg-4">
+                <input type="number" 
+                       class="form-control"
+                       name="interestRate"
+                       ng-model="params.improvements.interestRate"
+                       min="0">
+                <span class="input-icon latlonfix">&nbsp;%</span>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div bs-tooltip="'Upgrade building vulnerability classes'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-3">
+                    <div>Target class: <b>B'</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <div>Target class: <b>C'</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <div>Target class: <b>D'</b></div>
+                </div>
+            </div>
+            <div class="row margin-top-10">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Origin class: <b>A</b></div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="aToB"
+                           ng-model="params.improvements.aToB"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="aToC"
+                           ng-model="params.improvements.aToC"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="aToD"
+                           ng-model="params.improvements.aToD"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Origin class: <b>B</b></div>
+                </div>
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="bToC"
+                           ng-model="params.improvements.bToC"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="bToD"
+                           ng-model="params.improvements.bToD"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+            <div class="col-lg-3">
+                <div class="bs-text-cell-center">Origin class: <b>C</b></div>
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+            </div>
+            <div class="col-lg-3">
+                <input type="number"
+                       class="form-control"
+                       name="cToD"
+                       ng-model="params.improvements.cToD"
+                       min="0"
+                       max="100">
+                <span class='input-icon latlonfix'>%</span>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div bs-tooltip="'Energy retrofitting'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center-twoline">Adeg. <b>A <i class="fa fa-arrow-right"/> D'</b></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="btn-group" ng-model="params.energy.aToD.level" bs-radio-group>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="1" type="radio"> 
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 1</span>
+                            <br>
+                            <span class="energy-saving-text">(25% saving)</span>
+                        </label>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="2" type="radio">
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 2</span>
+                            <br>
+                            <span class="energy-saving-text">(50% saving)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-3 input-col">
+                    <div class="bs-text-cell-center-twoline">
+                        <input type="number"
+                               class="form-control"
+                               name="energyAtoDPercentage"
+                               ng-model="params.energy.aToD.percentage"
+                               min="0"
+                               max="100">
+                        <span class='input-icon latlonfix'>%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center-twoline">Adeg. <b>B <i class="fa fa-arrow-right"/> D'</b></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="btn-group" ng-model="params.energy.bToD.level" bs-radio-group>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="1" type="radio"> 
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 1</span>
+                            <br>
+                            <span class="energy-saving-text">(25% saving)</span>
+                        </label>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="2" type="radio">
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 2</span>
+                            <br>
+                            <span class="energy-saving-text">(50% saving)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-3 input-col">
+                    <div class="bs-text-cell-center-twoline">
+                        <input type="number"
+                               class="form-control"
+                               name="energyBtoDPercentage"
+                               ng-model="params.energy.bToD.percentage"
+                               min="0"
+                               max="100">
+                        <span class='input-icon latlonfix'>%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center-twoline">Adeg. <b>C <i class="fa fa-arrow-right"/> D'</b></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="btn-group" ng-model="params.energy.cToD.level" bs-radio-group>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="1" type="radio"> 
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 1</span>
+                            <br>
+                            <span class="energy-saving-text">(25% saving)</span>
+                        </label>
+                        <label class="btn btn-default">
+                            <input class="btn btn-default" value="2" type="radio">
+                            <span class="fa fa-building-o energy-level-text">&nbsp;Energy Level 2</span>
+                            <br>
+                            <span class="energy-saving-text">(50% saving)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-3 input-col">
+                    <div class="bs-text-cell-center-twoline">
+                        <input type="number"
+                               class="form-control"
+                               name="energyCtoDPercentage"
+                               ng-model="params.energy.cToD.percentage"
+                               min="0"
+                               max="100">
+                        <span class='input-icon latlonfix'>%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row margin-top-10">
+                <div class="col-lg-3">
+                    <span class="bs-text-cell-center">Thermal KWh</span>
+                </div>
+                <div class="col-lg-3" bs-tooltip="'Price per KWh'"
+                           data-trigger="hover"
+                           data-placement="right">
+                    <input type="number"
+                           class="form-control"
+                           name="energyTermalKWhPrice"
+                           ng-model="params.energy.termalKWhPrice"
+                           min="0">
+                    <span class="fa fa-eur input-icon latlonfix"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <hr>
+        </div>
+        <div bs-tooltip="'Budget Share and Tax Incentives'" data-trigger="hover">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Government</div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="budgetGovernment"
+                           ng-model="params.budget.government"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Energy retrofit</div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="taxEnergy"
+                           ng-model="params.tax.energy"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+            </div>
+            <div class="row margin-top-3">
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Citizens</div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="budgetCitizens"
+                           ng-model="params.budget.citizens"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+                <div class="col-lg-3">
+                    <div class="bs-text-cell-center">Seismic retrofit</div>
+                </div>
+                <div class="col-lg-3">
+                    <input type="number"
+                           class="form-control"
+                           name="taxSeismic"
+                           ng-model="params.tax.seismic"
+                           min="0"
+                           max="100">
+                    <span class='input-icon latlonfix'>%</span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

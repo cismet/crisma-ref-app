@@ -143,3 +143,50 @@ span.glyphicon{
     -moz-padding-start: 50px;
     -moz-padding-end: 50px;
 }
+
+/* this fixes the nasty nvd3 svg override which causes the vector layers of leaflet to not be displayed anymore */
+.leaflet-overlay-pane svg {
+    width: initial;
+    height: initial;
+}
+
+.area-chooser-radio-button {
+    width: 100%;
+}
+
+.energy-level-text {
+    font-size: 12px;
+}
+
+.energy-saving-text {
+    font-size: 11px;
+    color: gray;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-top-3 {
+    margin-top: 3px;
+}
+
+.bs-text-cell-center {
+    height: 34px; 
+    display: table-cell; 
+    vertical-align: middle;
+}
+
+.bs-text-cell-center-twoline {
+    height: 54px; 
+    display: table-cell; 
+    vertical-align: middle;
+}
+
+.input-col {
+    display: table;
+}
+
+.width-100-percent {
+    width: 100%;
+}

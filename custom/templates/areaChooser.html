@@ -1,0 +1,71 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
+                    type="button" 
+                    name="useSelectableArea"
+                    value="selectableArea"
+                    ng-model="selectedOption"
+                    bs-radio>Use {{selectableAreasTitle}}
+            </button>
+        </div>
+        <div class="col-lg-7">
+            <button type="button" 
+                    class="btn btn-default" 
+                    ng-model="selectableArea" 
+                    ng-options="area.name for area in selectableAreas"
+                    ng-show="selectedOption === 'selectableArea'"
+                    data-placeholder="Choose {{selectableAreasTitle}}"
+                    data-placement='bottom-right'
+                    data-all-none-buttons="'true'"
+                    bs-select
+                    ng-disabled="true"
+                    style="width: 100%; text-align: right;">
+            </button>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 5px;">
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
+                    type="button" 
+                    name="usePointAndDistance"
+                    value="pointDistance"
+                    ng-model="selectedOption"
+                    bs-radio>Use Point and Distance
+            </button>
+        </div>
+        <div class="col-lg-7">
+            <form name="distanceInput" ng-show="selectedOption === 'pointDistance'">
+                <input class="form-control"
+                       name="input"
+                       type="number"
+                       ng-model="selectedDistance" 
+                       ng-options="area.name in selectableArea"
+                       ng-change="setRadius()"
+                       ng-min="0"> 
+                <span class='fa fa-arrows-h input-icon latlonfix'>&nbsp; in meters</span>
+            </form>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 5px;">
+        <div class="col-lg-5">
+            <button class="btn btn-default area-chooser-radio-button"
+                    type="button" 
+                    name="useFreePolygon"
+                    value="freePolygon"
+                    ng-model="selectedOption"
+                    bs-radio>Use Free Hand Polygon
+            </button>
+        </div>
+        <div class="col-lg-7">
+        </div>
+    </div>
+    <div class="row">
+        <hr>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <leaflet id="areaChooser" defaults="defaults" center="center" width="538" height="400"></leaflet>
+        </div>
+    </div>
+</div>
