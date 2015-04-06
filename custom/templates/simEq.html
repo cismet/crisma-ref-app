@@ -1,0 +1,94 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="de.cismet.custom.controllers.simEqController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="$hide()">&times;</button>
+                <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <input type="checkbox" name="useShakemap" ng-model="params.useShakemap"><span>&nbsp;Use shakemap</span>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="checkbox" name="applyTDV" ng-model="params.applyTDV"><span>&nbsp;Apply Time-dependent Vulnerability</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <hr>
+                    </div>
+                    <div class="row" ng-hide="params.useShakemap">
+                        <div class="col-lg-12">
+                            <leaflet id="mainmap" defaults="defaults" center="center" width="538" height="400"></leaflet>
+                            <div class="row" style="margin-top: 10px;">
+                                <div class="col-lg-6">
+                                    <div class="row" >
+                                        <div class='col-lg-2'>
+                                            <span style="height: 34px; display: table-cell; vertical-align: middle;">Lat:</span>
+                                        </div>
+                                        <div class='col-lg-10'>
+                                            <input class="form-control" type="number" ng-model="params.latitude" ng-change="createLatLng()">
+                                            <span class='fa fa-globe input-icon latlonfix'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class='col-lg-2'>
+                                            <span style="height: 34px; display: table-cell; vertical-align: middle;">Lon:</span>
+                                        </div>
+                                        <div class='col-lg-10'>
+                                            <input class="form-control" type="number" ng-model="params.longitude" ng-change="createLatLng()">
+                                            <span class='fa fa-globe input-icon latlonfix'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 15px;">
+                                <div class="col-lg-6">
+                                    <div class="row" >
+                                        <div class='col-lg-4'>
+                                            <span style="height: 34px; display: table-cell; vertical-align: middle;">Magnitude:</span>
+                                        </div>
+                                        <div class='col-lg-8'>
+                                            <input class="form-control" 
+                                                   type="number"
+                                                   ng-model="params.magnitude"
+                                                   bs-tooltip="magnitudeTooltip"
+                                                   data-trigger="focus"
+                                                   data-type="info"
+                                                   data-placement="bottom">
+                                            <span class='fa fa-area-chart input-icon latlonfix'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class='col-lg-3'>
+                                            <span style="height: 34px; display: table-cell; vertical-align: middle;">Depth:</span>
+                                        </div>
+                                        <div class='col-lg-9'>
+                                            <input class="form-control" 
+                                                   type="number"
+                                                   ng-model="params.depth"
+                                                   bs-tooltip="depthTooltip"
+                                                   data-trigger="focus"
+                                                   data-type="info"
+                                                   data-placement="bottom">
+                                            <span class='fa fa-wifi input-icon latlonfix'></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="startSimulation()">Start Simulation</button>
+            </div>
+        </div>
+    </div>
+</div>

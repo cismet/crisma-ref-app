@@ -4,6 +4,7 @@ angular.module(
         'de.cismet.smartAdmin.services',
         'ngAnimate',
         'de.cismet.custom.directives',
+        'de.cismet.custom.controllers',
         'leaflet-directive',
         'de.cismet.cids.widgets.nodeListWidget.directives',
         'de.cismet.cids.widgets.nodeListWidget.controllers',

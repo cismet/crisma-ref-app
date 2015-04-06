@@ -3,7 +3,8 @@ angular.module(
     [
         'easypiechart',
         'de.cismet.custom.services',
-        'eu.crismaproject.worldstateAnalysis.services'
+        'eu.crismaproject.worldstateAnalysis.services',
+        'mgcrea.ngStrap.modal'
     ]
     ).directive(
     'wmsLeaflet',
@@ -401,7 +402,9 @@ angular.module(
         'WorkspaceService',
         'de.cismet.collidingNameService.Nodes',
         'de.cismet.crisma.ICMM.Worldstates',
-        function (IconService, WorkspaceService, Nodes, Worldstates) {
+        '$modal',
+        '$rootScope',
+        function (IconService, WorkspaceService, Nodes, Worldstates, $modal, $rootScope) {
             'use strict';
             return {
                 restrict: 'E',
@@ -452,6 +455,35 @@ angular.module(
                         Nodes.get({nodeId: nodeKey}, function (node) {
                             WorkspaceService.removeWS(node);
                         });
+                    };
+                    
+                    $scope.simEq = function () {
+                        var modalInstance, scope;
+
+                        scope = $rootScope.$new(true);
+                        scope.worldstate = $scope.worldstate;
+                        scope.params = {};
+
+                        modalInstance = $modal({
+                            template: 'custom/templates/simEq.html',
+                            scope: scope,
+                            show: true,
+                            backdrop: 'static'
+                        });
+                        
+                        scope.$watch('params', function (n) {
+                            if(n && n.run) {
+                                console.log('TODO: run eq sim');
+                            }
+                        }, true);
+                    };
+                    
+                    $scope.buildingResistance = function () {
+                        
+                    };
+                    
+                    $scope.peopleEvacuation = function () {
+                        
                     };
                 }
             };
