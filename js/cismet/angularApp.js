@@ -37,6 +37,61 @@ angular.module('de.cismet.smartAdmin', [
             templateUrl: "partials/workspace.html",
             controller: 'WorkspaceCtrl'
         })
+        .when('/simulations', {
+            templateUrl: "partials/simulationsView.html",
+            controller: 'de.cismet.smartAdmin.controllers.simulationsViewController',
+            resolve: {
+                simulations: [
+                    'de.cismet.smartAdmin.services.simulation',
+                    function (simulationService) {
+                        return simulationService.updateSimulations().$promise;
+                    }
+                ]
+            }
+        })
+        .when('/simulations/:sId', {
+            templateUrl: "partials/simulationsDetailView.html",
+            controller: 'de.cismet.smartAdmin.controllers.simulationsDetailViewController',
+            resolve: {
+                simulation: [
+                    '$route',
+                    '$q',
+                    'de.cismet.smartAdmin.services.simulation',
+                    function ($route, $q, simulationService) {
+                        var deferred;
+                        
+                        deferred = $q.defer();
+                        
+                        simulationService.updateSimulations().$promise.then(
+                            function () {
+                                var found;
+                                
+                                found = simulationService.allSimulations.some(function (v) {
+                                    if(v.id.toString() === $route.current.params.sId) {
+                                        deferred.resolve(v);
+                                        return true;
+                                    }
+                                    
+                                    return false;
+                                });
+                                
+                                if(!found) {
+                                    deferred.reject('No simulation with id');
+                                }
+                            },
+                            function () {
+                                deferred.reject('No simulation with id');
+                            }
+                        );
+                
+                        return deferred.promise;
+                    }
+                ]
+            }
+        })
+        .when('/simulations/unknown', {
+            templateUrl: "partials/simulationsDetailUnknown.html",
+        })
         .when('/worldstateTreeWidget', {
             templateUrl: "partials/worldstateTree.html",
             controller: 'WorldstateTreeCtrl'

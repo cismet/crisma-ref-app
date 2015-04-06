@@ -1,0 +1,16 @@
+<div ng-repeat="simulation in simulations | orderBy : simulation.transitionstatus">
+    <div class="well well-sm" style="margin-bottom: 5px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
+                    <a href="#/simulations/{{simulation.id}}"> {{simulation.name}}</a>
+                </div>
+                <div class="col-lg-4">
+                    <span class="label label-default" 
+                          ng-class="{'label-success': (simulation.transitionstatus.indexOf('finished')) >= 0,
+                                     'label-warning': (simulation.transitionstatus.indexOf('running')) >= 0}"> {{JSON.parse(simulation.transitionstatus).status}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

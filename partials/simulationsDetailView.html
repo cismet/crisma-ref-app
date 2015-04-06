@@ -1,0 +1,46 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2><i class="fa fa-cog"/>&nbsp;{{simulation.name}}</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <span class="">ID:</span>
+        </div>
+        <div class="col-lg-8">
+            <span class="">{{simulation.id}}</span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <span class="">Description:</span>
+        </div>
+        <div class="col-lg-8">
+            <p class="">{{simulation.description}}</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <span class="">Performed simulations:</span>
+        </div>
+        <div class="col-lg-8">
+            <span class="">TBD</span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <span class="">Status:</span>
+        </div>
+        <div class="col-lg-8">
+            <span class="label label-default" 
+                  ng-class="{'label-success': (simulation.transitionstatus.indexOf('finished')) >= 0,
+                             'label-warning': (simulation.transitionstatus.indexOf('running')) >= 0}"> {{JSON.parse(simulation.transitionstatus).status}}</span>
+    
+        </div>
+    </div>
+</div>
