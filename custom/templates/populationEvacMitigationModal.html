@@ -1,0 +1,28 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="de.cismet.custom.controllers.populationEvacMitigationController">
+    <wizard on-finish="wizard.finish()" name="buildingMitigationWizard" current-step="wizard.currentStep">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="$hide()">&times;</button>
+                    <h4 class="modal-title">Population Evacuation mitigation analysis: {{worldstate.name}}</h4>
+                </div>
+                <div class="modal-body">
+                    <wz-step title="Select Area">
+                        <area-chooser geom="params.area" selectable-areas-title="'Municipality'" selectable-areas="[]"></area-chooser>
+                    </wz-step>
+                    <wz-step title="Parameterize Evacuation">
+                        <ng-include src="'custom/templates/populationEvacMitigationParams.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Parameterize Earthquake">
+                        <ng-include src="'custom/templates/simEqBody.html'" ng-controller="de.cismet.custom.controllers.simEqController"></ng-include>
+                    </wz-step>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
+                    <button type="button" class="btn btn-default" wz-previous style="margin-left: 20px;">Previous</button>
+                    <button type="button" class="btn btn-primary" wz-next ng-disabled="!wizard.canProceed">{{wizard.proceedButtonText}}</button>
+                </div>
+            </div>
+        </div>
+    </wizard>
+</div>

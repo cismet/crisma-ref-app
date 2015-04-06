@@ -488,14 +488,30 @@ angular.module(
                         
                         scope.$watch('params', function (n) {
                             if(n && n.run) {
-                                console.log('TODO: run eq sim');
+                                console.log('TODO: run building mitigation');
                             }
                         }, true);
-                        
                     };
                     
                     $scope.peopleEvacuation = function () {
+                        var modalInstance, scope;
+
+                        scope = $rootScope.$new(true);
+                        scope.worldstate = $scope.worldstate;
+                        scope.params = {};
+
+                        modalInstance = $modal({
+                            template: 'custom/templates/populationEvacMitigationModal.html',
+                            scope: scope,
+                            show: true,
+                            backdrop: 'static'
+                        });
                         
+                        scope.$watch('params', function (n) {
+                            if(n && n.run) {
+                                console.log('TODO: run population mitigation');
+                            }
+                        }, true);
                     };
                 }
             };
