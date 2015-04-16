@@ -24,7 +24,7 @@ angular.module(
             // the wizard framework is not sufficient for user friendly display of states
             $scope.wizard.validators = {noVal: function () { return true; }};
             $scope.wizard.validators['Select Area'] = function () {
-                if ($scope.params.area && $scope.params.area.geometry.coordinates) {
+                if ($scope.params.area && $scope.params.area.geometry && $scope.params.area.geometry.coordinates) {
                     return true;
                 }
 
