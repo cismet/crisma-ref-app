@@ -13,13 +13,12 @@
             <button type="button" 
                     class="btn btn-default" 
                     ng-model="selectableArea" 
-                    ng-options="area.name for area in selectableAreas"
+                    ng-options="area as area.properties.nome_com + ' (' + area.properties.pro_com + ')' for area in selectableAreas"
                     ng-show="selectedOption === 'selectableArea'"
                     data-placeholder="Choose {{selectableAreasTitle}}"
                     data-placement='bottom-right'
                     data-all-none-buttons="'true'"
                     bs-select
-                    ng-disabled="true"
                     style="width: 100%; text-align: right;">
             </button>
         </div>
@@ -40,7 +39,6 @@
                        name="input"
                        type="number"
                        ng-model="selectedDistance" 
-                       ng-options="area.name in selectableArea"
                        ng-change="setRadius()"
                        ng-min="0"> 
                 <span class='fa fa-arrows-h input-icon latlonfix'>&nbsp; in meters</span>
