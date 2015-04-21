@@ -39,27 +39,30 @@ angular.module(
                         overlays: {
                         }
                     };
-                    var createOverlayObject = function (dataslot) {
+                    var createOverlayObject = function (dataslot) {                        
                         var actualAccessInfo = JSON.parse(dataslot.actualaccessinfo);
                         var defaultAcessInfo = JSON.parse(dataslot.datadescriptor.defaultaccessinfo);
-                        var wmsBaseUrl = defaultAcessInfo['simplewms_getmap'];
+                        var wmsBaseUrl = defaultAcessInfo['capabilities'];
+                        var zIndex = dataslot.categories[0].key === 'SUPPORTIVE_WMS' ? 0 : 1;
                         wmsBaseUrl = wmsBaseUrl.slice(0, wmsBaseUrl.indexOf('?'));
                         var result = {
-                            name: dataslot.name,
+                            name: actualAccessInfo.displayName || dataslot.name,
                             type: 'wms',
                             url: wmsBaseUrl,
-                            visible: true,
+                            visible: actualAccessInfo.visible && actualAccessInfo.visible === true,
                             layerParams: {
                                 layers: actualAccessInfo.layername,
                                 format: 'image/png',
                                 transparent: true,
-                                opacity: 0.75
+                                opacity: 0.75,
+                                zIndex: zIndex
                             }
                         };
                         return result;
 
                     };
 
+                    // FIXME: don't do that! using the same property for arrays and objects!
                     if (Object.prototype.toString.call($scope.dataslots) === '[object Array]') {
                         for (var j = 0; j < $scope.dataslots.length; j++) {
                             var dataslotObj = $scope.dataslots[j];
@@ -71,7 +74,6 @@ angular.module(
                         var dataslot = $scope.dataslots;
                         $scope.layers.overlays[dataslot.name] = createOverlayObject(dataslot);
                     }
-
                 }
             }
             ;
