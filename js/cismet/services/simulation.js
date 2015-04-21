@@ -72,7 +72,7 @@ angular.module(
 
             updateSimulations = function () {
                 var simulations;
-                console.log('update');
+                //console.log('update');
 
                 simulations = getSimulations();
 
