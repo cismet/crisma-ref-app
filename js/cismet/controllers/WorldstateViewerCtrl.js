@@ -91,7 +91,7 @@ angular.module(
                         var theRealDataslot = rdItemArray[j].dataslot;
                         if(theRealDataslot.datadescriptor.categories[0].key === ('WMS_CAPABILITIES')) {  
                             //merge supportive WMS rditems array with "dataslot" rdItems Array
-                            $scope.visualisationData[k].dataslot = supportiveWMS.concat($scope.visualisationData[k].dataslot);
+                            $scope.visualisationData[k].dataslot = $scope.visualisationData[k].dataslot.concat(supportiveWMS);
                             break;
                         }
                     }
@@ -99,7 +99,7 @@ angular.module(
                     var theRealDataslot =  rdItemObjectOrArray.dataslot;
                     if(theRealDataslot.datadescriptor.categories[0].key === ('WMS_CAPABILITIES')) {    
                         
-                        var rdItemArray = supportiveWMS.concat([rdItemObjectOrArray]);
+                        var rdItemArray = [rdItemObjectOrArray].concat(supportiveWMS);
                         
                         // this is madness: FIX IT IN PRODUCTIVE VERSION!!!
                         rdItem = {
