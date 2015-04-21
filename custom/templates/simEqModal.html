@@ -1,17 +1,37 @@
 <div class="modal" tabindex="-1" role="dialog" ng-controller="de.cismet.custom.controllers.simEqController">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" ng-click="$hide()">&times;</button>
-                <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
-            </div>
-            <div class="modal-body">
-                <ng-include src="'custom/templates/simEqBody.html'"></ng-include>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
-                <button type="button" class="btn btn-primary" ng-click="startSimulation()">Start Simulation</button>
+    <wizard on-finish="wizard.finish()" name="Simulate Earthquake" current-step="wizard.currentStep">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="$hide()">&times;</button>
+                    <h4 class="modal-title">Simulate Earthquake: {{worldstate.name}}</h4>
+                </div>
+                <div class="modal-body">
+                    <wz-step title="Choose # of Earthquake Events">
+                        <ng-include src="'custom/templates/eqTDVRoundsChooser.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Earthquake Event #1">
+                        <ng-include src="'custom/templates/simEqBody1.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Earthquake Event #2" ng-if="params.tdvRounds >= 2">
+                        <ng-include src="'custom/templates/simEqBody2.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Earthquake Event #3" ng-if="params.tdvRounds >= 3">
+                        <ng-include src="'custom/templates/simEqBody3.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Earthquake Event #4" ng-if="params.tdvRounds >= 4">
+                        <ng-include src="'custom/templates/simEqBody4.html'"></ng-include>
+                    </wz-step>
+                    <wz-step title="Earthquake Event #5" ng-if="params.tdvRounds >= 5">
+                        <ng-include src="'custom/templates/simEqBody5.html'"></ng-include>
+                    </wz-step>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="$hide()">Cancel</button>
+                    <button type="button" class="btn btn-default" wz-previous="beforePrevious()" style="margin-left: 20px;">Previous</button>
+                    <button type="button" class="btn btn-primary" wz-next="beforeNext()" ng-disabled="!wizard.canProceed">{{wizard.proceedButtonText}}</button>
+                </div>
             </div>
         </div>
-    </div>
+    </wizard>
 </div>

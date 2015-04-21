@@ -1,0 +1,19 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4">
+            <span># of TDV rounds</span>
+        </div>
+        <div class="col-lg-8">
+            <button type="button" 
+                    class="btn btn-default" 
+                    ng-model="params.tdvRounds" 
+                    ng-options="round for round in [1,2,3,4,5]"
+                    data-placeholder="Choose # of TDV rounds"
+                    data-placement='bottom-right'
+                    data-all-none-buttons="'false'"
+                    bs-select
+                    style="width: 100%; text-align: right;">
+            </button>
+        </div>
+    </div>
+</div>
