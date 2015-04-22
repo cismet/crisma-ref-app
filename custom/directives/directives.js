@@ -52,7 +52,7 @@ angular.module(
                                         if (!overlays[dataslotObj.dataslot.name]) {
                                             //console.log('adding layer(s) ' + dataslotObj.dataslot.name);
                                             overlays[dataslotObj.dataslot.name] =
-                                                    controller.createOverlayObject(dataslotObj.dataslot);
+                                                    controller.createOverlayObject(dataslotObj.dataslot, j);
                                         }
 
                                     }
@@ -66,7 +66,7 @@ angular.module(
                                     if (!overlays[dataslot.name]) {
                                         //console.log('adding layer ' + dataslot.name);
                                         overlays[dataslot.name] =
-                                                controller.createOverlayObject(dataslot);
+                                                controller.createOverlayObject(dataslot, 1);
                                     }
                                 }
 
@@ -105,17 +105,18 @@ angular.module(
                             overlays: {}
                         };
 
-                        this.createOverlayObject = function (dataslot) {
+                        this.createOverlayObject = function (dataslot, i) {
                             var actualAccessInfo = JSON.parse(dataslot.actualaccessinfo);
                             var defaultAcessInfo = JSON.parse(dataslot.datadescriptor.defaultaccessinfo);
                             var wmsBaseUrl = defaultAcessInfo['capabilities'];
-                            var zIndex = dataslot.categories[0].key === 'SUPPORTIVE_WMS' ? 0 : 1;
+                            var zIndex = i;
                             wmsBaseUrl = wmsBaseUrl.slice(0, wmsBaseUrl.indexOf('?'));
                             var result = {
                                 name: actualAccessInfo.displayName || dataslot.name,
                                 type: 'wms',
                                 url: wmsBaseUrl,
                                 visible: actualAccessInfo.visible && actualAccessInfo.visible === true,
+                                zIndex: zIndex,
                                 layerParams: {
                                     layers: actualAccessInfo.layername,
                                     format: 'image/png',
@@ -145,13 +146,13 @@ angular.module(
 //                        if (Object.prototype.toString.call($scope.dataslots) === '[object Array]') {
 //                            for (var j = 0; j < $scope.dataslots.length; j++) {
 //                                var dataslotObj = $scope.dataslots[j];
-//                                var overlayLayer = this.createOverlayObject(dataslotObj.dataslot);
+//                                var overlayLayer = this.createOverlayObject(dataslotObj.dataslot, j);
 //                                $scope.layers.overlays[dataslotObj.dataslot.name] = overlayLayer;
 //
 //                            }
 //                        } else {
 //                            var dataslot = $scope.dataslots;
-//                            $scope.layers.overlays[dataslot.name] = this.createOverlayObject(dataslot);
+//                            $scope.layers.overlays[dataslot.name] = this.createOverlayObject(dataslot, 1);
 //                        }
                     }
                 }
@@ -380,8 +381,8 @@ angular.module(
                     templateUrl: 'custom/templates/iccDataBody.html',
                     replace: true,
                     controller: function ($scope) {
-                        var page, i, j, indicatorGroup, critFuncSet, critFun, items, item,
-                                indicatorItem;
+                        var page, i, j, indicatorGroup, critFuncSet, critFun, item,
+                                indicatorItem, pageCount, group;
                         //we need to split the indicators into groups of 3 items.
                         $scope.IconService = IconService;
                         $scope.SelectedCriteriaFunction = SelectedCriteriaFunction;
@@ -412,34 +413,64 @@ angular.module(
                                 }
                             }
                         }, true);
+                        
+                        
 
                         $scope.getPanelColour = function (pageIndex, index) {
-                            return $scope.renderingDescriptor.colourClasses[(3 * pageIndex) + index];
+                            //console.log('pageIndex:'+pageIndex+', index:'+index+', color index:'+ ((2 * pageIndex) + index));
+                            return $scope.renderingDescriptor.colourClasses[(2 * pageIndex) + index];
                         };
 
                         $scope.indicators = Worldstates.utils.stripIccData([$scope.dataslot[0].worldstate])[0].data;
 
+
                         $scope.pagedIccGroups = [];
                         page = [];
+                        pageCount = 0;
                         for (i = 0; i < Object.keys($scope.indicators).length; i++) {
                             indicatorGroup = $scope.indicators[Object.keys($scope.indicators)[i]];
-                            if (i > 0 && i % 3 === 0) {
-                                $scope.pagedIccGroups.push(page);
-                                page = [];
-                            }
 
-                            items = [];
+                            group = {
+                                displayName: indicatorGroup.displayName,
+                                iconResource: indicatorGroup.iconResource,
+                                avgItems: {},
+                                items: []
+                            };
 
                             for (j = 0; j < Object.keys(indicatorGroup).length; j++) {
-                                var property = Object.keys(indicatorGroup)[j]
+                                var property;
+                                property = Object.keys(indicatorGroup)[j];
                                 if (property !== 'displayName' && property !== 'iconResource') {
                                     indicatorItem = indicatorGroup[property];
                                     item = {
-                                        displayName: indicatorItem.displayName,
                                         iconResource: indicatorItem.iconResource,
                                         indicator: indicatorItem.value,
                                         indicatorUnit: indicatorItem.unit,
                                     };
+
+                                    if (indicatorItem.displayName.indexOf('(Avg)') !== -1) {
+                                        item.displayName = indicatorItem.displayName.substring(0, indicatorItem.displayName.indexOf('(Avg)'));
+                                        if (!group.avgItems[item.displayName]) {
+                                            group.avgItems[item.displayName] = {};
+                                        }
+                                        group.avgItems[item.displayName].avg = item;
+                                    } else if (indicatorItem.displayName.indexOf('(Min)') !== -1) {
+                                        item.displayName = indicatorItem.displayName.substring(0, indicatorItem.displayName.indexOf('(Min)'));
+                                        if (!group.avgItems[item.displayName]) {
+                                            group.avgItems[item.displayName] = {};
+                                        }
+                                        group.avgItems[item.displayName].min = item;
+                                    } else if (indicatorItem.displayName.indexOf('(Max)') !== -1) {
+                                        item.displayName = indicatorItem.displayName.substring(0, indicatorItem.displayName.indexOf('(Max)'));
+                                        if (!group.avgItems[item.displayName]) {
+                                            group.avgItems[item.displayName] = {};
+                                        }
+                                        group.avgItems[item.displayName].max = item;
+                                    } else {
+                                        item.displayName = indicatorItem.displayName;
+                                        group.items.push(item);
+                                    }
+
                                     if (SelectedCriteriaFunction.selectedCriteriaFunction) {
                                         critFuncSet = SelectedCriteriaFunction.selectedCriteriaFunction.criteriaFunctions;
                                         if (critFuncSet && critFuncSet.length > 0) {
@@ -451,21 +482,31 @@ angular.module(
                                             item.criteriaFunction = critFun;
                                         }
                                     }
-                                    items.push(item);
                                 }
                             }
 
-                            page.push({
-                                displayName: indicatorGroup.displayName,
-                                iconResource: indicatorGroup.iconResource,
-                                items: items
-                            });
+                            // create a new group for AVG-MIN-MAX Indicators!
+                            // FIXME: HACK!
+                            if (indicatorGroup.displayName === 'Casualties' ||
+                                    indicatorGroup.displayName === 'Economic cost' ||
+                                    indicatorGroup.displayName === 'Damaged buildings')
+                            {
+                                group.averages = true;
+                                // place average indicator groups on top
+                                $scope.pagedIccGroups.unshift([group]);
+                            } else {
+                                pageCount++;
+                                page.push(group);
+                                if (pageCount > 0 && pageCount % 2 === 0) {
+                                    $scope.pagedIccGroups.push(page);
+                                    pageCount = 0;
+                                    page = [];
+                                }
+                            }  
                         }
-                        $scope.pagedIccGroups.push(page);
 
                         $scope.size = 50;
-                        $scope.percent = 90;
-
+                        $scope.percent = 90; 
                     }
                 };
             }

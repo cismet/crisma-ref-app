@@ -199,9 +199,9 @@ angular.module('de.cismet.smartAdmin.services'
                         colourClasses: [
                             'panel-purple',
                             'panel-orange',
-                            'panel-greenLight',
+                            'panel-redLight',
                             'panel-blue',
-                            'panel-redLight'
+                            'panel-greenLight'
                         ],
                         mergeId: 'iccIndicatorCriteriaWidget',
                         title: 'Indicator & Criteria'
@@ -218,9 +218,9 @@ angular.module('de.cismet.smartAdmin.services'
                         colourClasses: [
                             'txt-color-blue',
                             'txt-color-purple',
-                            'txt-color-greenDark',
+                            'txt-color-redLight',
                             'txt-color-orange',
-                            'txt-color-redLight'
+                            'txt-color-greenDark'
                         ],
                         widgetArea: false
                     }
