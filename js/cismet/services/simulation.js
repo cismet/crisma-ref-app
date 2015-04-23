@@ -82,8 +82,8 @@ angular.module(
                     running = [];
                     simulations.forEach(function (simulation) {
                         if (simulation.transitionstatus) {
-                            if (simulation.transitionstatus === 'running' ||
-                                    JSON.parse(simulation.transitionstatus).status === 'running') {
+                            if (simulation.transitionstatus.toLowerCase() === 'running' ||
+                                    JSON.parse(simulation.transitionstatus).status.toLowerCase() === 'running') {
                                 running.push(simulation);
                             }
                         }

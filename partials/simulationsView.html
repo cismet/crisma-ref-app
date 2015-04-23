@@ -7,8 +7,8 @@
                 </div>
                 <div class="col-lg-4">
                     <span class="label label-default" 
-                          ng-class="{'label-success': (simulation.transitionstatus.indexOf('finished')) >= 0,
-                                     'label-warning': (simulation.transitionstatus.indexOf('running')) >= 0}"> {{JSON.parse(simulation.transitionstatus).status}}</span>
+                          ng-class="{'label-success': (simulation.transitionstatus.toLowerCase().indexOf('finished')) >= 0,
+                                     'label-warning': (simulation.transitionstatus.toLowerCase().indexOf('running')) >= 0}"> {{JSON.parse(simulation.transitionstatus).status}}</span>
                 </div>
             </div>
         </div>
