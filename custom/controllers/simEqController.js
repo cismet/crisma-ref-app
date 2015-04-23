@@ -18,7 +18,8 @@ angular.module(
                 return $scope.wizard.currentStep.indexOf($scope.params.tdvRounds + '') > 0;
             };
             $scope.wizard.finish = function () {
-//                $scope.params.run = true;
+                $scope.params.run = true;
+                $scope.params.wsId = $scope.worldstate.id;
                 $scope.$hide();
             };
             $scope.wizard.proceedButtonText = 'Next';

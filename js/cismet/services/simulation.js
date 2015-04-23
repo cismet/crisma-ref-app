@@ -97,14 +97,14 @@ angular.module(
             };
 
             // poll simulations
-//            $interval(
-//                function () {
-//                    updateSimulations();
-//                },
-//                10000,
-//                0,
-//                true
-//            );
+            $interval(
+                function () {
+                    updateSimulations();
+                },
+                10000,
+                0,
+                true
+            );
 
             updateSimulations();
 
