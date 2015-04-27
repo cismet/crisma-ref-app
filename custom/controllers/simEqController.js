@@ -52,6 +52,9 @@ angular.module(
             $scope.currentRound = 0;
             
             $scope.beforeNext = function() {
+                leafletData.getMap('eqParamMap'  + $scope.currentRound).then(function(map) {
+                    map.removeLayer(marker);
+                });
                 if($scope.currentRound > 0) {
                     $scope.params['eq' + $scope.currentRound] = angular.copy($scope.currentParams);
                     if($scope.params['eq' + ($scope.currentRound + 1)]) {
@@ -59,15 +62,26 @@ angular.module(
                     } else {
                         $scope.currentParams = angular.copy($scope.defaultParams);
                     }
+                    setEpicenter([$scope.currentParams.latitude, $scope.currentParams.longitude]);
                 }
                 $scope.currentRound++;
+                leafletData.getMap('eqParamMap'  + $scope.currentRound).then(function(map) {
+                    map.addLayer(marker);
+                });
             };
             $scope.beforePrevious = function() {
+                leafletData.getMap('eqParamMap'  + $scope.currentRound).then(function(map) {
+                    map.removeLayer(marker);
+                });
                 if($scope.currentRound > 1) {
                     $scope.params['eq' + $scope.currentRound] = angular.copy($scope.currentParams);
                     $scope.currentParams = angular.copy($scope.params['eq' + ($scope.currentRound - 1)]);
+                    setEpicenter([$scope.currentParams.latitude, $scope.currentParams.longitude]);
                 }
                 $scope.currentRound--;
+                leafletData.getMap('eqParamMap'  + $scope.currentRound).then(function(map) {
+                    map.addLayer(marker);
+                });
             };
             
             // TODO: gotoStep impl
@@ -118,14 +132,44 @@ angular.module(
                 setEpicenter([$scope.currentParams.latitude, $scope.currentParams.longitude]);
             };
             
-            leafletData.getMap('eqParamMap').then(function (map) {
+            leafletData.getMap('eqParamMap1').then(function (map) {
                 map.on('click', function (event) {
                     $scope.currentParams.latitude = event.latlng.lat;
                     $scope.currentParams.longitude = event.latlng.lng;
                     setEpicenter(event.latlng);
                 });
-
-                marker.addTo(map);
+            });
+            
+            leafletData.getMap('eqParamMap2').then(function (map) {
+                map.on('click', function (event) {
+                    $scope.currentParams.latitude = event.latlng.lat;
+                    $scope.currentParams.longitude = event.latlng.lng;
+                    setEpicenter(event.latlng);
+                });
+            });
+            
+            leafletData.getMap('eqParamMap3').then(function (map) {
+                map.on('click', function (event) {
+                    $scope.currentParams.latitude = event.latlng.lat;
+                    $scope.currentParams.longitude = event.latlng.lng;
+                    setEpicenter(event.latlng);
+                });
+            });
+            
+            leafletData.getMap('eqParamMap4').then(function (map) {
+                map.on('click', function (event) {
+                    $scope.currentParams.latitude = event.latlng.lat;
+                    $scope.currentParams.longitude = event.latlng.lng;
+                    setEpicenter(event.latlng);
+                });
+            });
+            
+            leafletData.getMap('eqParamMap5').then(function (map) {
+                map.on('click', function (event) {
+                    $scope.currentParams.latitude = event.latlng.lat;
+                    $scope.currentParams.longitude = event.latlng.lng;
+                    setEpicenter(event.latlng);
+                });
             });
             
             $scope.$watch('wizard.currentStep', function (n) {
