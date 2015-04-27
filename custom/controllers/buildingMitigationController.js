@@ -78,7 +78,7 @@ angular.module(
 
                     if (n === 'Parameterize Earthquake') {
                         // this has to be done as the map won't render properly as it is loaded when not displayed yet
-                        leafletData.getMap('eqParamMap').then(function (map) {
+                        leafletData.getMap('eqParamMap1').then(function (map) {
                             map.invalidateSize(false);
                         });
                     }
