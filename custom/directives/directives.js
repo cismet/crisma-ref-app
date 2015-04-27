@@ -520,7 +520,8 @@ angular.module(
             'de.cismet.crisma.ICMM.Worldstates',
             '$modal',
             '$rootScope',
-            function (IconService, WorkspaceService, Nodes, Worldstates, $modal, $rootScope) {
+            'WPSService',
+            function (IconService, WorkspaceService, Nodes, Worldstates, $modal, $rootScope, WPSService) {
                 'use strict';
                 return {
                     restrict: 'E',
@@ -589,7 +590,7 @@ angular.module(
 
                             scope.$watch('params', function (n) {
                                 if (n && n.run) {
-                                    console.log('TODO: run eq sim');
+                                    WPSService.getEqWPS().run(n)
                                 }
                             }, true);
                         };
