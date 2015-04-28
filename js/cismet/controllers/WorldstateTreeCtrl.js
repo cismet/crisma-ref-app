@@ -6,6 +6,11 @@ angular.module(
         'de.cismet.collidingNameService.Nodes',
         'WorkspaceService',
         function ($scope, Nodes, WorkspaceService) {
+            
+            $scope.$on('worldstatesChanged', function() {
+                console.log('ws changed in tree')
+                $scope.nodes = Nodes.query();
+            });
             $scope.isWorldstateIcon = true;
             $scope.treeOptions = {
                 multiSelection: true,

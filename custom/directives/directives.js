@@ -521,7 +521,8 @@ angular.module(
             '$modal',
             '$rootScope',
             'WPSService',
-            function (IconService, WorkspaceService, Nodes, Worldstates, $modal, $rootScope, WPSService) {
+            'de.cismet.smartAdmin.services.simulation',
+            function (IconService, WorkspaceService, Nodes, Worldstates, $modal, $rootScope, WPSService, simulation) {
                 'use strict';
                 return {
                     restrict: 'E',
@@ -590,7 +591,8 @@ angular.module(
 
                             scope.$watch('params', function (n) {
                                 if (n && n.run) {
-                                    WPSService.getEqWPS().run(n)
+                                    WPSService.getEqWPS().run(n);
+                                    simulation.updateSimulations();
                                 }
                             }, true);
                         };

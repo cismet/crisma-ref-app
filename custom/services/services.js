@@ -53,7 +53,7 @@ angular.module(
                     
                     console.log(xml);
                     
-                    $http.post('http://wps.plinivs.it:8989/geoserver/wps', xml, {
+                    $http.post('http://wps.plinivs.it:8080/geoserver/wps', xml, {
                         headers: {
                             'Content-Type': 'xml',
                             'Authorization': 'Basic YWRtaW46bV9Mb2E1aEp6OFZi'

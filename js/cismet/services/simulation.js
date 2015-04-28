@@ -8,7 +8,8 @@ angular.module(
         'de.cismet.smartAdmin.services.utils',
         'CRISMA_DOMAIN',
         'CRISMA_ICMM_API',
-        function ($resource, $interval, utils, CRISMA_DOMAIN, CRISMA_ICMM_API) {
+        '$rootScope',
+        function ($resource, $interval, utils, CRISMA_DOMAIN, CRISMA_ICMM_API, $rootScope) {
             'use strict';
 
             var allSimulations, getSimulation, getSimulations, processResults, res, runningSimulations,
@@ -88,6 +89,11 @@ angular.module(
                             }
                         }
                     });
+                    
+                    // FIXME: error-prone but sufficient for now:
+                    if(runningSimulations.length > running.length) {
+                        $rootScope.$broadcast('worldstatesChanged');
+                    }
 
                     utils.updateArray(allSimulations, simulations);
                     utils.updateArray(runningSimulations, running);
