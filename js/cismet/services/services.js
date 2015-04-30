@@ -110,18 +110,73 @@ angular.module('de.cismet.smartAdmin.services'
                     fullSize: true,
                     collapsed: false,
                     collapsible: true,
-                    bodyDirective: 'wms-leaflet',
+                    bodyDirective: null,
                     padding: 'no-padding'
                 }, dataslot, i, tempRd;
                 if (worldstate.worldstatedata) {
                     for (i = 0; i < worldstate.worldstatedata.length; i++) {
                         dataslot = worldstate.worldstatedata[i];
-                        if(dataslot){
-                            tempRd = Object.create(renderingDescriptorPrototype);
-                            tempRd.title = dataslot.name;
-                            tempRd.priority = i + 2;
-                            dataslot.renderingdescriptor = [];
-                            dataslot.renderingdescriptor.push(tempRd);
+                        dataslot.renderingdescriptor = [];
+                        if(dataslot && dataslot.categories && dataslot.categories.length > 0 &&
+                                dataslot.datadescriptor && dataslot.datadescriptor.categories && 
+                                dataslot.datadescriptor.categories.length > 0) {
+                            
+                            // FIXME: move to custom service!
+                            var category = dataslot.categories[0].key;
+                            var title, priority;
+                            switch(category) {
+                                    case 'INTENSITY_GRID':
+                                        title = 'Intensity Grid';
+                                        priority = 101;
+                                        break;
+                                    case 'BUILDING_DAMAGE_MIN':
+                                    case 'BUILDING_DAMAGE_MAX':
+                                    case 'BUILDING_DAMAGE_AVG':
+                                        title = 'Building Damage';
+                                        priority = 102;
+                                        break;
+                                    case 'BUILDING_INVENTORY':
+                                        title = 'Building Inventory';
+                                        priority = 103;
+                                        break;
+                                    case 'PEOPLE_DISTRIBUTION':
+                                        title = 'People Distribution';
+                                        priority = 104;
+                                        break;
+                                    case 'PEOPLE_IMPACT_MIN':
+                                    case 'PEOPLE_IMPACT_MAX':
+                                    case 'PEOPLE_IMPACT_AVG':
+                                        title = 'People Impact';
+                                        priority = 105;
+                                        break;    
+                                    case 'SHAKEMAP':
+                                        title = 'Shakemaps';
+                                        priority = 106;
+                                        break;
+                                    default:
+                                        title = category;
+                                        priority = i + 2;
+                            }
+                            
+                            // select the proper renderer for the dataslot
+                            if(dataslot.datadescriptor.categories[0].key === ('WMS_CAPABILITIES')) {
+                                // don't add a redering description for supportive WMS
+                                // -> dont't show them in worldstate view 
+                                // re-nabled because of rditms/dataslot/arrays mess
+                                //if(dataslot.categories[0].key !== 'SUPPORTIVE_WMS') {
+                                    tempRd = Object.create(renderingDescriptorPrototype);
+                                    tempRd.title = title;
+                                    tempRd.bodyDirective = 'wms-leaflet';
+                                    tempRd.priority = i + 2;
+                                    dataslot.renderingdescriptor.push(tempRd);
+                                //}
+                                
+                            } else {
+                                // TODO: define other rendering descriptors
+                                console.warn('Dataslot Type "'+dataslot.categories[0].key+'" is currently not supported')
+                            }
+                        } else {
+                            console.error('invalid dataslot "'+dataslot.name+'"!');
                         }
                     }
                 }
@@ -144,9 +199,9 @@ angular.module('de.cismet.smartAdmin.services'
                         colourClasses: [
                             'panel-purple',
                             'panel-orange',
-                            'panel-greenLight',
+                            'panel-redLight',
                             'panel-blue',
-                            'panel-redLight'
+                            'panel-greenLight'
                         ],
                         mergeId: 'iccIndicatorCriteriaWidget',
                         title: 'Indicator & Criteria'
@@ -163,9 +218,9 @@ angular.module('de.cismet.smartAdmin.services'
                         colourClasses: [
                             'txt-color-blue',
                             'txt-color-purple',
-                            'txt-color-greenDark',
+                            'txt-color-redLight',
                             'txt-color-orange',
-                            'txt-color-redLight'
+                            'txt-color-greenDark'
                         ],
                         widgetArea: false
                     }
@@ -183,39 +238,44 @@ angular.module('de.cismet.smartAdmin.services'
                 
                 return worldstate;
             };
+            /**
+             * Merge Layers
+             * 
+             * @param {type} worldstate
+             * @returns {unresolved}
+             */
             serviceObj.mergeWMSLayer = function (worldstate) {
-                var osmMergeId = 'osmHelperLayer';
-                var regionMergeId = 'regionHelperLayer';
-                var backgroundMergeId = 'backgroundHelperLayer';
                 var i, renderingdescriptor, dataslot;
                 if (worldstate.worldstatedata) {
 
                     for (i = 0; i < worldstate.worldstatedata.length; i++) {
-                        renderingdescriptor = worldstate.worldstatedata[i].renderingdescriptor[0];
-                        dataslot = worldstate.worldstatedata[i];
-                        switch (dataslot.name) {
-                            case 'planet_osm_polygon':
-                            case 'ortho':
-                            case 'planet_osm_line':
-                            case 'planet_osm_point':
-                                renderingdescriptor.mergeId = osmMergeId;
-                                renderingdescriptor.priority = 20;
-                                break;
-                            case 'regione':
-                            case 'province':
-                            case 'comune_aq':
-                            case 'hospitals':
-                            case 'schools':
-                            case 'power_towers':
-                                renderingdescriptor.mergeId = regionMergeId;
-                                renderingdescriptor.priority = 30;
-                                break;
-                            case 'contour_dem_25':
-                            case 'zones':
-                            case 'clc2006':
-                                renderingdescriptor.mergeId = backgroundMergeId;
-                                renderingdescriptor.priority = 40;
-                                break;
+                        if(worldstate.worldstatedata[i].renderingdescriptor &&
+                                worldstate.worldstatedata[i].renderingdescriptor.length > 0)
+                        {
+                            renderingdescriptor = worldstate.worldstatedata[i].renderingdescriptor[0];
+                            dataslot = worldstate.worldstatedata[i];
+                            switch (dataslot.categories[0].key) {
+                                case 'SHAKEMAP':
+                                    renderingdescriptor.mergeId = 'SHAKEMAP';
+                                    renderingdescriptor.priority = 20;
+                                    break;  
+                                case 'PEOPLE_IMPACT_MIN':
+                                case 'PEOPLE_IMPACT_MAX':
+                                case 'PEOPLE_IMPACT_AVG':
+                                    renderingdescriptor.mergeId = 'PEOPLE_IMPACT';
+                                    renderingdescriptor.priority = 30;
+                                    break;
+                                case 'BUILDING_DAMAGE_MIN':
+                                case 'BUILDING_DAMAGE_MAX':
+                                case 'BUILDING_DAMAGE_AVG':
+                                    renderingdescriptor.mergeId = 'BUILDING_DAMAGE';
+                                    renderingdescriptor.priority = 30;
+                                    break;
+                                case 'SUPPORTIVE_WMS':
+                                    renderingdescriptor.mergeId = 'SUPPORTIVE_WMS';
+                                    renderingdescriptor.priority = 100;
+                                    break;
+                            }
                         }
                     }
                 }
