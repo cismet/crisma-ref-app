@@ -177,11 +177,13 @@ angular.module('de.cismet.smartAdmin.services'
                                     tempRd.bodyDirective = 'retrofit-analysis';
                                     tempRd.priority = i + 2;
                                     dataslot.renderingdescriptor.push(tempRd);
+                                    tempRd.colourClass = 'panel-blue';
                             } else if (dataslot.datadescriptor.categories[0].key === ('EVACUATION_ANALYSIS ')) {
                                     tempRd = Object.create(renderingDescriptorPrototype);
                                     tempRd.title = title;
                                     tempRd.bodyDirective = 'evacuation-analysis';
                                     tempRd.priority = i + 2;
+                                    tempRd.colourClass = 'panel-orange';
                                     dataslot.renderingdescriptor.push(tempRd);
                             } else {
                                 // TODO: define other rendering descriptors

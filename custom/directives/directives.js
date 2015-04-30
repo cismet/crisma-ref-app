@@ -781,12 +781,14 @@ angular.module(
         ).directive(
         'retrofitAnalysis',
         [
-            function () {
+            'IconService',
+            function (IconService) {
                 return {
                     restrict: 'E',
                     templateUrl: 'custom/templates/retrofitAnalysis.html',
                     replace: true,
                     controller: function ($scope) {
+                        $scope.data = $scope.dataitem.actualaccessinfo; 
                     }
                 };
             }
@@ -794,7 +796,8 @@ angular.module(
         ).directive(
         'evacuationAnalysis',
         [
-            function () {
+            'IconService',
+            function (IconService) {
                 return {
                     restrict: 'E',
                     templateUrl: 'custom/templates/evacuationAnalysis.html',
