@@ -125,33 +125,41 @@ angular.module('de.cismet.smartAdmin.services'
                             var category = dataslot.categories[0].key;
                             var title, priority;
                             switch(category) {
+                                    case 'RETROFIT_ANALYSIS':
+                                        title = 'Building Retrofit Analysis';
+                                        priority = 101;
+                                        break;
+                                    case 'EVACUATION_ANALYSIS':
+                                        title = 'Evacuation Analysis';
+                                        priority = 101;
+                                        break;
                                     case 'INTENSITY_GRID':
                                         title = 'Intensity Grid';
-                                        priority = 101;
+                                        priority = 103;
                                         break;
                                     case 'BUILDING_DAMAGE_MIN':
                                     case 'BUILDING_DAMAGE_MAX':
                                     case 'BUILDING_DAMAGE_AVG':
                                         title = 'Building Damage';
-                                        priority = 102;
+                                        priority = 104;
                                         break;
                                     case 'BUILDING_INVENTORY':
                                         title = 'Building Inventory';
-                                        priority = 103;
+                                        priority = 105;
                                         break;
                                     case 'PEOPLE_DISTRIBUTION':
                                         title = 'People Distribution';
-                                        priority = 104;
+                                        priority = 106;
                                         break;
                                     case 'PEOPLE_IMPACT_MIN':
                                     case 'PEOPLE_IMPACT_MAX':
                                     case 'PEOPLE_IMPACT_AVG':
                                         title = 'People Impact';
-                                        priority = 105;
+                                        priority = 107;
                                         break;    
                                     case 'SHAKEMAP':
                                         title = 'Shakemaps';
-                                        priority = 106;
+                                        priority = 108;
                                         break;
                                     default:
                                         title = category;
@@ -159,7 +167,7 @@ angular.module('de.cismet.smartAdmin.services'
                             }
                             
                             // select the proper renderer for the dataslot
-                            if(dataslot.datadescriptor.categories[0].key === ('WMS_CAPABILITIES')) {
+                            if(dataslot.datadescriptor.categories[0].key === 'WMS_CAPABILITIES') {
                                 // don't add a redering description for supportive WMS
                                 // -> dont't show them in worldstate view 
                                 // re-nabled because of rditms/dataslot/arrays mess
@@ -171,14 +179,14 @@ angular.module('de.cismet.smartAdmin.services'
                                     dataslot.renderingdescriptor.push(tempRd);
                                 //}
                                 
-                            } else if (dataslot.datadescriptor.categories[0].key === ('RETROFIT_ANALYSIS')) {
+                            } else if (dataslot.datadescriptor.categories[0].key === 'RETROFIT_ANALYSIS') {
                                     tempRd = Object.create(renderingDescriptorPrototype);
                                     tempRd.title = title;
                                     tempRd.bodyDirective = 'retrofit-analysis';
                                     tempRd.priority = i + 2;
                                     dataslot.renderingdescriptor.push(tempRd);
                                     tempRd.colourClass = 'panel-blue';
-                            } else if (dataslot.datadescriptor.categories[0].key === ('EVACUATION_ANALYSIS ')) {
+                            } else if (dataslot.datadescriptor.categories[0].key === 'EVACUATION_ANALYSIS') {
                                     tempRd = Object.create(renderingDescriptorPrototype);
                                     tempRd.title = title;
                                     tempRd.bodyDirective = 'evacuation-analysis';
@@ -271,23 +279,29 @@ angular.module('de.cismet.smartAdmin.services'
                             switch (dataslot.categories[0].key) {
                                 case 'SHAKEMAP':
                                     renderingdescriptor.mergeId = 'SHAKEMAP';
-                                    renderingdescriptor.priority = 20;
+                                    renderingdescriptor.priority = 30;
                                     break;  
                                 case 'PEOPLE_IMPACT_MIN':
                                 case 'PEOPLE_IMPACT_MAX':
                                 case 'PEOPLE_IMPACT_AVG':
                                     renderingdescriptor.mergeId = 'PEOPLE_IMPACT';
-                                    renderingdescriptor.priority = 30;
+                                    renderingdescriptor.priority = 40;
                                     break;
                                 case 'BUILDING_DAMAGE_MIN':
                                 case 'BUILDING_DAMAGE_MAX':
                                 case 'BUILDING_DAMAGE_AVG':
                                     renderingdescriptor.mergeId = 'BUILDING_DAMAGE';
-                                    renderingdescriptor.priority = 30;
+                                    renderingdescriptor.priority = 50;
                                     break;
                                 case 'SUPPORTIVE_WMS':
                                     renderingdescriptor.mergeId = 'SUPPORTIVE_WMS';
                                     renderingdescriptor.priority = 100;
+                                    break;
+                                case 'EVACUATION_ANALYSIS':
+                                    renderingdescriptor.priority = 20;
+                                    break;
+                                case 'RETROFIT_ANALYSIS':
+                                    renderingdescriptor.priority = 10;
                                     break;
                             }
                         }

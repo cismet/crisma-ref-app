@@ -788,7 +788,9 @@ angular.module(
                     templateUrl: 'custom/templates/retrofitAnalysis.html',
                     replace: true,
                     controller: function ($scope) {
-                        $scope.data = $scope.dataitem.actualaccessinfo; 
+                        if($scope.dataslot && $scope.dataslot.actualaccessinfo) {
+                            $scope.data = JSON.parse($scope.dataslot.actualaccessinfo); 
+                        }
                     }
                 };
             }
@@ -803,6 +805,9 @@ angular.module(
                     templateUrl: 'custom/templates/evacuationAnalysis.html',
                     replace: true,
                     controller: function ($scope) {
+                        if($scope.dataslot && $scope.dataslot.actualaccessinfo) {
+                            $scope.data = JSON.parse($scope.dataslot.actualaccessinfo); 
+                        }
                     }
                 };
             }
