@@ -778,6 +778,40 @@ angular.module(
                 };
             }
         ]
+        ).directive(
+        'retrofitAnalysis',
+        [
+            'IconService',
+            function (IconService) {
+                return {
+                    restrict: 'E',
+                    templateUrl: 'custom/templates/retrofitAnalysis.html',
+                    replace: true,
+                    controller: function ($scope) {
+                        if($scope.dataslot && $scope.dataslot.actualaccessinfo) {
+                            $scope.data = JSON.parse($scope.dataslot.actualaccessinfo); 
+                        }
+                    }
+                };
+            }
+        ]
+        ).directive(
+        'evacuationAnalysis',
+        [
+            'IconService',
+            function (IconService) {
+                return {
+                    restrict: 'E',
+                    templateUrl: 'custom/templates/evacuationAnalysis.html',
+                    replace: true,
+                    controller: function ($scope) {
+                        if($scope.dataslot && $scope.dataslot.actualaccessinfo) {
+                            $scope.data = JSON.parse($scope.dataslot.actualaccessinfo); 
+                        }
+                    }
+                };
+            }
+        ]
         ).filter(
         'strip',
         [

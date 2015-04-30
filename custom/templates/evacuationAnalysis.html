@@ -1,0 +1,46 @@
+<table class="table" style="text-align:left;">
+    <thead>
+        <tr>
+            <th>
+                Aspect
+            </th>
+            <th>
+                Cost / Indicator
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                Global cost of Mitigation measure
+            </td>
+            <td>
+                {{!data.mitigationGlobalCost ? 0 : data.mitigationGlobalCost | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                Mitigation Measure Benefit Present value
+            </td>
+            <td>
+                {{!data.benefitPresentValue ? 0 : data.benefitPresentValue | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                <strong>Net Present Value</strong>
+            </td>
+            <td>
+                {{!data.netPresentValue ? 0 : data.netPresentValue | number}} Euro
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <i>Cost/Benefit Indicator</i>
+            </td>
+            <td>
+                {{!data.costBenefitIndicator ? 0 : data.costBenefitIndicator | number}}
+            </td>
+        </tr>
+    </tbody>
+</table>

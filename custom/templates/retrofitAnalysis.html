@@ -1,0 +1,171 @@
+<table class="table" style="text-align:left;">
+    <thead>
+        <tr>
+            <th>
+                Aspect / Indicator
+            </th>
+            <th>
+                GOV
+            </th>
+            <th>
+                CIT
+            </th>
+            <th>
+                TOT
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                Global cost of Mitigation measure
+            </td>
+            <td>
+                {{(!data.mitigationGlobalCost || !data.mitigationGlobalCost[0]) ? 0 : data.mitigationGlobalCost[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.mitigationGlobalCost || !data.mitigationGlobalCost[1]) ? 0 : data.mitigationGlobalCost[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.mitigationGlobalCost || !data.mitigationGlobalCost[2]) ? 0 : data.mitigationGlobalCost[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                Mitigation Measure Benefit Present value
+            </td>
+            <td>
+                {{(!data.benefitPresentValue || !data.benefitPresentValue[0]) ? 
+                    0 : data.benefitPresentValue[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.benefitPresentValue || !data.benefitPresentValue[1]) ? 
+                    0 : data.benefitPresentValue[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.benefitPresentValue || !data.benefitPresentValue[2]) ? 
+                    0 : data.benefitPresentValue[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                &nbsp;&nbsp;&nbsp;Energy saving
+            </td>
+            <td>
+                {{(!data.energySaving || !data.energySaving[0]) ? 
+                    0 : data.energySaving[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.energySaving || !data.energySaving[1]) ? 
+                    0 : data.energySaving[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.energySaving || !data.energySaving[2]) ? 
+                    0 : data.energySaving[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                 &nbsp;&nbsp;&nbsp;Tax incentives (Energy)
+            </td>
+            <td>
+                {{(!data.taxIncentivesEnergy || !data.taxIncentivesEnergy[0]) ? 
+                    0 : data.taxIncentivesEnergy[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.taxIncentivesEnergy || !data.taxIncentivesEnergy[1]) ? 
+                    0 : data.taxIncentivesEnergy[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.taxIncentivesEnergy || !data.taxIncentivesEnergy[2]) ? 
+                    0 : data.taxIncentivesEnergy[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                &nbsp;&nbsp;&nbsp;Tax incentives (Retrofitting)
+            </td>
+            <td>
+                {{(!data.taxIncentivesRetrofitting || !data.taxIncentivesRetrofitting[0]) ? 
+                    0 : data.taxIncentivesRetrofitting[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.taxIncentivesRetrofitting || !data.taxIncentivesRetrofitting[1]) ? 
+                    0 : data.taxIncentivesRetrofitting[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.taxIncentivesRetrofitting || !data.taxIncentivesRetrofitting[2]) ? 
+                    0 : data.taxIncentivesRetrofitting[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                <strong>Net Present Value</strong>
+            </td>
+            <td>
+                {{(!data.netPresentValue || !data.netPresentValue[0]) ? 
+                    0 : data.netPresentValue[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.netPresentValue || !data.netPresentValue[1]) ? 
+                    1 : data.netPresentValue[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.netPresentValue || !data.netPresentValue[2]) ? 
+                    2 : data.netPresentValue[0] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                Impact of additional Benefit
+            </td>
+            <td>
+                {{(!data.additionalBenefitImpact || !data.additionalBenefitImpact[0]) ? 
+                    0 : data.additionalBenefitImpact[0] | number}} Euro
+            </td>
+            <td>
+                {{(!data.additionalBenefitImpact || !data.additionalBenefitImpact[0]) ? 
+                    1 : data.additionalBenefitImpact[1] | number}} Euro
+            </td>
+            <td>
+                {{(!data.additionalBenefitImpact || !data.additionalBenefitImpact[0]) ? 
+                    2 : data.additionalBenefitImpact[2] | number}} Euro
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                Cost/Benefit Indicator
+            </td>
+            <td>
+                {{(!data.costBenefitIndicator || !data.costBenefitIndicator[0]) ? 
+                    0 : data.costBenefitIndicator[0] | number}}
+            </td>
+            <td>
+                {{(!data.costBenefitIndicator || !data.costBenefitIndicator[0]) ? 
+                    1 : data.costBenefitIndicator[1] | number}}
+            </td>
+            <td>
+                {{(!data.costBenefitIndicator || !data.costBenefitIndicator[0]) ? 
+                    2 : data.costBenefitIndicator[2] | number}}
+            </td>
+        </tr> 
+        <tr>
+            <td>
+                Years to Payback Period
+            </td>
+            <td>
+                {{(!data.yearsToPaybackPeriod || !data.yearsToPaybackPeriod[0]) ? 
+                    0 : data.yearsToPaybackPeriod[0] | number}} Years
+            </td>
+            <td>
+                {{(!data.yearsToPaybackPeriod || !data.yearsToPaybackPeriod[0]) ? 
+                    1 : data.yearsToPaybackPeriod[1] | number}} Years
+            </td>
+            <td>
+                {{(!data.yearsToPaybackPeriod || !data.yearsToPaybackPeriod[0]) ? 
+                    2 : data.yearsToPaybackPeriod[2] | number}} Years
+            </td>
+        </tr> 
+    </tbody>
+</table>
+
