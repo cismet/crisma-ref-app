@@ -171,9 +171,21 @@ angular.module('de.cismet.smartAdmin.services'
                                     dataslot.renderingdescriptor.push(tempRd);
                                 //}
                                 
+                            } else if (dataslot.datadescriptor.categories[0].key === ('RETROFIT_ANALYSIS')) {
+                                    tempRd = Object.create(renderingDescriptorPrototype);
+                                    tempRd.title = title;
+                                    tempRd.bodyDirective = 'retrofit-analysis';
+                                    tempRd.priority = i + 2;
+                                    dataslot.renderingdescriptor.push(tempRd);
+                            } else if (dataslot.datadescriptor.categories[0].key === ('EVACUATION_ANALYSIS ')) {
+                                    tempRd = Object.create(renderingDescriptorPrototype);
+                                    tempRd.title = title;
+                                    tempRd.bodyDirective = 'evacuation-analysis';
+                                    tempRd.priority = i + 2;
+                                    dataslot.renderingdescriptor.push(tempRd);
                             } else {
                                 // TODO: define other rendering descriptors
-                                console.warn('Dataslot Type "'+dataslot.categories[0].key+'" is currently not supported')
+                                console.warn('Dataslot Type "'+dataslot.categories[0].key+'" is currently not supported');
                             }
                         } else {
                             console.error('invalid dataslot "'+dataslot.name+'"!');

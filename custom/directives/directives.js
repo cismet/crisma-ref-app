@@ -778,6 +778,32 @@ angular.module(
                 };
             }
         ]
+        ).directive(
+        'retrofitAnalysis',
+        [
+            function () {
+                return {
+                    restrict: 'E',
+                    templateUrl: 'custom/templates/retrofitAnalysis.html',
+                    replace: true,
+                    controller: function ($scope) {
+                    }
+                };
+            }
+        ]
+        ).directive(
+        'evacuationAnalysis',
+        [
+            function () {
+                return {
+                    restrict: 'E',
+                    templateUrl: 'custom/templates/evacuationAnalysis.html',
+                    replace: true,
+                    controller: function ($scope) {
+                    }
+                };
+            }
+        ]
         ).filter(
         'strip',
         [
