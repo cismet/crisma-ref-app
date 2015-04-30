@@ -126,12 +126,12 @@ angular.module('de.cismet.smartAdmin.services'
                             var title, priority;
                             switch(category) {
                                     case 'RETROFIT_ANALYSIS':
-                                        title = 'Building Retrofit Analysis';
-                                        priority = 101;
+                                        title = 'Building Retrofitting Analysis';
+                                        priority = 201;
                                         break;
                                     case 'EVACUATION_ANALYSIS':
                                         title = 'Evacuation Analysis';
-                                        priority = 101;
+                                        priority = 202;
                                         break;
                                     case 'INTENSITY_GRID':
                                         title = 'Intensity Grid';
@@ -186,6 +186,7 @@ angular.module('de.cismet.smartAdmin.services'
                                     tempRd.priority = i + 2;
                                     dataslot.renderingdescriptor.push(tempRd);
                                     tempRd.colourClass = 'panel-blue';
+                                    tempRd.gridWidth = 'col-sm-12';
                             } else if (dataslot.datadescriptor.categories[0].key === 'EVACUATION_ANALYSIS') {
                                     tempRd = Object.create(renderingDescriptorPrototype);
                                     tempRd.title = title;
@@ -298,10 +299,10 @@ angular.module('de.cismet.smartAdmin.services'
                                     renderingdescriptor.priority = 100;
                                     break;
                                 case 'EVACUATION_ANALYSIS':
-                                    renderingdescriptor.priority = 20;
+                                    renderingdescriptor.priority = 210;
                                     break;
                                 case 'RETROFIT_ANALYSIS':
-                                    renderingdescriptor.priority = 10;
+                                    renderingdescriptor.priority = 200;
                                     break;
                             }
                         }
